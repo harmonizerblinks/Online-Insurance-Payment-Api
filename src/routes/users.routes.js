@@ -1,0 +1,22 @@
+module.exports = function(app) {
+
+    var users = require('../controllers/users.controller.js');
+
+    // Create a new User
+    app.post('/api/users', users.create);
+
+    // Retrieve all User
+    app.get('/api/users', users.findAll);
+
+    // Retrieve a single User by Id
+    app.get('/api/users/:userId', users.findOne);
+
+    // Retrieve a single User by username
+    app.get('/api/users/username/:username', users.findOneByUsername);
+
+    // Update a User with Id
+    app.put('/api/users/:userId', users.update);
+
+    // Delete a User with Id
+    app.delete('/api/users/:userId', users.delete);
+}
