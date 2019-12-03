@@ -31,36 +31,78 @@ exports.findAll = async(req, res) => {
     console.log('fine All');
     const categories = [];
     await Category.find()
-        .then((categorys) => {
-            this.findAllProducts(categorys).then((data) => {
-                res.send(data);
+        .then(async(categorys) => {
+            await categorys.forEach(async(cat) => {
+                console.log(cat);
+                let query = { categoryid: cat._id };
+                cat.products = await Product.find(query);
+                categories.push(cat);
             });
+            res.send(categories);
+            // await this.findAllProducts(categorys).then((data) => {
+            //     console.log(data);
+            //     res.send(data);
+            // });
         }).catch(err => {
             res.status(500).send({
                 message: err.message
             });
-        }).finally(() => {
-            res.send(categories);
         });
 };
 
 // FETCH all Products
-exports.findAllProducts = async(categorys, callback) => {
+exports.findAlls = async(categorys) => {
     const categories = [];
-    await categorys.forEach((cat) => {
+    await categorys.forEach(async(cat) => {
+        console.log(cat);
         let query = { categoryid: cat._id };
-        Product.find(query, (err, products) => {
-            if (err) return [];
+        await Product.find(query, (err, products) => {
+            // if (err) return [];
             console.log(products)
             cat.products = products;
             categories.push(cat);
         })
     });
-    console.log(categories)
+    //console.log(categories)
     return await categories;
 };
 
+// FETCH all Category
+exports.findAllCategorys = (req, res) => {
+    Product.find()
+        .then(products => {
+            res.send(products);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
+};
 
+// FETCH all Products
+exports.findAllProducts = (req, res) => {
+    Product.find()
+        .then(products => {
+            res.send(products);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
+};
+
+// FETCH all Products by CategoryId
+exports.findAllProductsByCategory = (req, res) => {
+    let query = { categoryid: req.params.categoryId };
+    Product.find(query)
+        .then(products => {
+            res.send(products);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
+};
 
 // FIND a Category
 exports.findOne = (req, res) => {

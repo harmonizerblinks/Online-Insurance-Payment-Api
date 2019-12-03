@@ -47,7 +47,7 @@ exports.findAll = (req, res) => {
         });
 };
 
-// FETCH all Products
+// FETCH all Products by CategoryId
 exports.findAllByCategory = (req, res) => {
     let query = { categoryid: req.params.categoryId };
     Product.find(query)
