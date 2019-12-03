@@ -2,8 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const passport = require('passport');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs')
 const path = require('path');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -14,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Configuring the database
-const dbConfig = require('./config/mongodb.config.js');
+const Config = require('./config/mongodb.config.js');
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
@@ -22,7 +20,7 @@ mongoose.Promise = global.Promise;
 // mongo configuration
 
 // Connecting to the database
-mongoose.connect(dbConfig.url, { useUnifiedTopology: true })
+mongoose.connect(Config.url, { useUnifiedTopology: true })
     .then(() => {
         console.log("Successfully connected to MongoDB.");
     }).catch(err => {
@@ -40,11 +38,14 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
+require('./config/authguard.config.js')(passport);
 require('./routes/customers.routes.js')(app);
 require('./routes/category.routes.js')(app);
 require('./routes/brands.routes.js')(app);
 require('./routes/blogs.routes.js')(app);
+require('./routes/users.routes.js')(app);
 require('./routes/products.routes.js')(app);
+require('./routes/website.routes.js')(app);
 
 // Api Documentation Setup
 const swaggerOptions = {

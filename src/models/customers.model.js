@@ -8,6 +8,7 @@ const CustomerSchema = mongoose.Schema({
     email: { type: String, required: true, unique: true },
     mobile: { type: String, required: true, unique: true },
     gender: { type: String, required: true },
+    carts: { type: Array, required: false },
     created: { type: Date, index: true, default: Date.now },
     updated: { type: Date, index: true, default: Date.now }
 });

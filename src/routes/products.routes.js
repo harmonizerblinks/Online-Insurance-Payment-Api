@@ -8,6 +8,9 @@ module.exports = function(app) {
     // Retrieve all Product
     app.get('/api/products', products.findAll);
 
+    // Retrieve all by CategoryId
+    app.get('/api/products/category/:categoryId', products.findAllByCategory);
+
     // Retrieve a single Product by Id
     app.get('/api/products/:productId', products.findOne);
 

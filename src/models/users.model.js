@@ -3,15 +3,15 @@ const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 
 const UserSchema = mongoose.Schema({
-    fullname: { type: String, required: true },
-    username: { type: String, required: true, unique: true },
-    password: { type: String, minlength: 8, maxlength: 15 },
+    fullname: { type: String, minlength: 8, maxlength: 50, required: true },
+    username: { type: String, minlength: 8, maxlength: 15, required: true, unique: true },
+    password: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    mobile: { type: String, required: true, unique: true },
-    gender: { type: String, required: true },
+    mobile: { type: String, minlength: 8, maxlength: 15, required: true, unique: true },
+    gender: { type: String, minlength: 4, required: true },
     usertype: { type: String, required: true },
     roles: { type: Array, required: true },
-    position: { type: Array, required: true },
+    position: { type: String, required: true },
     created: { type: Date, index: true, default: Date.now },
     updated: { type: Date, index: true, default: Date.now }
 });

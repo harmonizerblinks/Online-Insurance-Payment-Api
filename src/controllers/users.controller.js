@@ -1,6 +1,9 @@
 const User = require('../models/users.model.js');
 // const passport = require('passport');
 // const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const config = require('../config/mongodb.config.js');
 
 
 // POST a User
@@ -13,26 +16,95 @@ exports.create = (req, res) => {
         password: req.body.password,
         email: req.body.email,
         mobile: req.body.mobile,
-        gender: req.body.gender
+        gender: req.body.gender,
+        usertype: req.body.usertype,
+        roles: req.body.roles,
+        position: req.body.position
     });
+    // user.password = this.hashPassword(req.body.password);
+    //encrypt password
+    bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(req.body.password, salt, (err, hash) => {
+            if (err) {
+                return res.status(500).send({
+                    message: "Error while Creating  " + username
+                });
+            }
 
-    // Save a User in the MongoDB
-    user.save()
-        .then(data => {
-            res.send(data);
+            user.password = hash;
+            // Save a User in the MongoDB
+            user.save()
+                .then(data => {
+                    res.send(data);
+                }).catch(err => {
+                    res.status(500).send({
+                        message: err.message
+                    });
+                });
+        })
+    })
+};
+
+exports.login = (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password
+
+    const query = { username };
+    User.findOne(query)
+        .then(user => {
+            if (!user) {
+                return res.status(404).send({
+                    message: "User not found with username " + username
+                });
+            }
+            bcrypt.hash(password, user.password, (err, isMatch) => {
+                if (err) return err;
+                if (isMatch) {
+                    const token = jwt.sign({
+                        type: 'user',
+                        data: {
+                            _id: user._id,
+                            fullname: user.fullname,
+                            username: user.username,
+                            mobile: user.mobile,
+                            email: user.email,
+                            roles: user.roles
+                        },
+                    }, config.secret, {
+                        expiresIn: 684800
+                    });
+                    res.send({ success: true, token: token });
+                } else {
+                    res.status(500).send({ success: false, message: 'Password is not correct' })
+                }
+            })
         }).catch(err => {
-            res.status(500).send({
-                message: err.message
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "User not found with username " + username
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving User with username " + username
             });
         });
 };
 
-exports.login = (req, res) => {
-
+exports.comparePassword = (password, hash, callback) => {
+    bcrypt.hash(password, hash, (err, isMatch) => {
+        if (err) return err;
+        return isMatch;
+    })
 };
 
-exports.register = (req, res) => {
-
+exports.profile = (req, res) => {
+    if (req.user) {
+        res.send(req.users);
+    } else {
+        res.status(500).send({
+            message: "Authentication not Valid"
+        });
+    }
 };
 
 // FETCH all Users
@@ -98,13 +170,17 @@ exports.findOneByUsername = (req, res) => {
 // UPDATE a User
 exports.update = (req, res) => {
     // Find user and update it
+    console.log(req.body)
     User.findByIdAndUpdate(req.params.userId, {
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            age: req.body.age,
+            fullname: req.body.fullname,
+            username: req.body.username,
+            password: req.body.password,
             email: req.body.email,
             mobile: req.body.mobile,
-            gender: req.body.mobile,
+            gender: req.body.gender,
+            usertype: req.body.usertype,
+            roles: req.body.roles,
+            position: req.body.position,
             updated: Date.now
         }, { new: true })
         .then(user => {
@@ -120,6 +196,7 @@ exports.update = (req, res) => {
                     message: "User not found with id " + req.params.userId
                 });
             }
+            console.log(err);
             return res.status(500).send({
                 message: "Error updating user with id " + req.params.userId
             });

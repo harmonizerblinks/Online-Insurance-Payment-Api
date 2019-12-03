@@ -8,7 +8,19 @@ exports.create = (req, res) => {
         code: req.body.code,
         name: req.body.name,
         imageurl: req.body.imageurl,
-        images: req.body.images
+        images: req.body.images,
+        categoryid: req.body.categoryid,
+        category: req.body.category,
+        introduction: req.body.introduction,
+        description: req.body.description,
+        amount: req.body.amount,
+        sizes: req.body.sizes,
+        colors: req.body.colors,
+        status: req.body.status,
+        discount: req.body.discount,
+        percentage: req.body.percentage,
+        quantity: req.body.quantity,
+        userid: req.body.userid
     });
 
     // Save a Product in the MongoDB
@@ -26,6 +38,19 @@ exports.create = (req, res) => {
 // FETCH all Products
 exports.findAll = (req, res) => {
     Product.find()
+        .then(products => {
+            res.send(products);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
+};
+
+// FETCH all Products
+exports.findAllByCategory = (req, res) => {
+    let query = { categoryid: req.params.categoryId };
+    Product.find(query)
         .then(products => {
             res.send(products);
         }).catch(err => {
@@ -66,6 +91,18 @@ exports.update = (req, res) => {
             name: req.body.name,
             imageurl: req.body.imageurl,
             images: req.body.images,
+            categoryid: req.body.categoryid,
+            category: req.body.category,
+            introduction: req.body.introduction,
+            description: req.body.description,
+            amount: req.body.amount,
+            sizes: req.body.sizes,
+            colors: req.body.colors,
+            status: req.body.status,
+            discount: req.body.discount,
+            percentage: req.body.percentage,
+            quantity: req.body.quantity,
+            userid: req.body.userid,
             updated: Date.now
         }, { new: true })
         .then(product => {
