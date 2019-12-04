@@ -13,7 +13,7 @@ exports.create = (req, res) => {
     const user = new User({
         fullname: req.body.fullname,
         username: req.body.username,
-        password: req.body.password,
+        password: bcrypt.hashSync(req.body.password, 10), //password Encryption,
         email: req.body.email,
         mobile: req.body.mobile,
         gender: req.body.gender,
@@ -21,28 +21,14 @@ exports.create = (req, res) => {
         roles: req.body.roles,
         position: req.body.position
     });
-    // user.password = this.hashPassword(req.body.password);
-    //encrypt password
-    bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(req.body.password, salt, (err, hash) => {
-            if (err) {
-                return res.status(500).send({
-                    message: "Error while Creating  " + username
-                });
-            }
-
-            user.password = hash;
-            // Save a User in the MongoDB
-            user.save()
-                .then(data => {
-                    res.send(data);
-                }).catch(err => {
-                    res.status(500).send({
-                        message: err.message
-                    });
-                });
-        })
-    })
+    user.save()
+        .then(data => {
+            res.send(data);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
 };
 
 exports.login = (req, res) => {
@@ -57,27 +43,26 @@ exports.login = (req, res) => {
                     message: "User not found with username " + username
                 });
             }
-            bcrypt.hash(password, user.password, (err, isMatch) => {
-                if (err) return err;
-                if (isMatch) {
-                    const token = jwt.sign({
-                        type: 'user',
-                        data: {
-                            _id: user._id,
-                            fullname: user.fullname,
-                            username: user.username,
-                            mobile: user.mobile,
-                            email: user.email,
-                            roles: user.roles
-                        },
-                    }, config.secret, {
-                        expiresIn: 684800
-                    });
-                    res.send({ success: true, token: token });
-                } else {
-                    res.status(500).send({ success: false, message: 'Password is not correct' })
-                }
-            })
+
+            var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
+            if (passwordIsValid) {
+                const token = jwt.sign({
+                    type: 'user',
+                    data: {
+                        _id: user._id,
+                        fullname: user.fullname,
+                        username: user.username,
+                        mobile: user.mobile,
+                        email: user.email,
+                        roles: user.roles
+                    },
+                }, config.secret, {
+                    expiresIn: 684800
+                });
+                res.send({ success: true, accesstoken: token });
+            } else {
+                res.status(500).send({ success: false, message: 'Password is not correct' })
+            }
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({

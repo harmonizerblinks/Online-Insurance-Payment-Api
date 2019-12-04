@@ -57,7 +57,7 @@ const swaggerOptions = {
                 name: 'Harmony Alabi',
             },
             servers: ["http://localhost:" + PORT]
-        }
+        },
     },
     apis: ["./routes/*.routes.js"]
 };

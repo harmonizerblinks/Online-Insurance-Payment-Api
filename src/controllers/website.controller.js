@@ -1,4 +1,5 @@
 const Category = require('../models/category.model.js');
+const Brands = require('../models/brands.model.js');;
 const Product = require('../models/products.model.js');
 const Customer = require('../models/customers.model.js');
 // var async = require("async");
@@ -8,14 +9,10 @@ const Customer = require('../models/customers.model.js');
 exports.create = (req, res) => {
     // console.log(req.body);
     // Create a Category
-    const category = new Customer({
-        name: req.body.name,
-        imageurl: req.body.imageurl,
-        description: req.body.description
-    });
+    const customer = new Customer(req.body);
 
     // Save a Category in the MongoDB
-    category.save()
+    customer.save()
         .then(data => {
             res.send(data);
         }).catch(err => {
@@ -26,23 +23,22 @@ exports.create = (req, res) => {
 };
 
 
-// FETCH all Categorys
+// FETCH all Categorys With their Products
 exports.findAll = async(req, res) => {
     console.log('fine All');
-    const categories = [];
     await Category.find()
         .then(async(categorys) => {
-            await categorys.forEach(async(cat) => {
-                console.log(cat);
-                let query = { categoryid: cat._id };
-                cat.products = await Product.find(query);
-                categories.push(cat);
-            });
-            res.send(categories);
-            // await this.findAllProducts(categorys).then((data) => {
-            //     console.log(data);
-            //     res.send(data);
-            // });
+            const start = async() => {
+                const categories = [];
+                await asyncForEach(categorys, async(cat) => {
+                    let query = { categoryid: cat._id };
+                    cat.products = await Product.find(query);
+                    categories.push(cat);
+                });
+                console.log('Done');
+                res.send(categories);
+            }
+            start();
         }).catch(err => {
             res.status(500).send({
                 message: err.message
@@ -50,28 +46,48 @@ exports.findAll = async(req, res) => {
         });
 };
 
-// FETCH all Products
-exports.findAlls = async(categorys) => {
-    const categories = [];
-    await categorys.forEach(async(cat) => {
-        console.log(cat);
-        let query = { categoryid: cat._id };
-        await Product.find(query, (err, products) => {
-            // if (err) return [];
-            console.log(products)
-            cat.products = products;
-            categories.push(cat);
-        })
-    });
-    //console.log(categories)
-    return await categories;
+
+// FETCH all Categorys With their Products
+exports.findAll = async(req, res) => {
+    console.log('fine All');
+    await Category.find()
+        .then(async(categorys) => {
+            const start = async() => {
+                const categories = [];
+                await asyncForEach(categorys, async(cat) => {
+                    let query = { categoryid: cat._id };
+                    cat.products = await Product.find(query);
+                    categories.push(cat);
+                });
+                console.log('Done');
+                res.send(categories);
+            }
+            start();
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
+};
+
+
+// FETCH all Category
+exports.findAllBrands = async(req, res) => {
+    await Brands.find()
+        .then(brands => {
+            res.send(brands);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
 };
 
 // FETCH all Category
-exports.findAllCategorys = (req, res) => {
-    Product.find()
-        .then(products => {
-            res.send(products);
+exports.findAllCategorys = async(req, res) => {
+    await Category.find()
+        .then(categorys => {
+            res.send(categorys);
         }).catch(err => {
             res.status(500).send({
                 message: err.message
@@ -80,8 +96,8 @@ exports.findAllCategorys = (req, res) => {
 };
 
 // FETCH all Products
-exports.findAllProducts = (req, res) => {
-    Product.find()
+exports.findAllProducts = async(req, res) => {
+    await Product.find()
         .then(products => {
             res.send(products);
         }).catch(err => {
@@ -92,9 +108,9 @@ exports.findAllProducts = (req, res) => {
 };
 
 // FETCH all Products by CategoryId
-exports.findAllProductsByCategory = (req, res) => {
+exports.findAllProductsByCategory = async(req, res) => {
     let query = { categoryid: req.params.categoryId };
-    Product.find(query)
+    await Product.find(query)
         .then(products => {
             res.send(products);
         }).catch(err => {
@@ -175,3 +191,9 @@ exports.delete = (req, res) => {
             });
         });
 };
+
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}

@@ -5,11 +5,12 @@ const Brand = require('../models/brands.model.js');
 exports.create = (req, res) => {
     // console.log(req.body);
     // Create a Brand
-    const brand = new Brand({
-        name: req.body.name,
-        imageurl: req.body.imageurl,
-        description: req.body.description
-    });
+    // const brand = new Brand({
+    //     name: req.body.name,
+    //     imageurl: req.body.imageurl,
+    //     description: req.body.description
+    // });
+    const brand = new Brand(req.body);
 
     // Save a Brand in the MongoDB
     brand.save()
@@ -62,7 +63,8 @@ exports.findOne = (req, res) => {
 
 // UPDATE a Brand
 exports.update = (req, res) => {
-    // Find brand and update it
+    var body
+        // Find brand and update it
     Brand.findByIdAndUpdate(req.params.brandId, {
             name: req.body.name,
             imageurl: req.body.imageurl,

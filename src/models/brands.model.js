@@ -5,6 +5,7 @@ const BrandSchema = mongoose.Schema({
     imageurl: { type: String, required: true },
     description: { type: String, minlength: 18, required: true },
     promotions: { type: Array },
+    categoryids: { type: Array },
     categorys: { type: Array },
     created: { type: Date, index: true, default: Date.now },
     updated: { type: Date, index: true, default: Date.now }
