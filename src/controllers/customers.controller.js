@@ -5,14 +5,7 @@ const Customer = require('../models/customers.model.js');
 exports.create = (req, res) => {
     // console.log(req.body);
     // Create a Customer
-    const customer = new Customer({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        age: req.body.age,
-        email: req.body.email,
-        mobile: req.body.mobile,
-        gender: req.body.mobile
-    });
+    const customer = new Customer(req.body);
 
     // Save a Customer in the MongoDB
     customer.save()
@@ -65,16 +58,10 @@ exports.findOne = (req, res) => {
 
 // UPDATE a Customer
 exports.update = (req, res) => {
+    const customer = req.body;
+    customer.updated = Date.now;
     // Find customer and update it
-    Customer.findByIdAndUpdate(req.params.customerId, {
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            age: req.body.age,
-            email: req.body.email,
-            mobile: req.body.mobile,
-            gender: req.body.mobile,
-            updated: Date.now
-        }, { new: true })
+    Customer.findByIdAndUpdate(req.params.customerId, customer, { new: true })
         .then(customer => {
             if (!customer) {
                 return res.status(404).send({

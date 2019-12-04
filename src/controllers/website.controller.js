@@ -48,7 +48,7 @@ exports.findAll = async(req, res) => {
 
 
 // FETCH all Categorys With their Products
-exports.findAll = async(req, res) => {
+exports.findAllBrandProducts = async(req, res) => {
     console.log('fine All');
     await Category.find()
         .then(async(categorys) => {
@@ -70,8 +70,7 @@ exports.findAll = async(req, res) => {
         });
 };
 
-
-// FETCH all Category
+// FETCH all Brand
 exports.findAllBrands = async(req, res) => {
     await Brands.find()
         .then(brands => {

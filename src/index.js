@@ -86,4 +86,12 @@ var server = app.listen(PORT, function() {
 
     console.log("App listening at http://%s:%s", host, port)
 
-})
+});
+
+var io = require('socket.io')(server);
+
+io.on('connection', function(socket) {
+    socket.on('message', function(msg) {
+        io.emit('message', msg);
+    });
+});

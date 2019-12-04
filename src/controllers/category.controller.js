@@ -5,11 +5,7 @@ const Category = require('../models/category.model.js');
 exports.create = (req, res) => {
     // console.log(req.body);
     // Create a Category
-    const category = new Category({
-        name: req.body.name,
-        imageurl: req.body.imageurl,
-        description: req.body.description
-    });
+    const category = new Category(req.body);
 
     // Save a Category in the MongoDB
     category.save()
@@ -62,13 +58,10 @@ exports.findOne = (req, res) => {
 
 // UPDATE a Category
 exports.update = (req, res) => {
+    const category = req.body;
+    category.updated = Date.now;
     // Find category and update it
-    Category.findByIdAndUpdate(req.params.categoryId, {
-            name: req.body.name,
-            imageurl: req.body.imageurl,
-            description: req.body.description,
-            updated: Date.now
-        }, { new: true })
+    Category.findByIdAndUpdate(req.params.categoryId, category, { new: true })
         .then(category => {
             if (!category) {
                 return res.status(404).send({

@@ -9,6 +9,9 @@ module.exports = function(app) {
     app.get('/api/website', website.findAll);
 
     // Retrieve all Categories
+    app.get('/api/website/brands', website.findAllBrands);
+
+    // Retrieve all Categories
     app.get('/api/website/category', website.findAllCategorys);
 
     // Retrieve all Products
