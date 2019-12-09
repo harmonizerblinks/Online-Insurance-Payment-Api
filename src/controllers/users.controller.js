@@ -154,20 +154,11 @@ exports.findOneByUsername = (req, res) => {
 
 // UPDATE a User
 exports.update = (req, res) => {
+    var user = req.body;
+    user.updated = Date.now;
     // Find user and update it
     console.log(req.body)
-    User.findByIdAndUpdate(req.params.userId, {
-            fullname: req.body.fullname,
-            username: req.body.username,
-            password: req.body.password,
-            email: req.body.email,
-            mobile: req.body.mobile,
-            gender: req.body.gender,
-            usertype: req.body.usertype,
-            roles: req.body.roles,
-            position: req.body.position,
-            updated: Date.now
-        }, { new: true })
+    User.findByIdAndUpdate(req.params.userId, user, { new: true })
         .then(user => {
             if (!user) {
                 return res.status(404).send({

@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 
 const CustomerSchema = mongoose.Schema({
-    code: { type: String, unique: true, default: generateOTP() },
     firstname: { type: String, required: true },
     lastname: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    mobile: { type: String, required: true, unique: true },
+    email: { type: String, index: true, required: true, unique: true },
+    mobile: { type: String, index: true, required: true, unique: true },
+    password: { type: String, required: false },
     address: { type: Object, required: false },
     carts: { type: Array, required: false },
     created: { type: Date, index: true, default: Date.now },
@@ -15,7 +15,7 @@ const CustomerSchema = mongoose.Schema({
 
 CustomerSchema.plugin(uniqueValidator);
 
-module.exports = mongoose.model('customers', CustomerSchema);
+module.exports = mongoose.model('customer', CustomerSchema);
 
 function generateOTP() {
     var digits = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';

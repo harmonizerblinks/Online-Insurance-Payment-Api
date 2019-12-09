@@ -13,7 +13,7 @@ module.exports = function(app) {
     app.get('/api/users', users.findAll);
 
     // Retrieve Current Login User Prodile
-    app.get('/api/profile', users.profile);
+    app.get('/api/profile', passport.authenticate('jwt', { session: false }), users.profile);
 
     // Retrieve a single User by Id
     app.get('/api/users/:userId', users.findOne);

@@ -57,14 +57,10 @@ exports.findOne = (req, res) => {
 
 // UPDATE a Slider
 exports.update = (req, res) => {
-    var body
-        // Find slider and update it
-    Slider.findByIdAndUpdate(req.params.sliderId, {
-            name: req.body.name,
-            imageurl: req.body.imageurl,
-            description: req.body.description,
-            updated: Date.now
-        }, { new: true })
+    var slider = req.body;
+    slider.updated = Date.now;
+    // Find slider and update it
+    Slider.findByIdAndUpdate(req.params.sliderId, slider, { new: true })
         .then(slider => {
             if (!slider) {
                 return res.status(404).send({
