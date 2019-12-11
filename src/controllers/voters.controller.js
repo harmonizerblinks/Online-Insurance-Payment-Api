@@ -1,12 +1,12 @@
-const Slider = require('../models/sliders.model.js');
+const Voter = require('../models/voters.model.js');
 
 
-// POST a Slider
+// POST a Voter
 exports.create = (req, res) => {
-    // Create a Slider
-    const sliders = new Slider(req.body);
+    // Create a Voter
+    const sliders = new Voter(req.body);
 
-    // Save a Slider in the MongoDB
+    // Save a Voter in the MongoDB
     slider.save()
         .then(data => {
             res.send(data);
@@ -18,10 +18,10 @@ exports.create = (req, res) => {
 };
 
 
-// FETCH all Sliders
+// FETCH all Voters
 exports.findAll = (req, res) => {
     console.log('fine All');
-    Slider.find()
+    Voter.find()
         .then(sliders => {
             // console.log(sliders)
             res.send(sliders);
@@ -33,45 +33,45 @@ exports.findAll = (req, res) => {
 };
 
 
-// FIND a Slider
+// FIND a Voter
 exports.findOne = (req, res) => {
-    Slider.findById(req.params.sliderId)
+    Voter.findById(req.params.sliderId)
         .then(slider => {
             if (!slider) {
                 return res.status(404).send({
-                    message: "Slider not found with id " + req.params.sliderId
+                    message: "Voter not found with id " + req.params.sliderId
                 });
             }
             res.send(slider);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Slider not found with id " + req.params.sliderId
+                    message: "Voter not found with id " + req.params.sliderId
                 });
             }
             return res.status(500).send({
-                message: "Error retrieving Slider with id " + req.params.sliderId
+                message: "Error retrieving Voter with id " + req.params.sliderId
             });
         });
 };
 
-// UPDATE a Slider
+// UPDATE a Voter
 exports.update = (req, res) => {
     var slider = req.body;
     slider.updated = Date.now;
     // Find slider and update it
-    Slider.findByIdAndUpdate(req.params.sliderId, slider, { new: true })
+    Voter.findByIdAndUpdate(req.params.sliderId, slider, { new: true })
         .then(slider => {
             if (!slider) {
                 return res.status(404).send({
-                    message: "Slider not found with id " + req.params.sliderId
+                    message: "Voter not found with id " + req.params.sliderId
                 });
             }
             res.send(slider);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Slider not found with id " + req.params.sliderId
+                    message: "Voter not found with id " + req.params.sliderId
                 });
             }
             return res.status(500).send({
@@ -80,20 +80,20 @@ exports.update = (req, res) => {
         });
 };
 
-// DELETE a Slider
+// DELETE a Voter
 exports.delete = (req, res) => {
-    Slider.findByIdAndRemove(req.params.sliderId)
+    Voter.findByIdAndRemove(req.params.sliderId)
         .then(slider => {
             if (!slider) {
                 return res.status(404).send({
-                    message: "Slider not found with id " + req.params.sliderId
+                    message: "Voter not found with id " + req.params.sliderId
                 });
             }
-            res.send({ message: "Slider deleted successfully!" });
+            res.send({ message: "Voter deleted successfully!" });
         }).catch(err => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
-                    message: "Slider not found with id " + req.params.sliderId
+                    message: "Voter not found with id " + req.params.sliderId
                 });
             }
             return res.status(500).send({

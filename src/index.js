@@ -10,7 +10,7 @@ const swaggerUi = require('swagger-ui-express');
 // initialize the app
 const app = express();
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 
 // Configuring the database
 const Config = require('./config/mongodb.config.js');
@@ -43,14 +43,10 @@ app.use(bodyParser.json());
 console.log('working')
 
 // require('./config/authguard.config.js')(passport);
-require('./routes/customers.routes.js')(app);
-require('./routes/brands.routes.js')(app);
-require('./routes/category.routes.js')(app);
-require('./routes/brands.routes.js')(app);
-require('./routes/blogs.routes.js')(app);
+require('./routes/voters.routes.js')(app);
+require('./routes/videos.routes.js')(app);
 require('./routes/users.routes.js')(app);
-require('./routes/products.routes.js')(app);
-require('./routes/website.routes.js')(app);
+require('./routes/submissions.routes.js')(app);
 
 // Api Documentation Setup
 const swaggerOptions = {
