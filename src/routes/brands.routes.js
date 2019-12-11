@@ -4,19 +4,10 @@ module.exports = function(app) {
     const passport = require('passport');
 
     // Create a new Customer
-    app.post('/api/brands', passport.authenticate('Bearer', { session: false }), brands.create);
+    app.post('/api/brands', brands.create);
 
     // Retrieve all Customer
-    /**
-     * @swagger
-     * /api/brands:
-     *  get:
-     *    description: Use to request all brands
-     *    responses:
-     *      '200':
-     *        description: A successful response
-     */
-    app.get('/api/brands', passport.authenticate('Bearer', { session: false }), brands.findAll);
+    app.get('/api/brands', brands.findAll);
 
     // Retrieve a single Customer by Id
     /**
@@ -28,11 +19,14 @@ module.exports = function(app) {
      *      '200':
      *        description: A successful response
      */
-    app.get('/api/brands/:brandsId', brands.findOne);
+    app.get('/api/brands/:brandId', brands.findOne);
+
+    // 
+    app.get('/api/brands/name/:name', brands.findByName);
 
     // Update a Customer with Id
-    app.put('/api/brands/:brandsId', brands.update);
+    app.put('/api/brands/:brandId', brands.update);
 
     // Delete a Customer with Id
-    app.delete('/api/brands/:brandsId', brands.delete);
+    app.delete('/api/brands/:brandId', brands.delete);
 }

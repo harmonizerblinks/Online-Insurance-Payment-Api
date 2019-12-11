@@ -11,4 +11,4 @@ const SliderSchema = mongoose.Schema({
     updated: { type: Date, index: true, default: Date.now }
 });
 
-module.exports = mongoose.model('sliders', SliderSchema);
+module.exports = mongoose.model('slider', SliderSchema);

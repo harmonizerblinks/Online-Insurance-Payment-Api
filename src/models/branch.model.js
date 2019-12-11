@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const RoleSchema = mongoose.Schema({
+const BranchSchema = mongoose.Schema({
     name: { type: String, required: true },
     description: { type: String, required: false },
     status: { type: Boolean, required: true, default: true },
@@ -9,4 +9,4 @@ const RoleSchema = mongoose.Schema({
 });
 
 
-module.exports = mongoose.model('role', RoleSchema);
+module.exports = mongoose.model('branch', BranchSchema);

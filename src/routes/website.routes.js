@@ -23,7 +23,4 @@ module.exports = function(app) {
     // Retrieve a single Website by Id
     app.get('/api/website/:productid', website.findOne);
 
-    // Update a Website with Id
-    app.put('/api/website/:websiteId', website.update);
-
 }

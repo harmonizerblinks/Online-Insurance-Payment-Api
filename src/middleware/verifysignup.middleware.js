@@ -55,4 +55,4 @@ const signUpVerify = {
 // signUpVerify.checkDuplicateUserNameOrEmail = checkDuplicateUserNameOrEmail;
 // signUpVerify.checkRolesExisted = checkRolesExisted;
 
-module.exports = signUpVerify;
+// module.exports = signUpVerify;

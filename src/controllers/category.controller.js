@@ -58,10 +58,11 @@ exports.findOne = (req, res) => {
 
 // UPDATE a Category
 exports.update = (req, res) => {
-    const category = req.body;
-    category.updated = Date.now;
+    var body = req.body;
+    // console.log(body)
+    body.updated = new Date();
     // Find category and update it
-    Category.findByIdAndUpdate(req.params.categoryId, category, { new: true })
+    Category.findByIdAndUpdate(req.params.categoryId, body, { new: true })
         .then(category => {
             if (!category) {
                 return res.status(404).send({

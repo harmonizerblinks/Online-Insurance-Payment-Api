@@ -51,13 +51,13 @@ exports.findAll = async(req, res) => {
 exports.findAllBrandProducts = async(req, res) => {
     console.log('fine All');
     await Category.find()
-        .then(async(categorys) => {
+        .then(async(brands) => {
             const start = async() => {
                 const categories = [];
-                await asyncForEach(categorys, async(cat) => {
-                    let query = { categoryid: cat._id };
-                    cat.products = await Product.find(query);
-                    categories.push(cat);
+                await asyncForEach(brands, async(brand) => {
+                    let query = { brandid: cat._id };
+                    brand.products = await Product.find(query);
+                    // brand.produ.push(cat);
                 });
                 console.log('Done');
                 res.send(categories);
@@ -78,6 +78,41 @@ exports.findAllBrands = async(req, res) => {
         }).catch(err => {
             res.status(500).send({
                 message: err.message
+            });
+        });
+};
+
+
+// FIND a Brand by name
+exports.findByName = (req, res) => {
+    let query = { name: req.params.name };
+    Brand.findOne(query)
+        .then(brand => {
+            if (!brand) {
+                return res.status(404).send({
+                    message: "Brand not found with Name " + req.params.name
+                });
+            }
+            const start = async() => {
+                const categories = [];
+                await asyncForEach(brand.categoryid, async(c) => {
+                    const category = await Category.findById(c);
+                    categories.push(category);
+                });
+                // console.log('Done');
+                brand.categorys = categories;
+                res.send(brand);
+            }
+            start();
+            // res.send(brand);
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "Brand not found with name " + req.params.name
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving Brand with name " + req.params.name
             });
         });
 };
@@ -137,56 +172,6 @@ exports.findOne = (req, res) => {
             }
             return res.status(500).send({
                 message: "Error retrieving Category with id " + req.params.categoryId
-            });
-        });
-};
-
-// UPDATE a Category
-exports.update = (req, res) => {
-    // Find category and update it
-    Category.findByIdAndUpdate(req.params.categoryId, {
-            name: req.body.name,
-            imageurl: req.body.imageurl,
-            description: req.body.description,
-            updated: Date.now
-        }, { new: true })
-        .then(category => {
-            if (!category) {
-                return res.status(404).send({
-                    message: "Category not found with id " + req.params.categoryId
-                });
-            }
-            res.send(category);
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "Category not found with id " + req.params.categoryId
-                });
-            }
-            return res.status(500).send({
-                message: "Error updating category with id " + req.params.categoryId
-            });
-        });
-};
-
-// DELETE a Category
-exports.delete = (req, res) => {
-    Category.findByIdAndRemove(req.params.categoryId)
-        .then(category => {
-            if (!category) {
-                return res.status(404).send({
-                    message: "Category not found with id " + req.params.categoryId
-                });
-            }
-            res.send({ message: "Category deleted successfully!" });
-        }).catch(err => {
-            if (err.kind === 'ObjectId' || err.name === 'NotFound') {
-                return res.status(404).send({
-                    message: "Category not found with id " + req.params.categoryId
-                });
-            }
-            return res.status(500).send({
-                message: "Could not delete category with id " + req.params.categoryId
             });
         });
 };

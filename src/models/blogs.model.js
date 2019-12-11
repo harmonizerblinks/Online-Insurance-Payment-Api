@@ -10,4 +10,4 @@ const BlogSchema = mongoose.Schema({
     updated: { type: Date, index: true, default: Date.now }
 });
 
-module.exports = mongoose.model('blogs', BlogSchema);
+module.exports = mongoose.model('blog', BlogSchema);

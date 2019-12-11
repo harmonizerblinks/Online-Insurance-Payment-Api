@@ -98,4 +98,4 @@ authJwt.verifyToken = verifyToken;
 authJwt.isAdmin = isAdmin;
 authJwt.isPmOrAdmin = isPmOrAdmin;
 
-module.exports = authJwt;
+// module.exports = authJwt;

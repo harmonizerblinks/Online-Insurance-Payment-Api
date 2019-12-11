@@ -4,24 +4,7 @@ const Product = require('../models/products.model.js');
 // POST a Product
 exports.create = (req, res) => {
     // Create a Product
-    const product = new Product({
-        code: req.body.code,
-        name: req.body.name,
-        imageurl: req.body.imageurl,
-        images: req.body.images,
-        categoryid: req.body.categoryid,
-        category: req.body.category,
-        introduction: req.body.introduction,
-        description: req.body.description,
-        amount: req.body.amount,
-        sizes: req.body.sizes,
-        colors: req.body.colors,
-        status: req.body.status,
-        discount: req.body.discount,
-        percentage: req.body.percentage,
-        quantity: req.body.quantity,
-        userid: req.body.userid
-    });
+    const product = new Product(req.body);
 
     // Save a Product in the MongoDB
     product.save()
@@ -85,26 +68,11 @@ exports.findOne = (req, res) => {
 
 // UPDATE a Product
 exports.update = (req, res) => {
+    var body = req.body;
+    console.log(body)
+    body.updated = new Date();
     // Find product and update it
-    Product.findByIdAndUpdate(req.params.productId, {
-            code: req.body.code,
-            name: req.body.name,
-            imageurl: req.body.imageurl,
-            images: req.body.images,
-            categoryid: req.body.categoryid,
-            category: req.body.category,
-            introduction: req.body.introduction,
-            description: req.body.description,
-            amount: req.body.amount,
-            sizes: req.body.sizes,
-            colors: req.body.colors,
-            status: req.body.status,
-            discount: req.body.discount,
-            percentage: req.body.percentage,
-            quantity: req.body.quantity,
-            userid: req.body.userid,
-            updated: Date.now
-        }, { new: true })
+    Product.findByIdAndUpdate(req.params.productId, body, { new: true })
         .then(product => {
             if (!product) {
                 return res.status(404).send({

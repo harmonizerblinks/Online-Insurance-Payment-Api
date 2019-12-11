@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const passport = require('passport');
 const path = require('path');
@@ -9,7 +10,7 @@ const swaggerUi = require('swagger-ui-express');
 // initialize the app
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 // Configuring the database
 const Config = require('./config/mongodb.config.js');
@@ -30,16 +31,20 @@ mongoose.connect(Config.url, { useUnifiedTopology: true })
 
 // defining the Middleware
 app.use(cors());
+app.use(fileUpload);
 // Set the static folder
 app.use(express.static(path.join(__dirname, 'public')));
 // Bodyparser Middleware
 app.use(bodyParser.json());
 // Passport Middleware
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
-require('./config/authguard.config.js')(passport);
+console.log('working')
+
+// require('./config/authguard.config.js')(passport);
 require('./routes/customers.routes.js')(app);
+require('./routes/brands.routes.js')(app);
 require('./routes/category.routes.js')(app);
 require('./routes/brands.routes.js')(app);
 require('./routes/blogs.routes.js')(app);
