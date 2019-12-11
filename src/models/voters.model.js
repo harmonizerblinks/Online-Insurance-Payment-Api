@@ -5,4 +5,4 @@ const VoteSchema = mongoose.Schema({
     created: { type: Date, index: true, default: Date.now }
 });
 
-module.exports = mongoose.model('vote', VoteSchema);
+module.exports = mongoose.model('votes', VoteSchema);

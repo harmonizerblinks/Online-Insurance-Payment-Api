@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const SubmissionSchema = mongoose.Schema({
     name: { type: String, index: true, required: true, unique: true },
@@ -12,4 +13,6 @@ const SubmissionSchema = mongoose.Schema({
     updated: { type: Date, index: true, default: Date.now }
 });
 
-module.exports = mongoose.model('submission', SubmissionSchema);
+SubmissionSchema.plugin(uniqueValidator);
+
+module.exports = mongoose.model('submissions', SubmissionSchema);

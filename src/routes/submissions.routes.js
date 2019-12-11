@@ -1,7 +1,7 @@
 module.exports = function(app) {
 
     var submissions = require('../controllers/submissions.controller.js');
-    const passport = require('passport');
+    console.log('submission');
 
     // Create a new Customer
     app.post('/api/submissions', submissions.create);

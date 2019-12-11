@@ -6,4 +6,4 @@ const VideoSchema = mongoose.Schema({
     created: { type: Date, index: true, default: Date.now }
 });
 
-module.exports = mongoose.model('video', VideoSchema);
+module.exports = mongoose.model('videos', VideoSchema);

@@ -3,6 +3,7 @@ const Video = require('../models/videos.model.js');
 
 // POST a Video
 exports.create = (req, res) => {
+
     // Create a Video
     const video = new Video(req.body);
 
