@@ -1,21 +1,41 @@
 const Video = require('../models/videos.model.js');
+const config = require('../config/mongodb.config.js');
+var path = require('path');
+var appDir = path.dirname(require.main.filename);
 
 
 // POST a Video
-exports.create = (req, res) => {
+exports.create = async(req, res) => {
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send('No files were uploaded.');
+    }
+    console.log(req.files.video);
+    // The name of the input field (i.e. "video") is used to retrieve the uploaded file
+    const file = req.files.video;
+    const fname = new Date().getTime() + file.name.replace(/ /g, "_");
+    const name = appRoot + '/../public/' + fname;
+    console.log(name)
+        // Use the mv() method to place the file somewhere on your server
+    file.mv(name, function(err) {
+        if (err) {
+            console.log(err);
+            return res.status(500).send(err);
+        }
+        // console.log(result);
+        // Create a Video
+        const video = new Video({ name: fname, url: config.app + fname });
 
-    // Create a Video
-    const video = new Video(req.body);
-
-    // Save a Video in the MongoDB
-    video.save()
-        .then(data => {
-            res.send(data);
-        }).catch(err => {
-            res.status(500).send({
-                message: err.message
+        // Save a Video in the MongoDB
+        video.save()
+            .then(data => {
+                res.send(data);
+            }).catch(err => {
+                res.status(500).send({
+                    message: err.message
+                });
             });
-        });
+        // res.send('File uploaded!');
+    });
 };
 
 

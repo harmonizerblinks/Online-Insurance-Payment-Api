@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-// const fileUpload = require('express-fileupload');
+const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const passport = require('passport');
 const path = require('path');
@@ -9,6 +9,8 @@ const swaggerUi = require('swagger-ui-express');
 
 // initialize the app
 const app = express();
+
+global.appRoot = path.resolve(__dirname);
 
 const PORT = process.env.PORT || 3000;
 
@@ -32,10 +34,14 @@ mongoose.connect(Config.url, { useNewUrlParser: true, useUnifiedTopology: true }
 
 // defining the Middleware
 app.use(cors());
-// app.use(fileUpload);
+app.use(fileUpload({
+    limits: { fileSize: 50 * 1024 * 1024 },
+    // useTempFiles: true,
+    // tempFileDir: '/tmp/'
+}));
 // Set the static folder
-app.use(express.static(path.join(__dirname, 'public')));
-// Bodyparser Middleware
+app.use('/public', express.static(path.join(__dirname, '../public')))
+    // Bodyparser Middleware
 app.use(bodyParser.json());
 // Passport Middleware
 app.use(passport.initialize());
@@ -67,6 +73,23 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+app.post('/upload', function(req, res) {
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send('No files were uploaded.');
+    }
+
+    // The name of the input field (i.e. "video") is used to retrieve the uploaded file
+    let file = req.files.video;
+
+    // Use the mv() method to place the file somewhere on your server
+    sampleFile.mv('/public/' + file.name, function(err) {
+        if (err)
+            return res.status(500).send(err);
+
+        res.send('File uploaded!');
+    });
+});
 
 // Handler for 404 - Resource Not Found
 app.use((req, res, next) => {

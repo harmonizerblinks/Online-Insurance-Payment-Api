@@ -16,6 +16,7 @@
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
         "express": "^4.17.1",
+        "express-fileupload": "^1.1.6",
         "jsonwebtoken": "^8.5.1",
         "mongodb": "^3.3.5",
         "mongoose": "^5.7.13",
