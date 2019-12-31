@@ -1,4 +1,4 @@
-const User = require('../models/users.model.js');
+const User = require('../models/user.model.js');
 // const passport = require('passport');
 // const jwt = require('jsonwebtoken');
 const jwt = require('jsonwebtoken');
@@ -7,21 +7,13 @@ const config = require('../config/mongodb.config.js');
 
 
 // POST a User
-exports.create = (req, res) => {
+exports.create = async(req, res) => {
     // console.log(req.body);
     // Create a User
-    const user = new User({
-        fullname: req.body.fullname,
-        username: req.body.username,
-        password: bcrypt.hashSync(req.body.password, 10), //password Encryption,
-        email: req.body.email,
-        mobile: req.body.mobile,
-        gender: req.body.gender,
-        usertype: req.body.usertype,
-        roles: req.body.roles,
-        position: req.body.position
-    });
-    user.save()
+    const user = new User(req.body);
+    user.password = bcrypt.hashSync(req.body.password, 10),
+
+        await user.save()
         .then(data => {
             res.send(data);
         }).catch(err => {
@@ -49,7 +41,7 @@ exports.login = (req, res) => {
                 const token = jwt.sign({
                     type: 'user',
                     data: {
-                        _id: user._id,
+                        id: user._id,
                         fullname: user.fullname,
                         username: user.username,
                         mobile: user.mobile,
@@ -59,7 +51,7 @@ exports.login = (req, res) => {
                 }, config.secret, {
                     expiresIn: 684800
                 });
-                res.send({ success: true, accesstoken: token });
+                res.send({ success: true, access_token: token, date: Date.now });
             } else {
                 res.status(500).send({ success: false, message: 'Password is not correct' })
             }
@@ -75,16 +67,63 @@ exports.login = (req, res) => {
         });
 };
 
-exports.comparePassword = (password, hash, callback) => {
-    bcrypt.hash(password, hash, (err, isMatch) => {
-        if (err) return err;
-        return isMatch;
-    })
+
+exports.changepassword = (req, res) => {
+    const id = req.body.userid;
+    const oldpassword = req.body.password;
+    const password = req.body.newpassword;
+
+    User.findById(id)
+        .then(user => {
+            if (!user) {
+                return res.status(404).send({
+                    message: "User not found with username " + username
+                });
+            }
+
+            var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
+            if (passwordIsValid) {
+                user.password = bcrypt.hashSync(req.body.newpassword, 10);
+
+                User.findByIdAndUpdate(id, user, { new: true })
+                    .then(use => {
+                        if (!use) {
+                            return res.status(404).send({
+                                message: "User not found with id " + req.params.userId
+                            });
+                        }
+                        res.send({
+                            message: "Password Changed successfully"
+                        });
+                    }).catch(err => {
+                        if (err.kind === 'ObjectId') {
+                            return res.status(404).send({
+                                message: "Invalid User "
+                            });
+                        }
+                        console.log(err);
+                        return res.status(500).send({
+                            message: "Error updating user Password "
+                        });
+                    });
+            } else {
+                res.status(500).send({ success: false, message: 'Password is not correct' })
+            }
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "User not found with username " + username
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving User with username " + username
+            });
+        });
 };
 
 exports.profile = (req, res) => {
     if (req.user) {
-        res.send(req.users);
+        res.send(req.user);
     } else {
         res.status(500).send({
             message: "Authentication not Valid"

@@ -12,7 +12,7 @@ const app = express();
 
 global.appRoot = path.resolve(__dirname);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Configuring the database
 const Config = require('./config/mongodb.config.js');
@@ -36,8 +36,8 @@ mongoose.connect(Config.url, { useNewUrlParser: true, useUnifiedTopology: true }
 app.use(cors());
 app.use(fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 },
-    // useTempFiles: true,
-    // tempFileDir: '/tmp/'
+    useTempFiles: true,
+    tempFileDir: '/tmp/'
 }));
 // Set the static folder
 app.use('/public', express.static(path.join(__dirname, '../public')))
@@ -50,10 +50,21 @@ app.use(passport.session());
 // console.log('working')
 
 // require('./config/authguard.config.js')(passport);
-require('./routes/voters.routes.js')(app);
-require('./routes/videos.routes.js')(app);
+require('./routes/auth.routes.js')(app);
 require('./routes/users.routes.js')(app);
-require('./routes/submissions.routes.js')(app);
+require('./routes/country.routes.js')(app);
+require('./routes/region.routes.js')(app);
+require('./routes/location.routes.js')(app);
+require('./routes/brand.routes.js')(app);
+require('./routes/bus.routes.js')(app);
+require('./routes/busfee.routes.js')(app);
+require('./routes/driver.routes.js')(app);
+require('./routes/rent.routes.js')(app);
+require('./routes/schedule.routes.js')(app);
+require('./routes/station.routes.js')(app);
+require('./routes/tour.routes.js')(app);
+require('./routes/booking.routes.js')(app);
+require('./routes/saving.routes.js')(app);
 
 // Api Documentation Setup
 const swaggerOptions = {

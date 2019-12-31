@@ -1,8 +1,8 @@
 {
-    "name": "fbtwm-xmas-api",
+    "name": "ticketing-platform",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
+    "main": "src/index.js",
     "scripts": {
         "start": "node src/index.js",
         "start-watch": "nodemon src/index.js",
@@ -29,6 +29,6 @@
         "swagger-ui-express": "^4.1.2"
     },
     "devDependencies": {
-        "nodemon": "^1.17.2"
+        "nodemon": "^1.19.4"
     }
 }
