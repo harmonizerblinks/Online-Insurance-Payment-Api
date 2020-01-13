@@ -1,4 +1,11 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const http = require('http');
+const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
@@ -7,6 +14,9 @@ const path = require('path');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
+// Configuring the database
+const Config = require('./config/mongodb.config.js');
+
 // initialize the app
 const app = express();
 
@@ -14,17 +24,21 @@ global.appRoot = path.resolve(__dirname);
 
 const PORT = process.env.PORT || 5000;
 
-// Configuring the database
-const Config = require('./config/mongodb.config.js');
-const mongoose = require('mongoose');
+// Creating a Server
+let server = http.createServer(app);
 
+let io = socketIO(server);
+
+// makes db connection global
 mongoose.Promise = global.Promise;
 
 // mongo configuration
-mongoose.set('useCreateIndex', true)
+mongoose.set('useCreateIndex', true);
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useUnifiedTopology', true);
 
 // Connecting to the database
-mongoose.connect(Config.url, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(Config.url)
     .then(() => {
         console.log("Successfully connected to MongoDB.");
     }).catch(err => {
@@ -41,8 +55,27 @@ app.use(fileUpload({
 }));
 // Set the static folder
 app.use('/public', express.static(path.join(__dirname, '../public')))
-    // Bodyparser Middleware
-app.use(bodyParser.json());
+
+// Bodyparser Middleware
+// app.use(bodyParser.json({ limit: '10kb' }));
+
+// Helmet
+app.use(helmet());
+// Rate Limiting
+const limit = rateLimit({
+    max: 100, // max requests
+    windowMs: 60 * 60 * 1000, // 1 Hour of 'ban' / lockout 
+    message: 'Too many requests' // message to send
+});
+app.use('/routeName', limit); // Setting limiter on specific route
+// Body Parser
+app.use(express.json({ limit: '10kb' })); // Body limit is 10
+
+// Data Sanitization against NoSQL Injection Attacks
+app.use(mongoSanitize());
+// Data Sanitization against XSS attacks
+app.use(xss());
+
 // Passport Middleware
 app.use(passport.initialize());
 app.use(passport.session());
@@ -70,8 +103,8 @@ require('./routes/saving.routes.js')(app);
 const swaggerOptions = {
     swaggerDefinition: {
         info: {
-            title: 'E-Commerce Api',
-            description: 'Complete E-Commerce and Inventory Api',
+            title: 'Troski Ticketing',
+            description: 'Troski Ticketing Platform',
             contact: {
                 name: 'Harmony Alabi',
             },
@@ -85,23 +118,6 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.post('/upload', function(req, res) {
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send('No files were uploaded.');
-    }
-
-    // The name of the input field (i.e. "video") is used to retrieve the uploaded file
-    let file = req.files.video;
-
-    // Use the mv() method to place the file somewhere on your server
-    sampleFile.mv('/public/' + file.name, function(err) {
-        if (err)
-            return res.status(500).send(err);
-
-        res.send('File uploaded!');
-    });
-});
-
 // Handler for 404 - Resource Not Found
 app.use((req, res, next) => {
     res.status(404).send({ message: 'We think you are lost!' });
@@ -114,20 +130,36 @@ app.use((err, req, res, next) => {
     // res.sendFile(path.join(__dirname, '../public/500.html'))
 })
 
-// Create a Server
-var server = app.listen(PORT, function() {
 
-    var host = server.address().address
-    var port = server.address().port
-
-    console.log("App listening at http://%s:%s", host, port)
-
-});
-
-var io = require('socket.io')(server);
-
-io.on('connection', function(socket) {
-    socket.on('message', function(msg) {
+io.on('connection', (socket) => {
+    console.info('a new user has connected')
+    socket.on('message', (msg) => {
         io.emit('message', msg);
     });
+    socket.on('disconnect', (socket) => {
+        console.info('a user has disconnected');
+    });
 });
+
+
+// Start Server using environment port
+server.listen(PORT, () => {
+    console.info('Server is running on ' + PORT)
+});
+
+// var server = app.listen(PORT, function() {
+
+//     var host = server.address().address
+//     var port = server.address().port
+
+//     console.log("App listening at http://%s:%s", host, port)
+
+// });
+
+// var io = require('socket.io')(server);
+
+// io.on('connection', function(socket) {
+//     socket.on('message', function(msg) {
+//         io.emit('message', msg);
+//     });
+// });

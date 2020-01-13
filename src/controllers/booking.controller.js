@@ -5,7 +5,7 @@ const Booking = require('../models/booking.model.js');
 exports.create = (req, res) => {
     // Create a Booking
     const booking = new Booking(req.body);
-    booking.userid = req.user.id;
+    // booking.userid = req.user.id;
 
     // Save a Booking in the MongoDB
     booking.save()
@@ -42,7 +42,7 @@ exports.findOne = (req, res) => {
                     message: "Booking not found with id " + req.params.bookingId
                 });
             }
-            res.send(slider);
+            res.send(booking);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({

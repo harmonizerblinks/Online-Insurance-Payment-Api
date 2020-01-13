@@ -108,3 +108,17 @@ async function asyncForEach(array, callback) {
         await callback(array[index], index, array);
     }
 }
+
+async function generateOTP() {
+    var digits = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    var otpLength = 10;
+    var otp = '';
+
+    for (let i = 1; i <= otpLength; i++) {
+        var index = Math.floor(Math.random() * (digits.length));
+
+        otp = otp + digits[index];
+    }
+    return otp.toUpperCase();
+}

@@ -3,7 +3,7 @@ const config = require('../config/mongodb.config.js');
 const User = require('../models/user.model.js');
 const Role = require('../models/role.model.js');
 
-verifyToken = (req, res, next) => {
+verifyToken = async(req, res, next) => {
     console.log(req.headers);
     // let token = req.headers['authorization'];
     let token = req.headers['x-access-token'] || req.headers['authorization']; // Express headers are auto converted to lowercase
@@ -19,7 +19,7 @@ verifyToken = (req, res, next) => {
         });
     }
 
-    jwt.verify(token, config.secret, (err, decoded) => {
+    jwt.verify(token, config.secret, async(err, decoded) => {
         if (err) {
             return res.status(500).send({
                 auth: false,
@@ -30,6 +30,7 @@ verifyToken = (req, res, next) => {
         req.user = decoded.data;
         req.body.muserid = decoded.data.id;
         if (req.body.userid == null) { req.body.userid = decoded.data.id; }
+        if (req.body.code == null) { req.body.code = await generateOTP(); }
         // console.log(req.body);
 
         next();
@@ -111,3 +112,17 @@ const authJwt = {
 };
 
 module.exports = authJwt;
+
+async function generateOTP(length) {
+    var digits = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    var otpLength = length;
+    var otp = '';
+
+    for (let i = 1; i <= otpLength; i++) {
+        var index = Math.floor(Math.random() * (digits.length));
+
+        otp = otp + digits[index];
+    }
+    return otp.toUpperCase();
+}

@@ -1,21 +1,21 @@
 module.exports = function(app) {
 
-    var saving = require('../controllers/saving.controller.js');
+    var station = require('../controllers/station.controller.js');
     const verify = require('../middleware/verifyJwtToken.middleware.js');
-    // console.log('saving');
+    // console.log('station');
 
-    // Create a new Saving
-    app.post('/api/savings', saving.create);
+    // Create a new Stations
+    app.post('/api/stations', station.create);
 
-    // Retrieve all Saving
-    app.get('/api/savings', saving.findAll);
+    // Retrieve all Stations
+    app.get('/api/stations', station.findAll);
 
-    // Retrieve a single Saving by Id
-    app.get('/api/savings/:savingId', saving.findOne);
+    // Retrieve a single Stations by Id
+    app.get('/api/stations/:stationId', station.findOne);
 
-    // Update a Saving with Id
-    app.put('/api/savings/:savingId', saving.update);
+    // Update a Stations with Id
+    app.put('/api/stations/:stationId', station.update);
 
-    // Delete a Saving with Id
-    app.delete('/api/savings/:savingId', saving.delete);
+    // Delete a Stations with Id
+    app.delete('/api/stations/:stationId', station.delete);
 }
