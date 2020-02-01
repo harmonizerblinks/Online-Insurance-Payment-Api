@@ -5,8 +5,10 @@ const uniqueValidator = require('mongoose-unique-validator');
 const BusfeeSchema = mongoose.Schema({
     start_point: { type: Schema.Types.ObjectId, ref: 'station', required: true },
     end_point: { type: Schema.Types.ObjectId, ref: 'station', required: true },
-    price: { type: Schema.Types.Decimal128, required: true, default: 0.0 },
-    public_price: { type: Schema.Types.Decimal128, required: true, default: 0.0 },
+    price: { type: String, required: true, default: 0.0 },
+    public_price: { type: String, required: true, default: 0 },
+    hire_price: { type: String, required: false, default: 0 },
+    fuel_cost: { type: String, required: false, default: 0 },
     locationid: { type: Schema.Types.ObjectId, ref: 'location', required: false },
     regionid: { type: Schema.Types.ObjectId, ref: 'region', required: false },
     countryid: { type: Schema.Types.ObjectId, ref: 'country', required: false },

@@ -3,14 +3,14 @@ const mongoose = require('mongoose'),
 const uniqueValidator = require('mongoose-unique-validator');
 
 const DriverSchema = mongoose.Schema({
-    fullname: { type: String, minlength: 8, maxlength: 50, required: true },
-    username: { type: String, minlength: 8, maxlength: 15, required: true, unique: true },
+    code: { type: String, minlength: 3, maxlength: 7, required: true, unique: true },
+    name: { type: String, minlength: 4, maxlength: 50, required: true },
     image: { type: String, required: false },
     password: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     mobile: { type: String, minlength: 8, maxlength: 15, required: true, unique: true },
     licence: { type: String, required: false },
-    budid: { type: Schema.Types.ObjectId, ref: 'bus', required: false },
+    // budid: { type: Schema.Types.ObjectId, ref: 'bus', required: false, default: null },
     locationid: { type: Schema.Types.ObjectId, ref: 'location', required: false },
     regionid: { type: Schema.Types.ObjectId, ref: 'region', required: false },
     countryid: { type: Schema.Types.ObjectId, ref: 'country', required: false },

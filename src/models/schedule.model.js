@@ -4,13 +4,13 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 const ScheduleSchema = mongoose.Schema({
     code: { type: String, index: true, required: true, unique: true },
-    name: { type: String, index: true, required: true },
+    // name: { type: String, index: true, required: true },
     loc: { type: [String], required: true },
     start_point: { type: Schema.Types.ObjectId, ref: 'station', required: false },
     end_point: { type: Schema.Types.ObjectId, ref: 'station', required: false },
     date: { type: Date, required: true },
     landmark: { type: String, required: true },
-    amount: { type: Schema.Types.Decimal128, required: true },
+    amount: { type: String, required: true },
     seats: { type: Number, required: true },
     currency: { type: String, required: true },
     intro: { type: String, required: true },

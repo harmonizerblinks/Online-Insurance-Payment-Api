@@ -20,8 +20,24 @@ exports.create = (req, res) => {
 
 // FETCH all BusFees
 exports.findAll = (req, res) => {
+    let query = [{
+        $lookup: {
+            from: 'stations',
+            localField: 'start_point',
+            foreignField: '_id',
+            as: 'start'
+        },
+    }, {
+        $lookup: {
+            from: 'stations',
+            localField: 'end_point',
+            foreignField: '_id',
+            as: 'end'
+        },
+    }];
+
     console.log('fine All');
-    BusFee.find()
+    BusFee.aggregate(query)
         .then(busfee => {
             // console.log(busfee)
             res.send(busfee);
