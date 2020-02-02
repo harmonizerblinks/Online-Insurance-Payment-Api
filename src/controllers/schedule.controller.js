@@ -20,8 +20,23 @@ exports.create = (req, res) => {
 
 // FETCH all Schedules
 exports.findAll = (req, res) => {
+    let query = [{
+        $lookup: {
+            from: 'stations',
+            localField: 'start_point',
+            foreignField: '_id',
+            as: 'start'
+        },
+    }, {
+        $lookup: {
+            from: 'stations',
+            localField: 'end_point',
+            foreignField: '_id',
+            as: 'end'
+        },
+    }];
     console.log('fine All');
-    Schedule.find()
+    Schedule.aggregate(query)
         .then(schedules => {
             // console.log(schedules)
             res.send(schedules);
@@ -34,14 +49,30 @@ exports.findAll = (req, res) => {
 
 // FIND a Schedule
 exports.findOne = (req, res) => {
-    Schedule.findById(req.params.scheduleId)
+    let query = [{
+        $lookup: {
+            from: 'stations',
+            localField: 'start_point',
+            foreignField: '_id',
+            as: 'start'
+        },
+    }, {
+        $lookup: {
+            from: 'stations',
+            localField: 'end_point',
+            foreignField: '_id',
+            as: 'end'
+        },
+    }, { $match: { _id: req.params.scheduleId } }];
+
+    Schedule.aggregate(query)
         .then(schedule => {
             if (!schedule) {
                 return res.status(404).send({
                     message: "Schedule not found with id " + req.params.scheduleId
                 });
             }
-            res.send(slider);
+            res.send(schedule);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({

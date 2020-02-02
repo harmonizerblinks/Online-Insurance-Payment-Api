@@ -41,7 +41,7 @@ exports.findOne = (req, res) => {
                     message: "Brand not found with id " + req.params.brandId
                 });
             }
-            res.send(slider);
+            res.send(brand);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({

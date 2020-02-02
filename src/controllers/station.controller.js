@@ -41,7 +41,7 @@ exports.findOne = (req, res) => {
                     message: "Station not found with id " + req.params.stationId
                 });
             }
-            res.send(slider);
+            res.send(station);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({

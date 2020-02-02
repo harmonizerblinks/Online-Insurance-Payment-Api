@@ -5,17 +5,17 @@ module.exports = function(app) {
     // console.log('schedule');
 
     // Create a new Schedule
-    app.post('/api/schedules', schedule.create);
+    app.post('/api/schedules', verify.verifyToken, schedule.create);
 
     // Retrieve all Schedule
-    app.get('/api/schedules', schedule.findAll);
+    app.get('/api/schedules', verify.verifyToken, schedule.findAll);
 
     // Retrieve a single Schedule by Id
-    app.get('/api/schedules/:scheduleId', schedule.findOne);
+    app.get('/api/schedules/:scheduleId', verify.verifyToken, schedule.findOne);
 
     // Update a Schedule with Id
-    app.put('/api/schedules/:scheduleId', schedule.update);
+    app.put('/api/schedules/:scheduleId', verify.verifyToken, schedule.update);
 
     // Delete a Schedule with Id
-    app.delete('/api/schedules/:scheduleId', schedule.delete);
+    app.delete('/api/schedules/:scheduleId', verify.verifyToken, schedule.delete);
 }

@@ -41,7 +41,7 @@ exports.findOne = (req, res) => {
                     message: "Driver not found with id " + req.params.driverId
                 });
             }
-            res.send(slider);
+            res.send(driver);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({

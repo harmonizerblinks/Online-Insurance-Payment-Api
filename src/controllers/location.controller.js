@@ -41,7 +41,7 @@ exports.findOne = (req, res) => {
                     message: "Location not found with id " + req.params.locationId
                 });
             }
-            res.send(slider);
+            res.send(location);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({

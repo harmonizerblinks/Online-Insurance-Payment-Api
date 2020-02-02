@@ -5,17 +5,17 @@ module.exports = function(app) {
     // console.log('tour');
 
     // Create a new Tour
-    app.post('/api/tours', tour.create);
+    app.post('/api/tours', verify.verifyToken, tour.create);
 
     // Retrieve all Tour
-    app.get('/api/tours', tour.findAll);
+    app.get('/api/tours', verify.verifyToken, tour.findAll);
 
     // Retrieve a single Tour by Id
-    app.get('/api/tours/:tourId', tour.findOne);
+    app.get('/api/tours/:tourId', verify.verifyToken, tour.findOne);
 
     // Update a Tour with Id
-    app.put('/api/tours/:tourId', tour.update);
+    app.put('/api/tours/:tourId', verify.verifyToken, tour.update);
 
     // Delete a Tour with Id
-    app.delete('/api/tours/:tourId', tour.delete);
+    app.delete('/api/tours/:tourId', verify.verifyToken, tour.delete);
 }

@@ -5,17 +5,17 @@ module.exports = function(app) {
     // console.log('driver');
 
     // Create a new Driver
-    app.post('/api/drivers', driver.create);
+    app.post('/api/drivers', verify.verifyToken, driver.create);
 
     // Retrieve all Driver
-    app.get('/api/drivers', driver.findAll);
+    app.get('/api/drivers', verify.verifyToken, driver.findAll);
 
     // Retrieve a single Driver by Id
-    app.get('/api/drivers/:driverId', driver.findOne);
+    app.get('/api/drivers/:driverId', verify.verifyToken, driver.findOne);
 
     // Update a Driver with Id
-    app.put('/api/drivers/:driverId', driver.update);
+    app.put('/api/drivers/:driverId', verify.verifyToken, driver.update);
 
     // Delete a Driver with Id
-    app.delete('/api/drivers/:driverId', driver.delete);
+    app.delete('/api/drivers/:driverId', verify.verifyToken, driver.delete);
 }

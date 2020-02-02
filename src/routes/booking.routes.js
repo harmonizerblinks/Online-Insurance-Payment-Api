@@ -5,17 +5,17 @@ module.exports = function(app) {
     // console.log('booking');
 
     // Create a new Region
-    app.post('/api/bookings', booking.create);
+    app.post('/api/bookings', verify.verifyToken, booking.create);
 
     // Retrieve all Region
-    app.get('/api/bookings', booking.findAll);
+    app.get('/api/bookings', verify.verifyToken, booking.findAll);
 
     // Retrieve a single Region by Id
-    app.get('/api/bookings/:bookingId', booking.findOne);
+    app.get('/api/bookings/:bookingId', verify.verifyToken, booking.findOne);
 
     // Update a Region with Id
-    app.put('/api/bookings/:bookingId', booking.update);
+    app.put('/api/bookings/:bookingId', verify.verifyToken, booking.update);
 
     // Delete a Region with Id
-    app.delete('/api/bookings/:bookingId', booking.delete);
+    app.delete('/api/bookings/:bookingId', verify.verifyToken, booking.delete);
 }

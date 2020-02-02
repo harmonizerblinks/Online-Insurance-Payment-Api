@@ -88,6 +88,8 @@ require('./routes/users.routes.js')(app);
 require('./routes/country.routes.js')(app);
 require('./routes/region.routes.js')(app);
 require('./routes/location.routes.js')(app);
+require('./routes/company.routes.js')(app);
+require('./routes/expense.routes.js')(app);
 require('./routes/brand.routes.js')(app);
 require('./routes/gallery.routes.js')(app);
 require('./routes/bus.routes.js')(app);

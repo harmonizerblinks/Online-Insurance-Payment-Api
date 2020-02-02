@@ -1,13 +1,13 @@
-const Saving = require('../models/saving.model.js');
+const Company = require('../models/company.model.js');
 
 
-// POST a Saving
+// POST a Company
 exports.create = (req, res) => {
-    // Create a Saving
-    const saving = new Saving(req.body);
+    // Create a Company
+    const company = new Company(req.body);
 
-    // Save a Saving in the MongoDB
-    saving.save()
+    // Save a Company in the MongoDB
+    company.save()
         .then(data => {
             res.send(data);
         }).catch(err => {
@@ -18,13 +18,13 @@ exports.create = (req, res) => {
 };
 
 
-// FETCH all Savings
+// FETCH all Companys
 exports.findAll = (req, res) => {
     console.log('fine All');
-    Saving.find()
-        .then(savings => {
-            // console.log(savings)
-            res.send(savings);
+    Company.find()
+        .then(company => {
+            // console.log(company)
+            res.send(company);
         }).catch(err => {
             res.status(500).send({
                 message: err.message
@@ -32,72 +32,72 @@ exports.findAll = (req, res) => {
         });
 };
 
-// FIND a Saving
+// FIND a Company
 exports.findOne = (req, res) => {
-    Saving.findById(req.params.savingId)
-        .then(saving => {
-            if (!saving) {
+    Company.findById(req.params.companyId)
+        .then(company => {
+            if (!company) {
                 return res.status(404).send({
-                    message: "Saving not found with id " + req.params.savingId
+                    message: "Company not found with id " + req.params.companyId
                 });
             }
-            res.send(saving);
+            res.send(company);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Saving not found with id " + req.params.savingId
+                    message: "Company not found with id " + req.params.companyId
                 });
             }
             return res.status(500).send({
-                message: "Error retrieving Saving with id " + req.params.savingId
+                message: "Error retrieving Company with id " + req.params.companyId
             });
         });
 };
 
-// UPDATE a Saving
+// UPDATE a Company
 exports.update = (req, res) => {
     var body = req.body;
     // console.log(body)
     body.updated = new Date();
-    // Find saving and update it
-    Saving.findByIdAndUpdate(req.params.savingId, body, { new: true })
-        .then(saving => {
-            if (!saving) {
+    // Find company and update it
+    Company.findByIdAndUpdate(req.params.companyId, body, { new: true })
+        .then(company => {
+            if (!company) {
                 return res.status(404).send({
-                    message: "Saving not found with id " + req.params.savingId
+                    message: "Company not found with id " + req.params.companyId
                 });
             }
-            res.send(saving);
+            res.send(company);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Saving not found with id " + req.params.savingId
+                    message: "Company not found with id " + req.params.companyId
                 });
             }
             return res.status(500).send({
-                message: "Error updating saving with id " + req.params.savingId
+                message: "Error updating company with id " + req.params.companyId
             });
         });
 };
 
-// DELETE a Saving
+// DELETE a Company
 exports.delete = (req, res) => {
-    Saving.findByIdAndRemove(req.params.savingId)
-        .then(saving => {
-            if (!saving) {
+    Company.findByIdAndRemove(req.params.companyId)
+        .then(company => {
+            if (!company) {
                 return res.status(404).send({
-                    message: "Saving not found with id " + req.params.savingId
+                    message: "Company not found with id " + req.params.companyId
                 });
             }
-            res.send({ message: "Saving deleted successfully!" });
+            res.send({ message: "Company deleted successfully!" });
         }).catch(err => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
-                    message: "Saving not found with id " + req.params.savingId
+                    message: "Company not found with id " + req.params.companyId
                 });
             }
             return res.status(500).send({
-                message: "Could not delete saving with id " + req.params.savingId
+                message: "Could not delete company with id " + req.params.companyId
             });
         });
 };

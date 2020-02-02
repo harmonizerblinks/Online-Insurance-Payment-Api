@@ -6,7 +6,7 @@ const StationSchema = mongoose.Schema({
     code: { type: String, index: true, required: true, unique: true },
     name: { type: String, index: true, required: true, unique: true },
     loc: { type: [String], index: true, required: false },
-    suherb: { type: String, index: true, required: false, unique: true },
+    suherb: { type: String, index: true, required: false },
     image: { type: String, required: false },
     locationid: { type: Schema.Types.ObjectId, ref: 'location', required: true },
     regionid: { type: Schema.Types.ObjectId, ref: 'region', required: true },

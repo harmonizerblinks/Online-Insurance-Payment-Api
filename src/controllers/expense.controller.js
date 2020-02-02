@@ -1,13 +1,13 @@
-const Saving = require('../models/saving.model.js');
+const Expense = require('../models/expense.model.js');
 
 
-// POST a Saving
+// POST a Expense
 exports.create = (req, res) => {
-    // Create a Saving
-    const saving = new Saving(req.body);
+    // Create a Expense
+    const expense = new Expense(req.body);
 
-    // Save a Saving in the MongoDB
-    saving.save()
+    // Save a Expense in the MongoDB
+    expense.save()
         .then(data => {
             res.send(data);
         }).catch(err => {
@@ -18,13 +18,13 @@ exports.create = (req, res) => {
 };
 
 
-// FETCH all Savings
+// FETCH all Countrys
 exports.findAll = (req, res) => {
     console.log('fine All');
-    Saving.find()
-        .then(savings => {
-            // console.log(savings)
-            res.send(savings);
+    Expense.find()
+        .then(expense => {
+            // console.log(expense)
+            res.send(expense);
         }).catch(err => {
             res.status(500).send({
                 message: err.message
@@ -32,72 +32,72 @@ exports.findAll = (req, res) => {
         });
 };
 
-// FIND a Saving
+// FIND a Expense
 exports.findOne = (req, res) => {
-    Saving.findById(req.params.savingId)
-        .then(saving => {
-            if (!saving) {
+    Expense.findById(req.params.expenseId)
+        .then(expense => {
+            if (!expense) {
                 return res.status(404).send({
-                    message: "Saving not found with id " + req.params.savingId
+                    message: "Expense not found with id " + req.params.expenseId
                 });
             }
-            res.send(saving);
+            res.send(expense);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Saving not found with id " + req.params.savingId
+                    message: "Expense not found with id " + req.params.expenseId
                 });
             }
             return res.status(500).send({
-                message: "Error retrieving Saving with id " + req.params.savingId
+                message: "Error retrieving Expense with id " + req.params.expenseId
             });
         });
 };
 
-// UPDATE a Saving
+// UPDATE a Expense
 exports.update = (req, res) => {
     var body = req.body;
     // console.log(body)
     body.updated = new Date();
-    // Find saving and update it
-    Saving.findByIdAndUpdate(req.params.savingId, body, { new: true })
-        .then(saving => {
-            if (!saving) {
+    // Find expense and update it
+    Expense.findByIdAndUpdate(req.params.expenseId, body, { new: true })
+        .then(expense => {
+            if (!expense) {
                 return res.status(404).send({
-                    message: "Saving not found with id " + req.params.savingId
+                    message: "Expense not found with id " + req.params.expenseId
                 });
             }
-            res.send(saving);
+            res.send(expense);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Saving not found with id " + req.params.savingId
+                    message: "Expense not found with id " + req.params.expenseId
                 });
             }
             return res.status(500).send({
-                message: "Error updating saving with id " + req.params.savingId
+                message: "Error updating expense with id " + req.params.expenseId
             });
         });
 };
 
-// DELETE a Saving
+// DELETE a Expense
 exports.delete = (req, res) => {
-    Saving.findByIdAndRemove(req.params.savingId)
-        .then(saving => {
-            if (!saving) {
+    Expense.findByIdAndRemove(req.params.expenseId)
+        .then(expense => {
+            if (!expense) {
                 return res.status(404).send({
-                    message: "Saving not found with id " + req.params.savingId
+                    message: "Expense not found with id " + req.params.expenseId
                 });
             }
-            res.send({ message: "Saving deleted successfully!" });
+            res.send({ message: "Expense deleted successfully!" });
         }).catch(err => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
-                    message: "Saving not found with id " + req.params.savingId
+                    message: "Expense not found with id " + req.params.expenseId
                 });
             }
             return res.status(500).send({
-                message: "Could not delete saving with id " + req.params.savingId
+                message: "Could not delete expense with id " + req.params.expenseId
             });
         });
 };

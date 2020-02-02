@@ -5,29 +5,29 @@ module.exports = function(app) {
     // const passport = require('passport');
 
     // Create a new User
-    app.post('/api/users', users.create);
+    app.post('/api/users', verify.verifyToken, users.create);
 
     // User Login or Authentication
     // app.post('/api/login', users.login);
 
     // Retrieve all User
-    app.get('/api/users', users.findAll);
+    app.get('/api/users', verify.verifyToken, users.findAll);
 
     // Retrieve all User
-    app.get('/api/users/usertype/:type', users.findAllByType);
+    app.get('/api/users/usertype/:type', verify.verifyToken, users.findAllByType);
 
     // Retrieve Current Login User Prodile
     // app.get('/api/profile', passport.authenticate('jwt', { session: false }), users.profile);
 
     // Retrieve a single User by Id
-    app.get('/api/users/:userId', users.findOne);
+    app.get('/api/users/:userId', verify.verifyToken, users.findOne);
 
     // Retrieve a single User by username
-    app.get('/api/users/username/:username', users.findOneByUsername);
+    app.get('/api/users/username/:username', verify.verifyToken, users.findOneByUsername);
 
     // Update a User with Id
-    app.put('/api/users/:userId', users.update);
+    app.put('/api/users/:userId', verify.verifyToken, users.update);
 
     // Delete a User with Id
-    app.delete('/api/users/:userId', users.delete);
+    app.delete('/api/users/:userId', verify.verifyToken, users.delete);
 }

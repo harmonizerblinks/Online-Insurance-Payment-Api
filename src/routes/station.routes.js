@@ -5,17 +5,17 @@ module.exports = function(app) {
     // console.log('station');
 
     // Create a new Stations
-    app.post('/api/stations', station.create);
+    app.post('/api/stations', verify.verifyToken, station.create);
 
     // Retrieve all Stations
-    app.get('/api/stations', station.findAll);
+    app.get('/api/stations', verify.verifyToken, station.findAll);
 
     // Retrieve a single Stations by Id
-    app.get('/api/stations/:stationId', station.findOne);
+    app.get('/api/stations/:stationId', verify.verifyToken, station.findOne);
 
     // Update a Stations with Id
-    app.put('/api/stations/:stationId', station.update);
+    app.put('/api/stations/:stationId', verify.verifyToken, station.update);
 
     // Delete a Stations with Id
-    app.delete('/api/stations/:stationId', station.delete);
+    app.delete('/api/stations/:stationId', verify.verifyToken, station.delete);
 }
