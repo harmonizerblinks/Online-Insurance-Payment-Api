@@ -13,6 +13,9 @@ module.exports = function(app) {
     // Retrieve all User
     app.get('/api/users', users.findAll);
 
+    // Retrieve all User
+    app.get('/api/users/usertype/:type', users.findAllByType);
+
     // Retrieve Current Login User Prodile
     // app.get('/api/profile', passport.authenticate('jwt', { session: false }), users.profile);
 

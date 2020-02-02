@@ -145,6 +145,21 @@ exports.findAll = (req, res) => {
         });
 };
 
+// FETCH all Users With Usertype
+exports.findAll = (req, res) => {
+    console.log('fine All by type');
+    const query = { usertype: req.params.type };
+    User.find(query)
+        .then(users => {
+            // console.log(users)
+            res.send(users);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
+};
+
 
 // FIND a User
 exports.findOne = (req, res) => {
