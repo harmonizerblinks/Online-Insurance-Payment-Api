@@ -146,7 +146,7 @@ exports.findAll = (req, res) => {
 };
 
 // FETCH all Users With Usertype
-exports.findAll = (req, res) => {
+exports.findAllByType = (req, res) => {
     console.log('fine All by type');
     const query = { usertype: req.params.type };
     User.find(query)

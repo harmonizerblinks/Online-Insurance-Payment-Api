@@ -89,6 +89,7 @@ require('./routes/country.routes.js')(app);
 require('./routes/region.routes.js')(app);
 require('./routes/location.routes.js')(app);
 require('./routes/brand.routes.js')(app);
+require('./routes/gallery.routes.js')(app);
 require('./routes/bus.routes.js')(app);
 require('./routes/busfee.routes.js')(app);
 require('./routes/driver.routes.js')(app);
