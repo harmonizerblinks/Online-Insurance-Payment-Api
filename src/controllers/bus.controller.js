@@ -5,12 +5,14 @@ const Bus = require('../models/bus.model.js');
 exports.create = (req, res) => {
     // Create a Bus
     const bus = new Bus(req.body);
+    console.log(bus)
 
     // Save a Bus in the MongoDB
     bus.save()
         .then(data => {
             res.send(data);
         }).catch(err => {
+            console.log(err);
             res.status(500).send({
                 message: err.message
             });

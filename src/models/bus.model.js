@@ -3,8 +3,8 @@ const mongoose = require('mongoose'),
 const uniqueValidator = require('mongoose-unique-validator');
 
 const BusSchema = mongoose.Schema({
-    code: { type: String, minlength: 3, maxlength: 7, index: true, required: true, unique: true },
     type: { type: String, required: true },
+    code: { type: String, minlength: 3, maxlength: 7, index: true, required: true },
     name: { type: String, required: true },
     image: { type: String, required: true },
     gallery: { type: [String], required: true },
@@ -28,6 +28,6 @@ const BusSchema = mongoose.Schema({
     updated: { type: Date, index: true, default: Date.now }
 });
 
-BusSchema.plugin(uniqueValidator);
+// BusSchema.plugin(uniqueValidator);
 
 module.exports = mongoose.model('bus', BusSchema);
