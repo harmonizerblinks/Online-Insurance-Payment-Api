@@ -101,6 +101,7 @@ require('./routes/station.routes.js')(app);
 require('./routes/tour.routes.js')(app);
 require('./routes/booking.routes.js')(app);
 require('./routes/saving.routes.js')(app);
+require('./routes/app.routes.js')(app);
 
 // Api Documentation Setup
 const swaggerOptions = {
@@ -138,6 +139,9 @@ io.on('connection', (socket) => {
     console.info('a new user has connected')
     socket.on('message', (msg) => {
         io.emit('message', msg);
+    });
+    socket.on('booked', (msg) => {
+        io.emit(msg._id, msg);
     });
     socket.on('disconnect', (socket) => {
         console.info('a user has disconnected');
