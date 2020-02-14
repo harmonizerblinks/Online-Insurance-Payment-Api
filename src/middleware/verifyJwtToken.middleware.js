@@ -22,7 +22,7 @@ verifyToken = async(req, res, next) => {
 
     jwt.verify(token, config.secret, async(err, decoded) => {
         if (err) {
-            return res.status(500).send({
+            return res.status(401).send({
                 auth: false,
                 message: 'Fail to Authentication. Error -> ' + err
             });
