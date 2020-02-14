@@ -106,8 +106,7 @@ exports.findOne = (req, res) => {
 exports.Booking = async(req, res) => {
     // Create a Booking
     const booking = new Booking(req.body);
-    booking.code = null;
-    booking.code = await generateOTP(6);
+    if (booking.code == null) { booking.code = await generateOTP(6); }
     Schedule.findById(req.body.scheduleid)
         .then(schedule => {
             if (!schedule) {
