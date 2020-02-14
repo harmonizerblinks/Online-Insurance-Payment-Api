@@ -103,10 +103,12 @@ exports.findOne = (req, res) => {
         });
 };
 
-exports.Booking = (req, res) => {
+exports.Booking = async(req, res) => {
     // Create a Booking
     const booking = new Booking(req.body);
-    Schedule.aggregate(query)
+    booking.code = null;
+    booking.code = await generateOTP(6);
+    Schedule.findById(req.body.scheduleid)
         .then(schedule => {
             if (!schedule) {
                 return res.status(404).send({
@@ -118,18 +120,18 @@ exports.Booking = (req, res) => {
                     message: "Number of Seats Available is less than " + booking.seat
                 });
             }
-            schedule.seats -= booking.seat;
+            schedule.seats = schedule.seats - booking.seat;
             // Save a Booking in the MongoDB
             booking.save()
                 .then(data => {
                     Schedule.findByIdAndUpdate(schedule._id, schedule, { new: true })
-                        .then(schedule => {
-                            if (!schedule) {
+                        .then(sche => {
+                            if (!sche) {
                                 return res.status(404).send({
                                     message: "Schedule not found with id"
                                 });
                             }
-                            res.send({ code: data.code, output: "Successfull", message: "Your Seat Has Been Reserved", schedule });
+                            res.send({ code: data.code, output: "Successfull", message: "Your Seat Has Been Reserved", sche });
                         }).catch(err => {
                             return res.status(500).send({
                                 message: "Error updating schedule with id " + booking.scheduleId
@@ -152,4 +154,18 @@ async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
         await callback(array[index], index, array);
     }
+}
+
+async function generateOTP(length) {
+    var digits = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    var otpLength = length;
+    var otp = '';
+
+    for (let i = 1; i <= otpLength; i++) {
+        var index = Math.floor(Math.random() * (digits.length));
+
+        otp = otp + digits[index];
+    }
+    return otp.toUpperCase();
 }

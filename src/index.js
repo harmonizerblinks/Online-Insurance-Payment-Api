@@ -36,6 +36,7 @@ mongoose.Promise = global.Promise;
 mongoose.set('useCreateIndex', true);
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useUnifiedTopology', true);
+// mongoose.set('useFindAndModify', false);
 
 // Connecting to the database
 mongoose.connect(Config.url)
@@ -169,4 +170,4 @@ server.listen(PORT, () => {
 //     socket.on('message', function(msg) {
 //         io.emit('message', msg);
 //     });
-// });
+// });-0
