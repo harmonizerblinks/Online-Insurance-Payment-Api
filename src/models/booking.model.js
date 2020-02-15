@@ -9,6 +9,7 @@ const BookingSchema = mongoose.Schema({
     mobile: { type: String, required: true },
     wallet: { type: String, required: true },
     email: { type: String, required: true },
+    date: { type: Date, required: true },
     // loc: { type: [String], required: false },
     need_pickup: { type: Boolean, required: true, default: false },
     pickup: { type: Schema.Types.ObjectId, ref: 'station', required: false },

@@ -34,7 +34,7 @@ exports.findAll = (req, res) => {
             foreignField: '_id',
             as: 'end'
         },
-    }];
+    }, { $sort: { created: 1 } }];
     console.log('fine All');
     Schedule.aggregate(query)
         .then(schedules => {
