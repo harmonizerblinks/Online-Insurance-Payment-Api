@@ -36,7 +36,7 @@ exports.findAllSchedules = (req, res) => {
             as: 'bus'
         },
 
-    }, { $match: { status: 'Upcoming', _id: ObjectId(req.params.scheduleId), available: true, seats: { $gte: 1 } } }];
+    }, { $match: { status: 'Upcoming', available: true, seats: { $gte: 1 } } }];
     console.log('fine All');
     Schedule.aggregate(query)
         .then(schedules => {
@@ -120,7 +120,7 @@ exports.Booking = async(req, res) => {
                 });
             }
             schedule.seats = schedule.seats - booking.seat;
-            if (schedule.seats == 0 || schedule.seats < 0) { schedule.status = "Booked" };
+            if (schedule.seats == 0 || schedule.seats < 0) { schedule.status = "Booked", schedule.available = false };
             // Save a Booking in the MongoDB
             booking.save()
                 .then(data => {
