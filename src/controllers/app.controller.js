@@ -36,7 +36,7 @@ exports.findAllSchedules = (req, res) => {
             as: 'bus'
         },
 
-    }, { $match: { status: 'Upcoming', available: true, seats: { $gte: 1 } } }];
+    }, { $match: { status: 'Upcoming', _id: ObjectId(req.params.scheduleId), available: true, seats: { $gte: 1 } } }];
     console.log('fine All');
     Schedule.aggregate(query)
         .then(schedules => {
@@ -120,6 +120,7 @@ exports.Booking = async(req, res) => {
                 });
             }
             schedule.seats = schedule.seats - booking.seat;
+            if (schedule.seats == 0 || schedule.seats < 0) { schedule.status = "Booked" };
             // Save a Booking in the MongoDB
             booking.save()
                 .then(data => {
@@ -147,6 +148,39 @@ exports.Booking = async(req, res) => {
             });
         });
 }
+
+// FIND user Booking
+exports.findUserBookingById = (req, res) => {
+    let query = [{
+        $lookup: {
+            from: 'schedules',
+            localField: 'scheduleid',
+            foreignField: '_id',
+            as: 'schedule'
+        },
+    }, {
+        $lookup: {
+            from: 'stations',
+            localField: 'pickup',
+            foreignField: '_id',
+            as: 'station'
+        },
+    }, { $match: { userid: req.params.userId } }];
+
+    Booking.aggregate(query)
+        .then(bookings => {
+            res.send(bookings);
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "Booking history not found with id " + req.params.userId
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving Booking History with id " + req.params.userId
+            });
+        });
+};
 
 
 async function asyncForEach(array, callback) {
