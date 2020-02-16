@@ -12,7 +12,7 @@ module.exports = function(app) {
     // Get All Schedules 
     app.post('/Bookings', apps.Booking);
 
-    // Post Booking
-    // app.post('/booking', app.findOne);
+    // Get User Booking
+    app.get('/Bookings/:userId', apps.findUserBookingById);
 
 }

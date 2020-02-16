@@ -21,8 +21,23 @@ exports.create = (req, res) => {
 
 // FETCH all Bookings
 exports.findAll = (req, res) => {
+    let query = [{
+        $lookup: {
+            from: 'stations',
+            localField: 'pickup',
+            foreignField: '_id',
+            as: 'pickups'
+        },
+    }, {
+        $lookup: {
+            from: 'schedules',
+            localField: 'scheduleid',
+            foreignField: '_id',
+            as: 'schedule'
+        },
+    }, { $sort: { created: -1 } }];
     console.log('fine All');
-    Booking.find()
+    Booking.aggregate(query)
         .then(bookings => {
             // console.log(bookings)
             res.send(bookings);

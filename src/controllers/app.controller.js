@@ -36,7 +36,7 @@ exports.findAllSchedules = (req, res) => {
             as: 'bus'
         },
 
-    }, { $match: { status: 'Upcoming', available: true, seats: { $gte: 1 } } }];
+    }, { $sort: { date: 1 } }, { $match: { status: 'Upcoming', available: true, seats: { $gte: 1 } } }];
     console.log('fine All');
     Schedule.aggregate(query)
         .then(schedules => {
@@ -163,10 +163,10 @@ exports.findUserBookingById = (req, res) => {
             from: 'stations',
             localField: 'pickup',
             foreignField: '_id',
-            as: 'station'
+            as: 'pickups'
         },
-    }, { $match: { userid: req.params.userId } }];
-
+    }, { $sort: { created: -1 } }, { $match: { wallet: req.params.userId } }];
+    console.log(req.params.userId);
     Booking.aggregate(query)
         .then(bookings => {
             res.send(bookings);

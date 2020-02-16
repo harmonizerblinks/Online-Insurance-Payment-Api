@@ -34,7 +34,14 @@ exports.findAll = (req, res) => {
             foreignField: '_id',
             as: 'end'
         },
-    }, { $sort: { created: 1 } }];
+    }, {
+        $lookup: {
+            from: 'bookings',
+            localField: '_id',
+            foreignField: 'scheduleid',
+            as: 'bookings'
+        },
+    }, { $sort: { date: -1 } }];
     console.log('fine All');
     Schedule.aggregate(query)
         .then(schedules => {
@@ -62,6 +69,13 @@ exports.findOne = (req, res) => {
             localField: 'end_point',
             foreignField: '_id',
             as: 'end'
+        },
+    }, {
+        $lookup: {
+            from: 'bookings',
+            localField: '_id',
+            foreignField: 'scheduleid',
+            as: 'bookings'
         },
     }, { $match: { _id: req.params.scheduleId } }];
 
