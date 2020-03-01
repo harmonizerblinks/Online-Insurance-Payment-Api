@@ -18,7 +18,7 @@ const BookingSchema = mongoose.Schema({
     seats: { type: [Number], required: true, default: [] },
     amount: { type: Number, required: true },
     scheduleid: { type: Schema.Types.ObjectId, ref: 'schedule', required: false },
-    // details: { type: String, required: false },
+    reference: { type: String, required: false },
     // locationid: { type: Schema.Types.ObjectId, ref: 'location', required: false },
     // regionid: { type: Schema.Types.ObjectId, ref: 'region', required: false },
     // countryid: { type: Schema.Types.ObjectId, ref: 'country', required: false },

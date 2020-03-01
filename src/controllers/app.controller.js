@@ -81,7 +81,7 @@ exports.findOne = (req, res) => {
             as: 'bus'
         },
 
-    }, { $match: { status: 'Upcoming', _id: ObjectId(req.params.scheduleId), available: true, seats: { $gte: 1 } } }];
+    }, { $match: { _id: ObjectId(req.params.scheduleId) } }];
 
     Schedule.aggregate(query)
         .then(schedule => {
@@ -120,6 +120,7 @@ exports.Booking = async(req, res) => {
                 });
             }
             schedule.seats = schedule.seats - booking.seat;
+            schedule.total = schedule.total + booking.amount;
             if (schedule.seats == 0 || schedule.seats < 0) { schedule.status = "Booked", schedule.available = false };
             // Save a Booking in the MongoDB
             booking.save()

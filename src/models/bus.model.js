@@ -13,7 +13,7 @@ const BusSchema = mongoose.Schema({
     engine: { type: String, required: false },
     seats: { type: Number, required: true },
     color: { type: String, required: true },
-    amount: { type: Number, required: true, default: 0 },
+    amount: { type: Schema.Types.Mixed, required: true, default: 0 },
     companyid: { type: Schema.Types.ObjectId, ref: 'company', required: false },
     brandid: { type: Schema.Types.ObjectId, ref: 'brand', required: true },
     driverid: { type: Schema.Types.ObjectId, ref: 'driver', required: true },
