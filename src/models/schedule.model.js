@@ -19,7 +19,7 @@ const ScheduleSchema = mongoose.Schema({
     status: { type: String, required: true, default: 'Upcoming' },
     haspickup: { type: Boolean, required: true },
     stations: { type: [Schema.Types.ObjectId], ref: 'station', required: false, default: '' },
-    driverid: { type: Schema.Types.ObjectId, ref: 'driver', required: false, default: '' },
+    driverid: { type: Schema.Types.ObjectId, required: false },
     busid: { type: Schema.Types.ObjectId, ref: 'bus', required: false },
     locationid: { type: Schema.Types.ObjectId, ref: 'location', required: false },
     regionid: { type: Schema.Types.ObjectId, ref: 'region', required: false },
