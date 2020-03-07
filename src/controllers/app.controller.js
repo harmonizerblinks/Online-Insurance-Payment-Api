@@ -206,31 +206,83 @@ exports.Booking = async(req, res) => {
 
 exports.BookingCancel = async(req, res) => {
     // Create a Booking
-    Booking.findById(req.body.bookingid)
+    Booking.findById(req.params.bookingId)
         .then(booking => {
             if (!booking) {
                 return res.status(404).send({
                     message: "Schedule not found "
                 });
             }
-            if (booking.date > new Date()) {
+            if (booking.date < new Date() || booking.status == true) {
                 return res.status(404).send({
                     message: "Booking can't be cancel"
                 });
             }
+            booking.cancel = true;
             // Save a Booking in the MongoDB
             Schedule.findById(booking.scheduleid)
+                .then(schedule => {
+                    if (!schedule) {
+                        return res.status(404).send({
+                            message: "Schedule not found with id"
+                        });
+                    }
+                    schedule.seats = schedule.seats + booking.seat;
+                    schedule.total = schedule.total - booking.amount;
+                    schedule.status = "Upcoming", schedule.available = true
+                    Schedule.findByIdAndUpdate(schedule._id, schedule, { new: true })
+                        .then(sche => {
+                            if (!sche) {
+                                return res.status(404).send({
+                                    message: "Schedule not found with id"
+                                });
+                            }
+                            Booking.findByIdAndUpdate(booking._id, booking, { new: true });
+
+                            res.send({ code: booking.code, output: "Booking Cancel", message: "Your Booking has been Canceled successfully", sche });
+                        }).catch(err => {
+                            return res.status(500).send({
+                                message: "Error updating schedule with id " + booking.scheduleId
+                            });
+                        });
+
+                }).catch(err => {
+                    return res.status(500).send({
+                        message: "Error updating schedule with id " + booking.scheduleId
+                    });
+                });
+
+        }).catch(err => {
+            return res.status(500).send({
+                message: "Error retrieving Schedule with id " + req.params.scheduleId
+            });
+        });
+}
+
+exports.BookingConfirm = async(req, res) => {
+    Booking.findById(req.params.bookingId)
+        .then(booking => {
+            if (!booking) {
+                return res.status(404).send({
+                    message: "Schedule not found "
+                });
+            }
+            if (booking.cancel == true) {
+                return res.status(404).send({
+                    message: "Booking Has Already been canceled by Passenger and payment has been refunded"
+                });
+            }
+            booking.status = true;
+            // Save a Booking in the MongoDB
+            Booking.findByIdAndUpdate(booking._id, booking, { new: true })
                 .then(sche => {
                     if (!sche) {
                         return res.status(404).send({
                             message: "Schedule not found with id"
                         });
                     }
-                    schedule.seats = schedule.seats - booking.seat;
-                    schedule.total = schedule.total + booking.amount;
-                    if (schedule.seats == 0 || schedule.seats < 0) { schedule.status = "Booked", schedule.available = false };
 
-                    res.send({ code: data.code, output: "Successfull", message: "Your Seat Has Been Reserved", sche });
+                    res.send({ code: booking.code, output: "Passenger Confirm", message: "Passenger Booking Confirm", sche });
                 }).catch(err => {
                     return res.status(500).send({
                         message: "Error updating schedule with id " + booking.scheduleId

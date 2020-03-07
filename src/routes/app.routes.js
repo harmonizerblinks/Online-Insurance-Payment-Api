@@ -15,6 +15,12 @@ module.exports = function(app) {
     // Get User Booking
     app.get('/Bookings/:userId', apps.findUserBookingById);
 
+    // Get User Booking
+    app.get('/Bookings/Cancel/:bookingId', apps.BookingCancel);
+
+    // Get User Booking
+    app.get('/Bookings/Confirm/:bookingId', apps.BookingConfirm);
+
     // Get All Schedules 
     app.get('/Schedules/Driver/:driverId', apps.findDriverSchedules);
 
