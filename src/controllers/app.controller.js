@@ -103,6 +103,38 @@ exports.findDriverSchedules = (req, res) => {
         });
 };
 
+exports.ScheduleCompleted = async(req, res) => {
+    Schedule.findById(req.params.scheduleId)
+        .then(schedule => {
+            if (!schedule) {
+                return res.status(404).send({
+                    message: "Schedule not found "
+                });
+            }
+            schedule.status = "Completed"
+                // Save a Booking in the MongoDB
+            Schedule.findByIdAndUpdate(schedule._id, schedule, { new: true })
+                .then(sche => {
+                    if (!sche) {
+                        return res.status(404).send({
+                            message: "Schedule not found with id"
+                        });
+                    }
+
+                    res.send({ code: schedule.code, output: "Ride Completed", message: "Your Wallet Will Be Credited Shortly", });
+                }).catch(err => {
+                    return res.status(500).send({
+                        message: "Error updating schedule with id " + schedule._id
+                    });
+                });
+
+        }).catch(err => {
+            return res.status(500).send({
+                message: "Error retrieving Schedule with id " + req.params.scheduleId
+            });
+        });
+}
+
 // FIND a Schedule
 exports.findOne = (req, res) => {
     let query = [{
@@ -282,7 +314,7 @@ exports.BookingConfirm = async(req, res) => {
                         });
                     }
 
-                    res.send({ code: booking.code, output: "Passenger Confirm", message: "Passenger Booking Confirm", sche });
+                    res.send({ code: booking.code, output: "Passenger Confirmed", message: "Passenger Booking Confirmed", sche });
                 }).catch(err => {
                     return res.status(500).send({
                         message: "Error updating schedule with id " + booking.scheduleId
@@ -329,7 +361,6 @@ exports.findUserBookingById = (req, res) => {
         });
 };
 
-
 // FIND user Booking
 exports.findScheduleBookingsById = (req, res) => {
     let query = [{
@@ -339,7 +370,7 @@ exports.findScheduleBookingsById = (req, res) => {
             foreignField: '_id',
             as: 'pickups'
         },
-    }, { $sort: { created: -1 } }, { $match: { scheduleid: ObjectId(req.params.scheduleId), cancel: { $ne: false } } }];
+    }, { $sort: { created: -1 } }, { $match: { scheduleid: ObjectId(req.params.scheduleId), cancel: { $ne: true } } }];
     // console.log(req.params.scheduleId);
     Booking.aggregate(query)
         .then(bookings => {

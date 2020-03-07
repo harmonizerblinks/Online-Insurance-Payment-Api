@@ -6,8 +6,11 @@ module.exports = function(app) {
     // Get All Schedules 
     app.get('/Schedules', apps.findAllSchedules);
 
-    // Get All Schedules 
+    // Get Schedules by Id
     app.get('/Schedules/:scheduleId', apps.findOne);
+
+    // Completed Schedule
+    app.get('/Schedules/Complete/:scheduleId', apps.ScheduleCompleted);
 
     // Get All Schedules 
     app.post('/Bookings', apps.Booking);
