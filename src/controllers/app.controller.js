@@ -112,6 +112,7 @@ exports.ScheduleCompleted = async(req, res) => {
                 });
             }
             schedule.status = "Completed"
+            schedule.completed = true
                 // Save a Booking in the MongoDB
             Schedule.findByIdAndUpdate(schedule._id, schedule, { new: true })
                 .then(sche => {
