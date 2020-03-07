@@ -49,6 +49,60 @@ exports.findAllSchedules = (req, res) => {
         });
 };
 
+// FETCH all Schedules
+exports.findDriverSchedules = (req, res) => {
+    let query = [{
+            $lookup: {
+                from: 'stations',
+                localField: 'start_point',
+                foreignField: '_id',
+                as: 'start'
+            },
+        }, {
+            $lookup: {
+                from: 'stations',
+                localField: 'end_point',
+                foreignField: '_id',
+                as: 'end'
+            },
+        }, {
+            $lookup: {
+                from: 'bookings',
+                localField: '_id',
+                foreignField: 'scheduleid',
+                as: 'bookings'
+            },
+        }, {
+            $lookup: {
+                from: 'stations',
+                localField: 'stations',
+                foreignField: '_id',
+                as: 'pickups'
+            },
+
+        }, {
+            $lookup: {
+                from: 'buses',
+                localField: 'busid',
+                foreignField: '_id',
+                as: 'bus'
+            },
+
+        }, { $sort: { date: 1 } },
+        { $match: { driverid: req.params.driverId, status: { $ne: 'Completed', $in: ['Upcoming', 'Booked', 'Started'] } } }
+    ];
+    console.log('fine All');
+    Schedule.aggregate(query)
+        .then(schedules => {
+            // console.log(schedules)
+            res.send(schedules);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
+};
+
 // FIND a Schedule
 exports.findOne = (req, res) => {
     let query = [{
@@ -150,6 +204,46 @@ exports.Booking = async(req, res) => {
         });
 }
 
+exports.BookingCancel = async(req, res) => {
+    // Create a Booking
+    Booking.findById(req.body.bookingid)
+        .then(booking => {
+            if (!booking) {
+                return res.status(404).send({
+                    message: "Schedule not found "
+                });
+            }
+            if (booking.date > new Date()) {
+                return res.status(404).send({
+                    message: "Booking can't be cancel"
+                });
+            }
+            // Save a Booking in the MongoDB
+            Schedule.findById(booking.scheduleid)
+                .then(sche => {
+                    if (!sche) {
+                        return res.status(404).send({
+                            message: "Schedule not found with id"
+                        });
+                    }
+                    schedule.seats = schedule.seats - booking.seat;
+                    schedule.total = schedule.total + booking.amount;
+                    if (schedule.seats == 0 || schedule.seats < 0) { schedule.status = "Booked", schedule.available = false };
+
+                    res.send({ code: data.code, output: "Successfull", message: "Your Seat Has Been Reserved", sche });
+                }).catch(err => {
+                    return res.status(500).send({
+                        message: "Error updating schedule with id " + booking.scheduleId
+                    });
+                });
+
+        }).catch(err => {
+            return res.status(500).send({
+                message: "Error retrieving Schedule with id " + req.params.scheduleId
+            });
+        });
+}
+
 // FIND user Booking
 exports.findUserBookingById = (req, res) => {
     let query = [{
@@ -168,6 +262,33 @@ exports.findUserBookingById = (req, res) => {
         },
     }, { $sort: { created: -1 } }, { $match: { wallet: req.params.userId } }];
     console.log(req.params.userId);
+    Booking.aggregate(query)
+        .then(bookings => {
+            res.send(bookings);
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "Booking history not found with id " + req.params.userId
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving Booking History with id " + req.params.userId
+            });
+        });
+};
+
+
+// FIND user Booking
+exports.findScheduleBookingsById = (req, res) => {
+    let query = [{
+        $lookup: {
+            from: 'stations',
+            localField: 'pickup',
+            foreignField: '_id',
+            as: 'pickups'
+        },
+    }, { $sort: { created: -1 } }, { $match: { scheduleid: ObjectId(req.params.scheduleId), cancel: { $ne: false } } }];
+    // console.log(req.params.scheduleId);
     Booking.aggregate(query)
         .then(bookings => {
             res.send(bookings);

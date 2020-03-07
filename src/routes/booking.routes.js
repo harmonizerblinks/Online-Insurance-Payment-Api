@@ -8,7 +8,7 @@ module.exports = function(app) {
     app.post('/api/bookings', verify.verifyToken, booking.create);
 
     // Retrieve all Region
-    app.get('/api/bookings', verify.verifyToken, booking.findAll);
+    app.get('/api/bookings', booking.findAll);
 
     // Retrieve a single Region by Id
     app.get('/api/bookings/:bookingId', verify.verifyToken, booking.findOne);
