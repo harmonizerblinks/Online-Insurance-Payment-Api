@@ -48,7 +48,7 @@ const InsuranceSchema = mongoose.Schema({
     package_id: { type: Schema.Types.ObjectId, ref: 'package', required: true },
     details: { type: InsuranceDetailSchema, required: true },
     payment: { type: InsurancePaymentSchema, required: false },
-    status: { type: String, required: true, default: true },
+    status: { type: String, required: true, default: 'Pending' },
     response: { type: Object, required: false },
     callback: { type: Object, required: false },
     created: { type: Date, index: true, default: Date.now },

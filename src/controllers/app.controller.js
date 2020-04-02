@@ -69,8 +69,67 @@ exports.Makepayment = (req, res) => {
         .end(function(res) {
             if (res.error) throw new Error(res.error);
             console.log(res.raw_body);
+            var body = req.body;
+            // console.log(body)
+            body.response = JSON.parse(res.raw_body);
+            body.updated = new Date();
+            // Find insurance and update it
+            Insurance.findByIdAndUpdate(body._id, body, { new: true })
+                .then(insurance => {
+                    if (!insurance) {
+                        return res.status(404).send({
+                            message: "Insurance not found with id " + req.params.insuranceId
+                        });
+                    }
+                    var callback = setTimeout(getCallBack(insurance, body.response.transaction_no), 100000);
+                    res.send(insurance);
+                }).catch(err => {
+                    if (err.kind === 'ObjectId') {
+                        return res.status(404).send({
+                            message: "Insurance not found with id " + req.params.insuranceId
+                        });
+                    }
+                    return res.status(500).send({
+                        message: "Error updating insurance with id " + req.params.insuranceId
+                    });
+                });
         });
 };
+
+function getCallBack(body, code) {
+    var req = unirest('GET', 'http://api.alias-solutions.net:8443/chatbotapi/paynow/confirm/' + code)
+        .end(function(res) {
+            if (res.error) throw new Error(res.error);
+            console.log(res.raw_body);
+            body.callback = JSON.parse(res.raw_body);
+            body.updated = new Date();
+            if (body.callback.result.status_code === 0 || body.callback.result.status_code === 2) {
+                var callback = setTimeout(getCallBack(body, body.response.transaction_no), 100000);
+            } else {
+                body.status = body.callback.result.status_message;
+                Insurance.findByIdAndUpdate(body._id, body, { new: true })
+                    .then(insurance => {
+                        if (!insurance) {
+                            return {
+                                message: "Insurance not found with id " + body._id
+                            };
+                        }
+
+                        return insurance;
+                    }).catch(err => {
+                        if (err.kind === 'ObjectId') {
+                            return {
+                                message: "Insurance not found with id " + body._id
+                            };
+                        }
+                        return {
+                            message: "Error updating insurance with id " + req.params.insuranceId
+                        };
+                    });
+            }
+
+        });
+}
 
 
 async function asyncForEach(array, callback) {
