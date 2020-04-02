@@ -86,22 +86,9 @@ app.use(passport.session());
 // require('./config/authguard.config.js')(passport);
 require('./routes/auth.routes.js')(app);
 require('./routes/users.routes.js')(app);
-require('./routes/country.routes.js')(app);
-require('./routes/region.routes.js')(app);
-require('./routes/location.routes.js')(app);
-require('./routes/company.routes.js')(app);
-require('./routes/expense.routes.js')(app);
-require('./routes/brand.routes.js')(app);
+require('./routes/package.routes.js')(app);
+require('./routes/insurance.routes.js')(app);
 require('./routes/gallery.routes.js')(app);
-require('./routes/bus.routes.js')(app);
-require('./routes/busfee.routes.js')(app);
-require('./routes/driver.routes.js')(app);
-require('./routes/rent.routes.js')(app);
-require('./routes/schedule.routes.js')(app);
-require('./routes/station.routes.js')(app);
-require('./routes/tour.routes.js')(app);
-require('./routes/booking.routes.js')(app);
-require('./routes/saving.routes.js')(app);
 require('./routes/app.routes.js')(app);
 
 // Api Documentation Setup

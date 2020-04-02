@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/mongodb.config.js');
 const User = require('../models/user.model.js');
-const Role = require('../models/role.model.js');
+// const Role = require('../models/role.model.js');
 
 verifyToken = async(req, res, next) => {
     // console.log(req.headers);

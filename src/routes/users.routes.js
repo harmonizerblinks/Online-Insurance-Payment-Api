@@ -5,7 +5,7 @@ module.exports = function(app) {
     // const passport = require('passport');
 
     // Create a new User
-    app.post('/api/users', verify.verifyToken, users.create);
+    app.post('/api/users', users.create);
 
     // User Login or Authentication
     // app.post('/api/login', users.login);

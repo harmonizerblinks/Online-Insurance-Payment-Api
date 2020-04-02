@@ -4,30 +4,9 @@ module.exports = function(app) {
     const verify = require('../middleware/verifyJwtToken.middleware.js');
 
     // Get All Schedules 
-    app.get('/Schedules', apps.findAllSchedules);
+    // app.get('/Schedules', apps.findAllSchedules);
 
-    // Get Schedules by Id
-    app.get('/Schedules/:scheduleId', apps.findOne);
-
-    // Completed Schedule
-    app.get('/Schedules/Complete/:scheduleId', apps.ScheduleCompleted);
-
-    // Get All Schedules 
-    app.post('/Bookings', apps.Booking);
-
-    // Get User Booking
-    app.get('/Bookings/:userId', apps.findUserBookingById);
-
-    // Get User Booking
-    app.get('/Bookings/Cancel/:bookingId', apps.BookingCancel);
-
-    // Get User Booking
-    app.get('/Bookings/Confirm/:bookingId', apps.BookingConfirm);
-
-    // Get All Schedules 
-    app.get('/Schedules/Driver/:driverId', apps.findDriverSchedules);
-
-    // Get User Booking
-    app.get('/Schedules/Bookings/:scheduleId', apps.findScheduleBookingsById);
+    // // Get Schedules by Id
+    // app.get('/Schedules/:scheduleId', apps.findOne);
 
 }

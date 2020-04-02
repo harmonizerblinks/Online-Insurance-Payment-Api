@@ -1,13 +1,13 @@
-const Rent = require('../models/rent.model.js');
+const Insurance = require('../models/insurance.model.js');
 
 
-// POST a Rent
+// POST a Insurance
 exports.create = (req, res) => {
-    // Create a Rent
-    const rent = new Rent(req.body);
+    // Create a Insurance
+    const insurance = new Insurance(req.body);
 
-    // Save a Rent in the MongoDB
-    rent.save()
+    // Save a Insurance in the MongoDB
+    insurance.save()
         .then(data => {
             res.send(data);
         }).catch(err => {
@@ -18,13 +18,13 @@ exports.create = (req, res) => {
 };
 
 
-// FETCH all Rents
+// FETCH all Insurances
 exports.findAll = (req, res) => {
     console.log('fine All');
-    Rent.find()
-        .then(rents => {
-            // console.log(rents)
-            res.send(rents);
+    Insurance.find()
+        .then(insurance => {
+            // console.log(insurance)
+            res.send(insurance);
         }).catch(err => {
             res.status(500).send({
                 message: err.message
@@ -32,72 +32,72 @@ exports.findAll = (req, res) => {
         });
 };
 
-// FIND a Rent
+// FIND a Insurance
 exports.findOne = (req, res) => {
-    Rent.findById(req.params.rentId)
-        .then(rent => {
-            if (!rent) {
+    Insurance.findById(req.params.insuranceId)
+        .then(insurance => {
+            if (!insurance) {
                 return res.status(404).send({
-                    message: "Rent not found with id " + req.params.rentId
+                    message: "Insurance not found with id " + req.params.insuranceId
                 });
             }
-            res.send(rent);
+            res.send(insurance);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Rent not found with id " + req.params.rentId
+                    message: "Insurance not found with id " + req.params.insuranceId
                 });
             }
             return res.status(500).send({
-                message: "Error retrieving Rent with id " + req.params.rentId
+                message: "Error retrieving Insurance with id " + req.params.insuranceId
             });
         });
 };
 
-// UPDATE a Rent
+// UPDATE a Insurance
 exports.update = (req, res) => {
     var body = req.body;
     // console.log(body)
     body.updated = new Date();
-    // Find rent and update it
-    Rent.findByIdAndUpdate(req.params.rentId, body, { new: true })
-        .then(rent => {
-            if (!rent) {
+    // Find insurance and update it
+    Insurance.findByIdAndUpdate(req.params.insuranceId, body, { new: true })
+        .then(insurance => {
+            if (!insurance) {
                 return res.status(404).send({
-                    message: "Rent not found with id " + req.params.rentId
+                    message: "Insurance not found with id " + req.params.insuranceId
                 });
             }
-            res.send(rent);
+            res.send(insurance);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Rent not found with id " + req.params.rentId
+                    message: "Insurance not found with id " + req.params.insuranceId
                 });
             }
             return res.status(500).send({
-                message: "Error updating rent with id " + req.params.rentId
+                message: "Error updating insurance with id " + req.params.insuranceId
             });
         });
 };
 
-// DELETE a Rent
+// DELETE a Insurance
 exports.delete = (req, res) => {
-    Rent.findByIdAndRemove(req.params.rentId)
-        .then(rent => {
-            if (!rent) {
+    Insurance.findByIdAndRemove(req.params.insuranceId)
+        .then(insurance => {
+            if (!insurance) {
                 return res.status(404).send({
-                    message: "Rent not found with id " + req.params.rentId
+                    message: "Insurance not found with id " + req.params.insuranceId
                 });
             }
-            res.send({ message: "Rent deleted successfully!" });
+            res.send({ message: "Insurance deleted successfully!" });
         }).catch(err => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
-                    message: "Rent not found with id " + req.params.rentId
+                    message: "Insurance not found with id " + req.params.insuranceId
                 });
             }
             return res.status(500).send({
-                message: "Could not delete rent with id " + req.params.rentId
+                message: "Could not delete insurance with id " + req.params.insuranceId
             });
         });
 };
