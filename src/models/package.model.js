@@ -4,11 +4,13 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 const PackageSchema = mongoose.Schema({
     code: { type: String, minlength: 4, maxlength: 8, required: true },
+    type: { type: String, required: true },
     name: { type: String, minlength: 6, maxlength: 50, required: true },
     period: { type: String, required: true },
+    fixed: { type: Boolean, required: true, default: true },
     amount: { type: Schema.Types.Mixed, required: true },
-    discount: { type: Boolean, required: true },
-    percentage: { type: String, required: true },
+    // discount: { type: Boolean, required: true },
+    percentage: { type: Number, required: true },
     status: { type: Boolean, required: true, default: true },
     userid: { type: Schema.Types.ObjectId, ref: 'user', required: false },
     created: { type: Date, index: true, default: Date.now },

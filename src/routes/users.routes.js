@@ -30,4 +30,5 @@ module.exports = function(app) {
 
     // Delete a User with Id
     app.delete('/api/users/:userId', verify.verifyToken, users.delete);
+
 }

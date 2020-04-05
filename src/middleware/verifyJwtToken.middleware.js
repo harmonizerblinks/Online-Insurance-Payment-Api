@@ -7,17 +7,16 @@ verifyToken = async(req, res, next) => {
     // console.log(req.headers);
     // let token = req.headers['authorization'];
     let token = req.headers['x-access-token'] || req.headers['authorization']; // Express headers are auto converted to lowercase
-    console.log(token);
-    if (token.startsWith('Bearer ')) {
-        // Remove Bearer from string
-        token = token.slice(7, token.length);
-    }
-    console.log(token);
     if (!token) {
         return res.status(403).send({
             auth: false,
             message: 'No token provided.'
         });
+    }
+    console.log(token);
+    if (token.startsWith('Bearer ')) {
+        // Remove Bearer from string
+        token = token.slice(7, token.length);
     }
 
     jwt.verify(token, config.secret, async(err, decoded) => {

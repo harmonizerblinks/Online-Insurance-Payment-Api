@@ -58,7 +58,7 @@ app.use(fileUpload({
 app.use('/public', express.static(path.join(__dirname, '../public')))
 
 // Bodyparser Middleware
-// app.use(bodyParser.json({ limit: '10kb' }));
+app.use(bodyParser.json({ limit: '1000kb' }));
 
 // Helmet
 app.use(helmet());
@@ -70,7 +70,7 @@ const limit = rateLimit({
 });
 app.use('/routeName', limit); // Setting limiter on specific route
 // Body Parser
-app.use(express.json({ limit: '10kb' })); // Body limit is 10
+app.use(express.json({ limit: '10000kb' })); // Body limit is 10
 
 // Data Sanitization against NoSQL Injection Attacks
 app.use(mongoSanitize());
