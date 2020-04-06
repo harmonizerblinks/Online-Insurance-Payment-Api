@@ -37,7 +37,7 @@ const InsuranceSchema = mongoose.Schema({
     firstname: { type: String, minlength: 3, maxlength: 20, required: true },
     lastname: { type: String, minlength: 3, maxlength: 20, required: true },
     othername: { type: String, minlength: 3, maxlength: 20, required: false },
-    email: { type: String, minlength: 6, maxlength: 60, required: true, },
+    email: { type: String, minlength: 6, maxlength: 60, required: false },
     mobile: { type: String, minlength: 10, maxlength: 15, required: true },
     dateofbirth: { type: Date, required: true },
     address: { type: String, minlength: 5, maxlength: 200, required: false },
