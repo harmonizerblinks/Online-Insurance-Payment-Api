@@ -24,6 +24,7 @@ exports.createUser = async(req, res) => {
                     id: data._id,
                     fullname: data.fullname,
                     isAdmin: data.isAdmin,
+                    mmobile: data.mobile,
                     email: user.email
                 },
             }, config.secret, {
@@ -35,6 +36,125 @@ exports.createUser = async(req, res) => {
         }).catch(err => {
             res.status(500).send({
                 message: err.message
+            });
+        });
+};
+
+
+// Logout user
+exports.logout = (req, res) => {
+    if (req.user) {
+        User.findById(req.user.id)
+            .then(user => {
+
+                user.isLogin = true;
+                user.access_token = null;
+                User.findByIdAndUpdate(user._id, user, { new: true });
+                res.send({ output: 'Logout', mesaage: 'you have been logout successfully' });
+            }).catch(err => {
+                return res.status(200).send({
+                    message: "you have been logout successfully"
+                });
+            });
+        // res.send(req.user);
+    } else {
+        res.status(401).send({
+            message: "Authentication not Valid"
+        });
+    }
+};
+
+// Get User Profile
+exports.profile = (req, res) => {
+    if (req.user) {
+        let query = [{
+            $lookup: {
+                from: 'departments',
+                localField: 'departmentid',
+                foreignField: '_id',
+                as: 'department'
+            },
+        }, { $match: { _id: ObjectId(req.user.id) } }];
+        User.aggregate(query)
+            .then(user => {
+                if (!user) {
+                    return res.status(404).send({
+                        message: "User not found with id " + req.params.userId
+                    });
+                }
+                // user[0].password = null;
+                res.send(user[0]);
+            }).catch(err => {
+                if (err.kind === 'ObjectId') {
+                    return res.status(404).send({
+                        message: "User not found with id " + req.params.userId
+                    });
+                }
+                return res.status(500).send({
+                    message: "Error retrieving User with id " + req.params.userId
+                });
+            });
+        // res.send(req.user);
+    } else {
+        res.status(401).send({
+            message: "Authentication not Valid"
+        });
+    }
+    // res.status(401).send({
+    //     message: "Authentication not Valid"
+    // });
+};
+
+// Change Password
+exports.changePassword = (req, res) => {
+    const id = req.user.id;
+    const oldpassword = req.body.password;
+    const password = req.body.newpassword;
+
+    User.findById(id)
+        .then(user => {
+            if (!user) {
+                return res.status(404).send({
+                    message: "User not found with username " + username
+                });
+            }
+
+            var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
+            if (passwordIsValid) {
+                user.password = bcrypt.hashSync(req.body.newpassword, 10);
+
+                User.findByIdAndUpdate(id, user, { new: true })
+                    .then(use => {
+                        if (!use) {
+                            return res.status(404).send({
+                                message: "User not found with id " + req.params.userId
+                            });
+                        }
+                        res.send({
+                            message: "Password Changed successfully"
+                        });
+                    }).catch(err => {
+                        if (err.kind === 'ObjectId') {
+                            return res.status(404).send({
+                                message: "Invalid User "
+                            });
+                        }
+                        console.log(err);
+                        return res.status(500).send({
+                            message: "Error updating user Password "
+                        });
+                    });
+            } else {
+                res.status(500).send({ success: false, message: 'Password is not correct' })
+            }
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "User not found with username " + username
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving User with username " + username
             });
         });
 };

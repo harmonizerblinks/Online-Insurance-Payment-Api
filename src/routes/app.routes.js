@@ -6,6 +6,18 @@ module.exports = function(app) {
     // Register 
     app.post('/api/register', apps.createUser);
 
+    // App user Login
+    // app.post('/api/login', apps.login);
+
+    // Logout
+    app.get('/api/logout', verify.verifyToken, apps.logout);
+
+    // Change Password
+    app.post('/api/change-password', verify.verifyToken, apps.changePassword);
+
+    // Retrieve user Detail
+    app.get('/api/profile', verify.verifyToken, apps.profile);
+
     // Get All Packages 
     app.get('/app/packages', apps.findAllPackages);
 

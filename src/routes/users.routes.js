@@ -8,7 +8,7 @@ module.exports = function(app) {
     app.post('/api/users', users.create);
 
     // User Login or Authentication
-    // app.post('/api/login', users.login);
+    app.post('/api/login', users.login);
 
     // Retrieve all User
     app.get('/api/users', verify.verifyToken, users.findAll);

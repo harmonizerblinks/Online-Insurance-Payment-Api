@@ -43,10 +43,9 @@ exports.login = (req, res) => {
                     data: {
                         id: user._id,
                         fullname: user.fullname,
-                        username: user.username,
                         mobile: user.mobile,
                         email: user.email,
-                        roles: user.roles
+                        isAdmin: user.isAdmin
                     },
                 }, config.secret, {
                     expiresIn: 684800
