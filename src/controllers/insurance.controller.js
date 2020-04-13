@@ -21,7 +21,7 @@ exports.create = (req, res) => {
 // FETCH all Insurances
 exports.findAll = (req, res) => {
     console.log('fine All');
-    Insurance.find()
+    Insurance.find().sort({ created: -1 })
         .then(insurance => {
             // console.log(insurance)
             res.send(insurance);
