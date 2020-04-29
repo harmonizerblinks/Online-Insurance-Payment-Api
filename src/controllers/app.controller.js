@@ -202,7 +202,7 @@ exports.createInsurance = async(req, res) => {
     const insurance = new Insurance(req.body);
     insurance.code = null;
     insurance.code = await generateOTP(6);
-    insurance.payment.reference = insurance.firstname + ' ' + insurance.lastname + ' ' + insurance.othername;
+    insurance.payment.reference = insurance.fullname;
     console.log(insurance);
 
     // Save a Insurance in the MongoDB
