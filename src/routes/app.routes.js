@@ -2,9 +2,10 @@ module.exports = function(app) {
 
     var apps = require('../controllers/app.controller.js');
     const verify = require('../middleware/verifyJwtToken.middleware.js');
+    const user = require('../middleware/verifysignup.middleware.js');
 
     // Register 
-    app.post('/api/register', apps.createUser);
+    app.post('/api/register', user.checkDuplicateUserNameOrEmail, apps.createUser);
 
     // App user Login
     // app.post('/api/login', apps.login);
