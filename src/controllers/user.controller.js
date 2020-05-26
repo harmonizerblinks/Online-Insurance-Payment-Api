@@ -27,12 +27,12 @@ exports.login = (req, res) => {
     const username = req.body.username;
     const password = req.body.password
 
-    const query = { username };
+    const query = { email: username };
     User.findOne(query)
         .then(user => {
             if (!user) {
                 return res.status(404).send({
-                    message: "User not found with username " + username
+                    message: "User not found with email " + username
                 });
             }
 
@@ -57,11 +57,11 @@ exports.login = (req, res) => {
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "User not found with username " + username
+                    message: "User not found with email " + username
                 });
             }
             return res.status(500).send({
-                message: "Error retrieving User with username " + username
+                message: "Error retrieving User with email " + username
             });
         });
 };
