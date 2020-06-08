@@ -19,6 +19,7 @@ const InsurancePaymentSchema = mongoose.Schema({
 
 const InsuranceDetailSchema = mongoose.Schema({
     cust_type: { type: String, required: true },
+    cover: { type: String, required: false, default: 'THIRD PARTY BASIC TARRIF' },
     cover_type: { type: String, required: false },
     vehicle: { type: String, required: true },
     vehicle_value: { type: String, required: false },
