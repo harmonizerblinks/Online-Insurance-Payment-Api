@@ -8,7 +8,7 @@ const UserSchema = mongoose.Schema({
     image: { type: String, required: false, default: '' },
     email: { type: String, required: true, unique: true },
     mobile: { type: String, minlength: 9, maxlength: 15, required: true, unique: true },
-    isAdmin: { type: String, required: true, default: false },
+    isAdmin: { type: Boolean, required: true, default: false },
     status: { type: Boolean, required: true, default: true },
     created: { type: Date, index: true, default: Date.now },
     updated: { type: Date, index: true, default: Date.now }
