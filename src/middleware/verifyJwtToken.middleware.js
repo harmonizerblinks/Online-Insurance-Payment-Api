@@ -42,36 +42,13 @@ verifyToken = async(req, res, next) => {
 
 isAdmin = (req, res, next) => {
 
-    User.findById(req.user._id)
-        .exec((err, user) => {
-            if (err) {
-                if (err.kind === 'ObjectId') {
-                    return res.status(404).send({
-                        message: "User not found with Username = " + req.body.username
-                    });
-                }
-                return res.status(500).send({
-                    message: "Error retrieving User with Username = " + req.body.username
-                });
-            }
-
-            Role.find({
-                '_id': { $in: user.roles }
-            }, (err, roles) => {
-                if (err)
-                    res.status(500).send("Error -> " + err);
-
-                for (let i = 0; i < roles.length; i++) {
-                    if (roles[i].name.toUpperCase() === "ADMIN") {
-                        next();
-                        return;
-                    }
-                }
-
-                res.status(403).send("Require Admin Role!");
-                return;
-            });
+    if (!req.user.isAdmin) {
+        return res.status(401).send({
+            message: "You are not Authorized to perform this Action"
         });
+    }
+
+    next();
 }
 
 isPmOrAdmin = (req, res, next) => {

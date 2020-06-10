@@ -5,17 +5,17 @@ module.exports = function(app) {
     // console.log('package');
 
     // Create a new Insurance
-    app.post('/api/packages', verify.verifyToken, package.create);
+    app.post('/api/packages', verify.verifyToken, verify.isAdmin, package.create);
 
     // Retrieve all Insurance
     app.get('/api/packages', verify.verifyToken, package.findAll);
 
     // Retrieve a single Insurance by Id
-    app.get('/api/packages/:packageId', verify.verifyToken, package.findOne);
+    app.get('/api/packages/:packageId', verify.verifyToken, verify.isAdmin, package.findOne);
 
     // Update a Insurance with Id
-    app.put('/api/packages/:packageId', verify.verifyToken, package.update);
+    app.put('/api/packages/:packageId', verify.verifyToken, verify.isAdmin, package.update);
 
     // Delete a Insurance with Id
-    app.delete('/api/packages/:packageId', verify.verifyToken, package.delete);
+    app.delete('/api/packages/:packageId', verify.verifyToken, verify.isAdmin, package.delete);
 }

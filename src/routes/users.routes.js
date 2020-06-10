@@ -5,7 +5,7 @@ module.exports = function(app) {
     // const passport = require('passport');
 
     // Create a new User
-    app.post('/api/users', verify.verifyToken, users.create);
+    app.post('/api/users', verify.verifyToken, verify.isAdmin, users.create);
 
     // User Login or Authentication
     app.post('/api/login', users.login);
@@ -26,9 +26,9 @@ module.exports = function(app) {
     app.get('/api/users/username/:username', verify.verifyToken, users.findOneByUsername);
 
     // Update a User with Id
-    app.put('/api/users/:userId', verify.verifyToken, users.update);
+    app.put('/api/users/:userId', verify.verifyToken, verify.isAdmin, users.update);
 
     // Delete a User with Id
-    app.delete('/api/users/:userId', verify.verifyToken, users.delete);
+    app.delete('/api/users/:userId', verify.verifyToken, verify.isAdmin, users.delete);
 
 }
