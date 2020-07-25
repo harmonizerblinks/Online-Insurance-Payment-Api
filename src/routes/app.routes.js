@@ -1,6 +1,7 @@
 module.exports = function(app) {
 
     var apps = require('../controllers/app.controller.js');
+    var ussd = require('../controllers/ussd.controller.js');
     const verify = require('../middleware/verifyJwtToken.middleware.js');
     const user = require('../middleware/verifysignup.middleware.js');
 
@@ -33,5 +34,8 @@ module.exports = function(app) {
 
     // Get Schedules by Id
     app.get('/app/insurance/:insuranceId', apps.findOneInsurance);
+
+    // Group Save Ussd
+    app.post('/api/ussd', ussd.ussd);
 
 }
