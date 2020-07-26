@@ -2,6 +2,8 @@ module.exports = function(app) {
 
     var apps = require('../controllers/app.controller.js');
     var ussd = require('../controllers/ussd.controller.js');
+    var usla = require('../controllers/usla.controller.js');
+    var vsla = require('../controllers/vsla.controller.js');
     const verify = require('../middleware/verifyJwtToken.middleware.js');
     const user = require('../middleware/verifysignup.middleware.js');
 
@@ -37,5 +39,9 @@ module.exports = function(app) {
 
     // Group Save Ussd
     app.post('/api/ussd', ussd.ussd);
+    // Group Save Ussd
+    app.post('/api/ussd/usla', usla.ussd);
+    // Group Save Ussd
+    app.post('/api/ussd/vsla', vsla.ussd);
 
 }
