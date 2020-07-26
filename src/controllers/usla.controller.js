@@ -42,16 +42,14 @@ menu.startState({
             '\n1. Savings' +
             '\n2. Check Balance' +
             '\n3. Withdrawal' +
-            '\n4. Save On Behalf' +
-            '\n5. Others');
+            '\n4. Others');
     },
     // next object links to next state based on user input
     next: {
         '1': 'Savings',
         '2': 'checkBalance',
         '3': 'Withdrawal',
-        '4': 'SaveOnBehalf',
-        '5': 'Others'
+        '4': 'Others'
     }
 });
 
@@ -62,16 +60,14 @@ menu.state('Start', {
             '\n1. Savings' +
             '\n2. Check Balance' +
             '\n3. Withdrawal' +
-            '\n4. Save On Behalf' +
-            '\n5. Others');
+            '\n4. Others');
     },
     // next object links to next state based on user input
     next: {
         '1': 'Savings',
         '2': 'checkBalance',
         '3': 'Withdrawal',
-        '4': 'SaveOnBehalf',
-        '5': 'Others'
+        '4': 'Others'
     }
 });
 
@@ -200,61 +196,31 @@ menu.state('Withdrawal.cancel', {
     }
 });
 
-menu.state('SaveOnBehalf', {
-    run: () => {
-        menu.con('Enter Member Id or Mobile Number');
-    },
-    next: {
-        // using input to match user input to next state
-        'input': 'SaveOnBehalf.member'
-    }
-});
-
-menu.state('SaveOnBehalf.member', {
-    run: () => {
-        menu.con('Enter amount to Save' +
-            '\n Daily Rate GHC 5');
-    },
-    next: {
-        // using regex to match user input to next state
-        '*\\d+': 'SaveOnBehalf.amount'
-    }
-});
-
-// nesting states
-menu.state('SaveOnBehalf.amount', {
-    run: () => {
-        // use menu.val to access user input value
-        var amount = Number(menu.val);
-        menu.session.set('amount', amount);
-        menu.con('You want to perform saving of amount GHS ' + amount +
-            '\n1. Confirm' +
-            '\n2. Cancel');
-
-    },
-    next: {
-        '1': 'SaveOnBehalf.confirm',
-        '2': 'SaveOnBehalf.cancel'
-    }
-});
-
-
-menu.state('SaveOnBehalf.confirm', {
-    run: () => {
-        // access user input value save in session
-        var amount = menu.session.get('amount');;
-        menu.end('Payment request of amount GHS' + amount + ' sent to your phone.');
-    }
-});
-
-menu.state('SaveOnBehalf.cancel', {
-    run: () => {
-        // Cancel Savings request
-        menu.end('Thank you for using paynow services.');
-    }
-});
-
 menu.state('Others', {
+    run: () => {
+        // use menu.con() to send response without terminating session      
+        menu.con('Choose option:' +
+            '\n1. Pension' +
+            '\n2. Airtime');
+    },
+    // next object links to next state based on user input
+    next: {
+        '1': 'Others.penion',
+        '2': 'Others.airtime',
+    }
+});
+
+menu.state('Others.penion', {
+    run: () => {
+        // fetch balance
+        // fetchBalance(menu.args.phoneNumber).then((bal) => {
+        // use menu.end() to send response and terminate session
+        menu.end('Coming Soon');
+        // });
+    }
+});
+
+menu.state('Others.airtime', {
     run: () => {
         // fetch balance
         // fetchBalance(menu.args.phoneNumber).then((bal) => {
