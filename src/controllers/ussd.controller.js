@@ -202,28 +202,27 @@ menu.state('Withdrawal.cancel', {
 
 menu.state('SaveOnBehalf', {
     run: () => {
-        menu.con('Enter amoun to Save' +
-            '\n Daily Rate GHC 5');
+        menu.con('Enter Member Id or Mobile Number');
     },
     next: {
-        // using regex to match user input to next state
-        '*\\d+': 'Savings.amount'
+        // using input to match user input to next state
+        'input': 'SaveOnBehalf.member'
     }
 });
 
-menu.state('Savings', {
+menu.state('SaveOnBehalf.member', {
     run: () => {
         menu.con('Enter amount to Save' +
             '\n Daily Rate GHC 5');
     },
     next: {
         // using regex to match user input to next state
-        '*\\d+': 'Savings.amount'
+        '*\\d+': 'SaveOnBehalf.amount'
     }
 });
 
 // nesting states
-menu.state('Savings.amount', {
+menu.state('SaveOnBehalf.amount', {
     run: () => {
         // use menu.val to access user input value
         var amount = Number(menu.val);
@@ -234,8 +233,24 @@ menu.state('Savings.amount', {
 
     },
     next: {
-        '1': 'Savings.confirm',
-        '2': 'Savings.cancel'
+        '1': 'SaveOnBehalf.confirm',
+        '2': 'SaveOnBehalf.cancel'
+    }
+});
+
+
+menu.state('SaveOnBehalf.confirm', {
+    run: () => {
+        // access user input value save in session
+        var amount = menu.session.get('amount');;
+        menu.end('Payment request of amount GHS' + amount + ' sent to your phone.');
+    }
+});
+
+menu.state('SaveOnBehalf.cancel', {
+    run: () => {
+        // Cancel Savings request
+        menu.end('Thank you for using paynow services.');
     }
 });
 
@@ -244,7 +259,7 @@ menu.state('Others', {
         // fetch balance
         // fetchBalance(menu.args.phoneNumber).then((bal) => {
         // use menu.end() to send response and terminate session
-        menu.end('Your balance is GHS 1.00' + bal);
+        menu.end('Coming Soon');
         // });
     }
 });
