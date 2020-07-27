@@ -234,7 +234,11 @@ menu.state('Others.airtime', {
 // POST a Insurance
 exports.ussd = async(req, res) => {
     // Create a 
-    menu.run(req.body, ussdResult => {
+    let args = req.body;
+    if (args.Type == 'initiation') {
+        args.Type = req.body.Type.replace(/\b[a-z]/g, (x) => x.toUpperCase());
+    }
+    menu.run(args, ussdResult => {
         res.send(ussdResult);
     });
     // let args = {
