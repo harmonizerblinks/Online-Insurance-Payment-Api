@@ -105,9 +105,9 @@ menu.state('Savings.amount', {
 });
 
 menu.state('Savings.confirm', {
-    run: () => {
+    run: async() => {
         // access user input value save in session
-        var amount = menu.session.get('amount');;
+        var amount = await menu.session.get('amount');
         menu.end('Payment request of amount GHS' + amount + ' sent to your phone.');
     }
 });
