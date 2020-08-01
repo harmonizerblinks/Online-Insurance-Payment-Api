@@ -330,11 +330,11 @@ async function fetchAccount(val, callback) {
         console.log(api_endpoint);
         var request = unirest('GET', api_endpoint)
         .end(async(resp)=> { 
-            if (resp.error) { 
-                console.log(resp.error); 
-                // var response = JSON.parse(res); 
-                return res;
-            }
+            // if (resp.error) { 
+            //     console.log(resp.error); 
+            //     // var response = JSON.parse(res); 
+            //     return res;
+            // }
             console.log(resp.raw_body);
             var response = JSON.parse(resp.raw_body);
             if(response.result)
