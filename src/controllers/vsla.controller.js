@@ -108,7 +108,7 @@ menu.state('Savings.confirm', {
     run: async() => {
         // access user input value save in session
         var amount = await menu.session.get('amount');
-        menu.end('Payment request of amount GHS' + amount + ' sent to your phone.');
+        menu.end('Payment request of amount GHS ' + amount + ' sent to your phone.');
     }
 });
 
@@ -123,14 +123,12 @@ menu.state('Savings.cancel', {
 menu.state('checkBalance', {
     run: () => {
         // fetch balance
-        // fetchBalance(menu.args.phoneNumber).then((bal) => {
-        // use menu.end() to send response and terminate session
+        // fetchBalance(menu.args.phoneNumber)
         menu.con('Balance Information' +
             '\nNumber Of Share 10' +
             '\nAmount GHS 10.00' +
             '\n1. Ok' +
             '\n#. Main Menu');
-        // });
     },
     next: {
         '1': 'checkBalance.confirm',

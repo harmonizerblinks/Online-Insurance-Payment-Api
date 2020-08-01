@@ -1,4 +1,6 @@
 const Ussd = require('../models/insurance.model.js');
+var unirest = require('unirest');
+var apiurl = 'http://api-collect.paynowafrica.com/api/services/app/Ussd/';
 const UssdMenu = require('ussd-menu-builder');
 let menu = new UssdMenu({ provider: 'hubtel' });
 let sessions = {};
@@ -36,14 +38,23 @@ menu.on('error', (err) => {
 
 // Define menu states
 menu.startState({
-    run: () => {
-        // use menu.con() to send response without terminating session      
-        menu.con('Welcome. Choose option:' +
-            '\n1. Savings' +
-            '\n2. Check Balance' +
-            '\n3. Withdrawal' +
-            '\n4. Save On Behalf' +
-            '\n5. Others');
+    run: async() => {
+        await fetchAccount(menu.args.phoneNumber, (data)=> { 
+            // console.log(1,data); 
+            // use menu.con() to send response without terminating session 
+            if(data.success) {     
+                menu.con('Welcome to '+data.result.groups+'.' + 
+                    '\n Select a Service:' +
+                    '\n1. Savings' +
+                    '\n2. Check Balance' +
+                    '\n3. Withdrawal' +
+                    '\n4. Save On Behalf' +
+                    '\n5. Others');
+            } else {
+                menu.go('Number');
+            }
+        });
+        
     },
     // next object links to next state based on user input
     next: {
@@ -56,14 +67,21 @@ menu.startState({
 });
 
 menu.state('Start', {
-    run: () => {
+    run: async() => {
+        // var mobile = Number(menu.val);
+        var account = await fetchGroup(menu.val || menu.args.phoneNumber);
         // use menu.con() to send response without terminating session      
-        menu.con('Welcome. Choose option:' +
-            '\n1. Savings' +
-            '\n2. Check Balance' +
-            '\n3. Withdrawal' +
-            '\n4. Save On Behalf' +
-            '\n5. Others');
+        if(account.success) {     
+            menu.con('Welcome to '+account.result.groups+'.' + 
+                '\n Select a Service:' +
+                '\n1. Savings' +
+                '\n2. Check Balance' +
+                '\n3. Withdrawal' +
+                '\n4. Save On Behalf' +
+                '\n5. Others');
+        } else {
+            menu.go('Number');
+        }
     },
     // next object links to next state based on user input
     next: {
@@ -72,6 +90,16 @@ menu.state('Start', {
         '3': 'Withdrawal',
         '4': 'SaveOnBehalf',
         '5': 'Others'
+    }
+});
+
+menu.state('Number', {
+    run: () => {
+        menu.con('Enter Member Number or Mobile Number used for Registration');
+    },
+    next: {
+        // using regex to match user input to next state
+        '*\\d+': 'Start'
     }
 });
 
@@ -105,10 +133,10 @@ menu.state('Savings.amount', {
 });
 
 menu.state('Savings.confirm', {
-    run: () => {
+    run: async() => {
         // access user input value save in session
-        var amount = menu.session.get('amount');;
-        menu.end('Payment request of amount GHS' + amount + ' sent to your phone.');
+        var amount = await menu.session.get('amount');;
+        menu.end('Payment request of amount GHS ' + amount + ' sent to your phone.');
     }
 });
 
@@ -275,19 +303,49 @@ exports.ussd = async(req, res) => {
     menu.run(args, ussdResult => {
         res.send(ussdResult);
     });
-    // let args = {
-    //     phoneNumber: req.body.phoneNumber,
-    //     sessionId: req.body.sessionId,
-    //     serviceCode: req.body.serviceCode,
-    //     text: req.body.text
-    // };
-    // await menu.run(args, resMsg => {
-    //     res.send(resMsg);
-    // });
 };
 
-function fetchBalance(val) {
-    return "2.00"
+async function fetchAcctt(val, callback) {
+    var req = unirest('GET', 'http://api-collect.paynowafrica.com/api/services/app/Ussd/GetAccountDetails?input='+val+'&tenantId=1')
+    .end(async(res)=> { 
+        // if (res.error) { throw new Error(res.error); }
+        console.log(res.raw_body);
+
+        var response = JSON.parse(res.raw_body);
+
+        return await callback(response);;
+    });
+    // return "2.00"
+}
+
+async function fetchAccount(val, callback) {
+    // try {
+        var request = unirest('GET', 'http://api-collect.paynowafrica.com/api/services/app/Ussd/GetAccountDetails?input=0502666774&tenantId=1')
+        .end(async(resp)=> { 
+            if (resp.error) { 
+                console.log(resp); 
+                // var response = JSON.parse(res); 
+                return res;
+            }
+            console.log(resp.raw_body);
+            var response = JSON.parse(resp.raw_body);
+            if(response.result)
+            {
+                menu.session.set('name', response.result.name);
+                menu.session.set('type', response.result.type);
+                menu.session.set('accountid', response.result.id);
+                menu.session.set('group', response.result.groups);
+                menu.session.set('balance', response.result.balance);
+                menu.session.set('institution', response.result.tenant);
+            }
+            
+            await callback(response);
+        });
+    // }
+    // catch(err) {
+    //     console.log(err);
+    //     return err;
+    // }
 }
 
 function buyAirtime(phone, val) {
