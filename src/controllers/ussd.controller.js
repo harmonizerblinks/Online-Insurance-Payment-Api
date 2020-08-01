@@ -326,7 +326,7 @@ async function fetchAcctt(val, callback) {
 
 async function fetchAccount(val, callback) {
     // try {
-        var api_endpoint = apiurl + 'GetAccountDetails?input=' + val.replace('+','') + '&tenantId=' + tenant;
+        var api_endpoint = apiurl + 'GetAccountDetails?input=' + val.replace('+233','0') + '&tenantId=' + tenant;
         console.log(api_endpoint);
         var request = unirest('GET', api_endpoint)
         .end(async(resp)=> { 
