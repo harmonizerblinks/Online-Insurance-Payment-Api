@@ -1,8 +1,11 @@
 const Ussd = require('../models/insurance.model.js');
 var unirest = require('unirest');
-var apiurl = 'http://api-collect.paynowafrica.com/api/services/app/Ussd/';
 const UssdMenu = require('ussd-menu-builder');
 let menu = new UssdMenu({ provider: 'hubtel' });
+
+
+var apiurl = 'http://api-collect.paynowafrica.com/api/services/app/Ussd/';
+var tenant = 1;
 let sessions = {};
 
 menu.sessionConfig({
@@ -68,20 +71,22 @@ menu.startState({
 
 menu.state('Start', {
     run: async() => {
-        // var mobile = Number(menu.val);
-        var account = await fetchGroup(menu.val || menu.args.phoneNumber);
-        // use menu.con() to send response without terminating session      
-        if(account.success) {     
-            menu.con('Welcome to '+account.result.groups+'.' + 
-                '\n Select a Service:' +
-                '\n1. Savings' +
-                '\n2. Check Balance' +
-                '\n3. Withdrawal' +
-                '\n4. Save On Behalf' +
-                '\n5. Others');
-        } else {
-            menu.go('Number');
-        }
+        
+        await fetchAccount(menu.val || menu.args.phoneNumber, (data)=> { 
+            // console.log(1,data); 
+            // use menu.con() to send response without terminating session 
+            if(data.success) {     
+                menu.con('Welcome to '+data.result.groups+'.' + 
+                    '\n Select a Service:' +
+                    '\n1. Savings' +
+                    '\n2. Check Balance' +
+                    '\n3. Withdrawal' +
+                    '\n4. Save On Behalf' +
+                    '\n5. Others');
+            } else {
+                menu.go('Number');
+            }
+        });
     },
     // next object links to next state based on user input
     next: {
@@ -214,9 +219,9 @@ menu.state('Withdrawal.amount', {
 });
 
 menu.state('Withdrawal.confirm', {
-    run: () => {
+    run: async() => {
         // submit with request
-        var amount = menu.session.get('amount');
+        var amount = await menu.session.get('amount');
         menu.end('Withdraw request of Amount GHC ' + amount + ' submited to group master(s) for approval.');
     }
 });
@@ -268,9 +273,9 @@ menu.state('SaveOnBehalf.amount', {
 
 
 menu.state('SaveOnBehalf.confirm', {
-    run: () => {
+    run: async() => {
         // access user input value save in session
-        var amount = menu.session.get('amount');;
+        var amount = await menu.session.get('amount');;
         menu.end('Payment request of amount GHS' + amount + ' sent to your phone.');
     }
 });
@@ -306,7 +311,8 @@ exports.ussd = async(req, res) => {
 };
 
 async function fetchAcctt(val, callback) {
-    var req = unirest('GET', 'http://api-collect.paynowafrica.com/api/services/app/Ussd/GetAccountDetails?input='+val+'&tenantId=1')
+    var api_endpoint = api + 'GetAccountDetails?input=' + val + '&tenantId=' + tenant
+    var req = unirest('GET', '/GetAccountDetails?input='+val+'&tenantId=1')
     .end(async(res)=> { 
         // if (res.error) { throw new Error(res.error); }
         console.log(res.raw_body);
@@ -320,10 +326,12 @@ async function fetchAcctt(val, callback) {
 
 async function fetchAccount(val, callback) {
     // try {
-        var request = unirest('GET', 'http://api-collect.paynowafrica.com/api/services/app/Ussd/GetAccountDetails?input=0502666774&tenantId=1')
+        var api_endpoint = apiurl + 'GetAccountDetails?input=' + val.replace('+','') + '&tenantId=' + tenant;
+        console.log(api_endpoint);
+        var request = unirest('GET', api_endpoint)
         .end(async(resp)=> { 
             if (resp.error) { 
-                console.log(resp); 
+                console.log(resp.error); 
                 // var response = JSON.parse(res); 
                 return res;
             }
