@@ -86,7 +86,8 @@ menu.state('Menu', {
                     '\n4. Save On Behalf' +
                     '\n5. Others');
             } else {
-                menu.go('Number');
+                // `menu.go('Number');
+                menu.end('use the number use were sign up with');
             }
         });
         
@@ -97,14 +98,15 @@ menu.state('Menu', {
         '2': 'checkBalance',
         '3': 'Withdrawal',
         '4': 'SaveOnBehalf',
-        '5': 'Others'
+        '5': 'Others',
+        'input': 'Number.account'
     }
 });
 
 menu.state('Number', {
     run: () => {
         console.log(menu.args);
-        menu.con('use the number use were sign up with');
+        menu.end('use the number use were sign up with');
     },
     next: {
         // using regex to match user input to next state
@@ -191,7 +193,7 @@ menu.state('checkBalance', {
     },
     next: {
         '1': 'checkBalance.confirm',
-        '#': 'checkBalance.cancel'
+        '#': 'Menu'
     }
 });
 
