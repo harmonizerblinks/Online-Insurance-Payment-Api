@@ -104,11 +104,11 @@ menu.state('Menu', {
 menu.state('Number', {
     run: () => {
         console.log(menu.args);
-        menu.con('Enter Member Number or Mobile Number used for Registration');
+        menu.con('use the number use were sign up with');
     },
     next: {
         // using regex to match user input to next state
-        '*\\d+': 'Number.account'
+        'input': 'Number.account'
     }
 });
 
@@ -350,7 +350,7 @@ async function fetchAcctt(val, callback) {
 
 async function fetchAccount(val, callback) {
     // try {
-        if (val && val.startsWith('+233 ')) {
+        if (val && val.startsWith('+233')) {
             // Remove Bearer from string
             val = val.replace('+233','0');
         }
