@@ -117,7 +117,7 @@ menu.state('Number', {
 menu.state('Number.account', {
     run: async() => {
         // use menu.val to access user input value
-        var account = Number(menu.val);
+        var account = menu.val;
         // save user input in session
         await menu.session.set('account', account);
         // menu.con('You want to perform saving of amount GHS ' + amount +
