@@ -69,10 +69,12 @@ menu.startState({
     }
 });
 
-menu.state('Start', {
+menu.state('Menu', {
     run: async() => {
-        
-        await fetchAccount(menu.val || menu.args.phoneNumber, (data)=> { 
+        // var mobile = menu.val;
+        var mobile = await menu.session.get('account');;
+        console.log(mobile);
+        await fetchAccount(mobile, (data)=> { 
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.success) {     
@@ -87,6 +89,7 @@ menu.state('Start', {
                 menu.go('Number');
             }
         });
+        
     },
     // next object links to next state based on user input
     next: {
@@ -100,11 +103,32 @@ menu.state('Start', {
 
 menu.state('Number', {
     run: () => {
+        console.log(menu.args);
         menu.con('Enter Member Number or Mobile Number used for Registration');
     },
     next: {
         // using regex to match user input to next state
-        '*\\d+': 'Start'
+        '*\\d+': 'Number.account'
+    }
+});
+
+
+// nesting states
+menu.state('Number.account', {
+    run: async() => {
+        // use menu.val to access user input value
+        var account = Number(menu.val);
+        // save user input in session
+        await menu.session.set('account', account);
+        // menu.con('You want to perform saving of amount GHS ' + amount +
+        //     '\n1. Confirm' +
+        //     '\n2. Cancel');
+        menu.go('Menu');
+
+    },
+    next: {
+        '1': 'Savings.confirm',
+        '2': 'Savings.cancel'
     }
 });
 
@@ -140,7 +164,7 @@ menu.state('Savings.amount', {
 menu.state('Savings.confirm', {
     run: async() => {
         // access user input value save in session
-        var amount = await menu.session.get('amount');;
+        var amount = await menu.session.get('amount');
         menu.end('Payment request of amount GHS ' + amount + ' sent to your phone.');
     }
 });
@@ -154,16 +178,16 @@ menu.state('Savings.cancel', {
 
 
 menu.state('checkBalance', {
-    run: () => {
+    run: async() => {
         // fetch balance
-        // fetchBalance(menu.args.phoneNumber).then((bal) => {
+        var balance = await menu.session.get('balance');
+        var rate = await menu.session.get('rate');
         // use menu.end() to send response and terminate session
         menu.con('Balance Information' +
-            '\nNumber Of Share 10' +
-            '\nAmount GHS 10.00' +
+            '\nNumber Of Share ' + (balance/5) +
+            '\nAmount GHS ' + balance +
             '\n1. Ok' +
             '\n#. Main Menu');
-        // });
     },
     next: {
         '1': 'checkBalance.confirm',
@@ -181,7 +205,7 @@ menu.state('checkBalance.confirm', {
 menu.state('checkBalance.cancel', {
     run: () => {
         // Cancel Savings request
-        menu.go('Start');
+        menu.go('Menu');
         // menu.end('Thank you for using paynow services.');
     }
 });
@@ -326,7 +350,11 @@ async function fetchAcctt(val, callback) {
 
 async function fetchAccount(val, callback) {
     // try {
-        var api_endpoint = apiurl + 'GetAccountDetails?input=' + val.replace('+233','0') + '&tenantId=' + tenant;
+        if (val && val.startsWith('+233 ')) {
+            // Remove Bearer from string
+            val = val.replace('+233','0');
+        }
+        var api_endpoint = apiurl + 'GetAccountDetails?input=' + val + '&tenantId=' + tenant;
         console.log(api_endpoint);
         var request = unirest('GET', api_endpoint)
         .end(async(resp)=> { 
@@ -340,6 +368,8 @@ async function fetchAccount(val, callback) {
             if(response.result)
             {
                 menu.session.set('name', response.result.name);
+                menu.session.set('account', val);
+                menu.session.set('rate', 2);
                 menu.session.set('type', response.result.type);
                 menu.session.set('accountid', response.result.id);
                 menu.session.set('group', response.result.groups);
@@ -356,6 +386,16 @@ async function fetchAccount(val, callback) {
     // }
 }
 
-function buyAirtime(phone, val) {
+async function postPayment(val, callback) {
+    var api_endpoint = apiurl + 'PostPayment'
+    var req = unirest('POST', api_endpoint)
+    .headers({
+        'Content-Type': 'application/json'
+    })
+    .send(JSON.stringify({"account":val.account,"type":val.type,"method":"MOMO","netWork":val.network,"pin":val.pin || '',"mobile":val.mobile,"source":"USSD","amount":val.amount,"reference":"Group Save","withdrawal":val.withdrawal}))
+    .end(function (res) { 
+        if (res.error) throw new Error(res.error); 
+        console.log(res.raw_body);
+    });
     return true
 }
