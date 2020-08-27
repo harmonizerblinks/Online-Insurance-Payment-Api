@@ -37,10 +37,13 @@ module.exports = function(app) {
     // Get Schedules by Id
     app.get('/app/insurance/:insuranceId', apps.findOneInsurance);
 
+
     // Group Save Ussd
     app.post('/api/ussd', ussd.ussd);
+
     // Group Save Ussd
     app.post('/api/ussd/usla', usla.ussd);
+
     // Group Save Ussd
     app.post('/api/ussd/vsla', vsla.ussd);
 
