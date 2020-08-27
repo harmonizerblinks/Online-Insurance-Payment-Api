@@ -3,7 +3,7 @@ const mongoose = require('mongoose'),
 const uniqueValidator = require('mongoose-unique-validator');
 
 const InsurancePaymentSchema = mongoose.Schema({
-    apiurl: { type: String, required: true, default: 'http://api.alias-solutions.net:8443/chatbotapi/paynow/merchant' },
+    apiurl: { type: String, required: true, default: 'https://api.paynowafrica.com/paynow/merchant' },
     key: { type: String, required: true, default: 'ukhv89yc984988dhdhf7' },
     code: { type: String, required: true, default: '555' },
     type: { type: String, required: true, default: '' },
