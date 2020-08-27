@@ -44,7 +44,7 @@ const InsuranceSchema = mongoose.Schema({
     address: { type: String, minlength: 5, maxlength: 500, required: false },
     digital_address: { type: String, required: false },
     postal_address: { type: String, required: false },
-    balance: { type: Schema.Types.Mixed, required: true },
+    balance: { type: Schema.Types.Mixed, required: true, default: 0 },
     // id_type: { type: String, required: false },
     // id_number: { type: String, required: false },
     // tin: { type: String, required: false },
