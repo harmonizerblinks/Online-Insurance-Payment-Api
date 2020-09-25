@@ -4,7 +4,8 @@ const UssdMenu = require('ussd-menu-builder');
 let menu = new UssdMenu({ provider: 'hubtel' });
 
 
-var apiurl = 'http://api-collect.paynowafrica.com/api/services/app/Ussd/';
+// var apiurl = 'http://api-collect.paynowafrica.com/api/services/app/Ussd/';
+var apiurl = 'https://33d1cb543226.ngrok.io/api/services/app/'
 var tenant = 1;
 let sessions = {};
 
@@ -87,7 +88,7 @@ menu.state('Menu', {
                     '\n5. Others');
             } else {
                 // `menu.go('Number');
-                menu.end('use the number use were sign up with');
+                menu.con('use the number use were sign up with');
             }
         });
         
@@ -121,16 +122,32 @@ menu.state('Number.account', {
         // use menu.val to access user input value
         var account = menu.val;
         // save user input in session
-        await menu.session.set('account', account);
-        // menu.con('You want to perform saving of amount GHS ' + amount +
-        //     '\n1. Confirm' +
-        //     '\n2. Cancel');
-        menu.go('Menu');
+        await fetchAccount(account, (data)=> { 
+            // console.log(1,data); 
+            // use menu.con() to send response without terminating session 
+            if(data.success) {     
+                menu.con('Welcome to '+data.result.groups+'.' + 
+                    '\n Select a Service:' +
+                    '\n1. Savings' +
+                    '\n2. Check Balance' +
+                    '\n3. Withdrawal' +
+                    '\n4. Save On Behalf' +
+                    '\n5. Others');
+            } else {
+                // `menu.go('Number');
+                menu.end('use the number use were sign up with');
+            }
+        });
 
     },
+    // next object links to next state based on user input
     next: {
-        '1': 'Savings.confirm',
-        '2': 'Savings.cancel'
+        '1': 'Savings',
+        '2': 'checkBalance',
+        '3': 'Withdrawal',
+        '4': 'SaveOnBehalf',
+        '5': 'Others',
+        'input': 'Number.account'
     }
 });
 
@@ -356,7 +373,7 @@ async function fetchAccount(val, callback) {
             // Remove Bearer from string
             val = val.replace('+233','0');
         }
-        var api_endpoint = apiurl + 'GetAccountDetails?input=' + val + '&tenantId=' + tenant;
+        var api_endpoint = apiurl + 'Ussd/GetAccountDetails?input=' + val + '&tenantId=' + tenant;
         console.log(api_endpoint);
         var request = unirest('GET', api_endpoint)
         .end(async(resp)=> { 
