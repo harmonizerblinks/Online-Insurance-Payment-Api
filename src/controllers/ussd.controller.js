@@ -47,7 +47,7 @@ menu.startState({
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.success) {     
-                menu.con('Welcome to '+data.result.groups+'.' + 
+                menu.con('Welcome to '+data.result.groups+'.' + '\n '+menu.args.networkCode + 
                     '\n Select a Service:' +
                     '\n1. Savings' +
                     '\n2. Check Balance' +
@@ -152,9 +152,10 @@ menu.state('Number.account', {
 });
 
 menu.state('Savings', {
-    run: () => {
+    run: async() => {
+        var rate = await menu.session.get('rate');
         menu.con('Enter amount to Save' +
-            '\n Daily Rate GHC 5');
+            '\n Daily Rate GHC ' + rate);
     },
     next: {
         // using regex to match user input to next state
@@ -184,6 +185,9 @@ menu.state('Savings.confirm', {
     run: async() => {
         // access user input value save in session
         var amount = await menu.session.get('amount');
+        var account = await menu.session.get('account');
+        var mobile = menu.args.phoneNumber;
+        var network = menu.args.phoneNumber;
         menu.end('Payment request of amount GHS ' + amount + ' sent to your phone.');
     }
 });
@@ -280,8 +284,7 @@ menu.state('SaveOnBehalf', {
 menu.state('SaveOnBehalf.member', {
     run: async() => {
         var mobile = Number(menu.val);
-        await fetchAccount(mobile, async(data)=> { 
-            
+        await fetchAccount(mobile, async(data)=> {
             if(data.success) {     
                 var rate = await menu.session.get('rate');
                 menu.con('Enter amount to Save' +
@@ -322,7 +325,7 @@ menu.state('SaveOnBehalf.amount', {
 menu.state('SaveOnBehalf.confirm', {
     run: async() => {
         // access user input value save in session
-        var amount = await menu.session.get('amount');;
+        var amount = await menu.session.get('amount');
         menu.end('Payment request of amount GHS' + amount + ' sent to your phone.');
     }
 });
