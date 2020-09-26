@@ -154,8 +154,7 @@ menu.state('Number.account', {
 menu.state('Savings', {
     run: async() => {
         var rate = await menu.session.get('rate');
-        var network = await menu.session.get('network');
-        menu.con('Enter amount to Save ' + network +
+        menu.con('Enter amount to Save ' +
             '\n Daily Rate GHC ' + rate);
     },
     next: {
@@ -188,7 +187,9 @@ menu.state('Savings.confirm', {
         var amount = await menu.session.get('amount');
         var account = await menu.session.get('account');
         var mobile = menu.args.phoneNumber;
-        var network = menu.args.phoneNumber;
+        var network = await menu.session.get('network');
+        var data = {account: account,type:"Deposit",netWork: network,mobile: mobile,amount: amount,withdrawal:false};
+        postPayment(data, (response)=> { });
         menu.end('Payment request of amount GHS ' + amount + ' sent to your phone.');
     }
 });
