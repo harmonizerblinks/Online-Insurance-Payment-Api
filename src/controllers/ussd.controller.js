@@ -47,7 +47,7 @@ menu.startState({
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.success) {     
-                menu.con('Welcome to '+data.result.groups+'.' + '\n '+menu.args.networkCode + 
+                menu.con('Welcome to '+data.result.groups+'.' + '\n '+menu.args.Operator +
                     '\n Select a Service:' +
                     '\n1. Savings' +
                     '\n2. Check Balance' +
@@ -55,7 +55,7 @@ menu.startState({
                     '\n4. Save On Behalf' +
                     '\n5. Others');
             } else {
-                menu.go('Number');
+                menu.con('use the number use were sign up with');
             }
         });
         
@@ -73,7 +73,7 @@ menu.startState({
 menu.state('Menu', {
     run: async() => {
         // var mobile = menu.val;
-        var mobile = await menu.session.get('account');;
+        var mobile = await menu.session.get('account');
         console.log(mobile);
         await fetchAccount(mobile, (data)=> { 
             // console.log(1,data); 
@@ -154,7 +154,8 @@ menu.state('Number.account', {
 menu.state('Savings', {
     run: async() => {
         var rate = await menu.session.get('rate');
-        menu.con('Enter amount to Save' +
+        var network = await menu.session.get('network');
+        menu.con('Enter amount to Save ' + network +
             '\n Daily Rate GHC ' + rate);
     },
     next: {
@@ -356,6 +357,7 @@ exports.ussd = async(req, res) => {
         args.Type = req.body.Type.replace(/\b[a-z]/g, (x) => x.toUpperCase());
     }
     menu.run(args, ussdResult => {
+        menu.session.set('network', args.Operator);
         res.send(ussdResult);
     });
 };
