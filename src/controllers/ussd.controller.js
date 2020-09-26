@@ -280,7 +280,7 @@ menu.state('SaveOnBehalf', {
 menu.state('SaveOnBehalf.member', {
     run: async() => {
         var mobile = Number(menu.val);
-        await fetchAccount(mobile, (data)=> { 
+        await fetchAccount(mobile, async(data)=> { 
             
             if(data.success) {     
                 var rate = await menu.session.get('rate');
@@ -410,13 +410,13 @@ async function fetchAccount(val, callback) {
 }
 
 async function postPayment(val, callback) {
-    var api_endpoint = apiurl + 'PostPayment'
+    var api_endpoint = apiurl + 'Mobile/PostPayment'
     var req = unirest('POST', api_endpoint)
     .headers({
         'Content-Type': 'application/json'
     })
     .send(JSON.stringify({"account":val.account,"type":val.type,"method":"MOMO","netWork":val.network,"pin":val.pin || '',"mobile":val.mobile,"source":"USSD","amount":val.amount,"reference":"Group Save","withdrawal":val.withdrawal}))
-    .end(function (res) { 
+    .end( async(res)=> { 
         if (res.error) throw new Error(res.error); 
         console.log(res.raw_body);
         var response = JSON.parse(resp.raw_body);
