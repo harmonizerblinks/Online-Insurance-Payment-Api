@@ -189,7 +189,7 @@ menu.state('Savings.confirm', {
         var mobile = menu.args.phoneNumber;
         var network = await menu.session.get('network');
         var data = {account: account,type:"Deposit",netWork: network,mobile: mobile,amount: amount,withdrawal:false};
-        postPayment(data, (response)=> { });
+        postPayment(data, (response)=> {  });
         menu.end('Payment request of amount GHS ' + amount + ' sent to your phone.');
     }
 });
