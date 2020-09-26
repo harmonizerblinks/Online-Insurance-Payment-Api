@@ -203,7 +203,7 @@ menu.state('checkBalance', {
         var rate = await menu.session.get('rate');
         // use menu.end() to send response and terminate session
         menu.con('Balance Information' +
-            '\nNumber Of Share ' + (balance/5) +
+            '\nNumber Of Share ' + (balance/rate) +
             '\nAmount GHS ' + balance +
             '\n1. Ok' +
             '\n#. Main Menu');
@@ -220,15 +220,6 @@ menu.state('checkBalance.confirm', {
         menu.end('Thank you for using paynow services.');
     }
 });
-
-menu.state('checkBalance.cancel', {
-    run: () => {
-        // Cancel Savings request
-        menu.go('Menu');
-        // menu.end('Thank you for using paynow services.');
-    }
-});
-
 
 menu.state('Withdrawal', {
     run: () => {
@@ -277,7 +268,7 @@ menu.state('Withdrawal.cancel', {
 });
 
 menu.state('SaveOnBehalf', {
-    run: () => {
+    run: async() => {
         menu.con('Enter Member Id or Mobile Number');
     },
     next: {
@@ -287,12 +278,25 @@ menu.state('SaveOnBehalf', {
 });
 
 menu.state('SaveOnBehalf.member', {
-    run: () => {
-        menu.con('Enter amount to Save' +
-            '\n Daily Rate GHC 5');
+    run: async() => {
+        var mobile = Number(menu.val);
+        await fetchAccount(mobile, (data)=> { 
+            
+            if(data.success) {     
+                var rate = await menu.session.get('rate');
+                menu.con('Enter amount to Save' +
+                    '\n Daily Rate GHC ' + rate);
+            } else {
+                // `menu.go('Number');
+                menu.con('Incorrect Mobile Number'+ 
+                    '\n1. Try Again');
+            }
+        });
+        
     },
     next: {
         // using regex to match user input to next state
+        '1': 'SaveOnBehalf',
         '*\\d+': 'SaveOnBehalf.amount'
     }
 });
@@ -388,7 +392,7 @@ async function fetchAccount(val, callback) {
             {
                 menu.session.set('name', response.result.name);
                 menu.session.set('account', val);
-                menu.session.set('rate', 2);
+                menu.session.set('rate', response.result.rate);
                 menu.session.set('type', response.result.type);
                 menu.session.set('accountid', response.result.id);
                 menu.session.set('group', response.result.groups);
@@ -415,6 +419,8 @@ async function postPayment(val, callback) {
     .end(function (res) { 
         if (res.error) throw new Error(res.error); 
         console.log(res.raw_body);
+        var response = JSON.parse(resp.raw_body);
+        await callback(response);
     });
     return true
 }
