@@ -170,7 +170,7 @@ menu.state('Savings.amount', {
         var amount = Number(menu.val);
         // save user input in session
         menu.session.set('amount', amount);
-        menu.con('You want to perform saving of amount GHS ' + amount +
+        menu.con('You want to perform saving of amount GHC ' + amount +
             '\n1. Confirm' +
             '\n2. Cancel');
 
@@ -416,7 +416,7 @@ async function fetchAccount(val, callback) {
 }
 
 async function postPayment(val, callback) {
-    var api_endpoint = apiurl + 'Mobile/PostPayment'
+    var api_endpoint = apiurl + 'Mobile/PostPayments?tenantId=' + tenant;
     var req = unirest('POST', api_endpoint)
     .headers({
         'Content-Type': 'application/json'
