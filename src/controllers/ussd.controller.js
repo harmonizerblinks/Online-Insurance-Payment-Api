@@ -186,9 +186,11 @@ menu.state('Savings.confirm', {
         // access user input value save in session
         var amount = await menu.session.get('amount');
         var account = await menu.session.get('account');
+        var accountid = await menu.session.get('account');
+        var groupid = await menu.session.get('groupid');
+        var network = await menu.session.get('groupid');
         var mobile = menu.args.phoneNumber;
-        var network = await menu.session.get('network');
-        var data = {account: account,type:"Deposit",netWork: network,mobile: mobile,amount: amount,withdrawal:false};
+        var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,netWork: network,mobile: mobile,amount: amount,withdrawal:false};
         postPayment(data, (result)=> { console.log(result)  });
         menu.end('Payment request of amount GHS ' + amount + ' sent to your phone.');
     }
@@ -401,6 +403,7 @@ async function fetchAccount(val, callback) {
                 menu.session.set('rate', response.result.rate);
                 menu.session.set('type', response.result.type);
                 menu.session.set('accountid', response.result.id);
+                menu.session.set('groupid', response.result.groupid);
                 menu.session.set('group', response.result.groups);
                 menu.session.set('balance', response.result.balance);
                 menu.session.set('institution', response.result.tenant);
@@ -421,7 +424,7 @@ async function postPayment(val, callback) {
     .headers({
         'Content-Type': 'application/json'
     })
-    .send(JSON.stringify({"account":val.account,"type":val.type,"method":"MOMO","netWork":val.network,"pin":val.pin || '',"mobile":val.mobile,"source":"USSD","amount":val.amount,"reference":"Group Save","withdrawal":val.withdrawal}))
+    .send(JSON.stringify({"account":val.account,"type":val.type,"method":"MOMO","netWork":val.network,"pin":val.pin || '',"mobile":val.mobile,"source":"USSD","amount":val.groupid,"amount":val.amount,"reference":"Group Save","tenantid":tenant,"withdrawal":val.withdrawal}))
     .end( async(res)=> { 
         if (res.error) throw new Error(res.error); 
         console.log(res.raw_body);
