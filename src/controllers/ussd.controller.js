@@ -47,7 +47,7 @@ menu.startState({
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.success) {     
-                menu.con('Welcome to '+data.result.groups+'.' + '\n '+menu.args.Operator +
+                menu.con('Welcome to '+data.result.groups+'.' +
                     '\n Select a Service:' +
                     '\n1. Savings' +
                     '\n2. Check Balance' +

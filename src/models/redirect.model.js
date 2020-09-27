@@ -7,8 +7,8 @@ const RedirectSchema = mongoose.Schema({
     type: { type: String, required: true },
     count: { type: Number, required: true },
     status: { type: Boolean, required: true, default: true },
-    created: { type: Date, index: true, default: Date.now },
-    updated: { type: Date, index: true, default: Date.now }
+    created: { type: Date, default: Date.now },
+    updated: { type: Date, default: Date.now }
 });
 
 RedirectSchema.plugin(uniqueValidator);
