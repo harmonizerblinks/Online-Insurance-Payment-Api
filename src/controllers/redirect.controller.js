@@ -1,13 +1,13 @@
-const User = require('../models/user.model.js');
+const Redirect = require('../models/redirect.model.js');
 
 
-// POST a User
-exports.create = async(req, res) => {
+// POST a Terminated
+exports.Completed = async(req, res) => {
     // console.log(req.body);
-    // Create a User
-    const user = new User(req.body);
+    // Create a Terminated
+    const redirect = new Redirect({ country: req.params.country.toLowerCase(), project: req.params.projectid.toLowerCase(), type: 'completed' });
 
-        await user.save()
+        await redirect.save()
         .then(data => {
             res.send(data);
         }).catch(err => {
@@ -17,13 +17,45 @@ exports.create = async(req, res) => {
         });
 };
 
-// FETCH all Users
+// POST a Terminated
+exports.Partial = async(req, res) => {
+    // console.log(req.body);
+    // Create a Redirect
+    const redirect = new Redirect({ country: req.params.country.toLowerCase(), project: req.params.projectid.toLowerCase(), type: 'partial' });
+
+        await redirect.save()
+        .then(data => {
+            res.send(data);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
+};
+
+// POST a Terminated
+exports.Terminated = async(req, res) => {
+    // console.log(req.body);
+    // Create a Redirect
+    const redirect = new Redirect({ country: req.params.country.toLowerCase(),  project: req.params.projectid.toLowerCase(), type: 'terminated' });
+
+        await redirect.save()
+        .then(data => {
+            res.send(data);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
+};
+
+// FETCH all Redirects
 exports.findAll = (req, res) => {
     console.log('fine All');
-    User.find()
-        .then(users => {
-            // console.log(users)
-            res.send(users);
+    Redirect.find()
+        .then(redirects => {
+            // console.log(redirects)
+            res.send(redirects);
         }).catch(err => {
             res.status(500).send({
                 message: err.message
@@ -31,14 +63,44 @@ exports.findAll = (req, res) => {
         });
 };
 
-// FETCH all Users With Usertype
+// FETCH all Redirects With Redirecttype
 exports.findAllByType = (req, res) => {
     console.log('fine All by type');
-    const query = { usertype: req.params.type };
-    User.find(query)
-        .then(users => {
-            // console.log(users)
-            res.send(users);
+    const query = { type: req.params.type };
+    Redirect.find(query)
+        .then(redirects => {
+            // console.log(redirects)
+            res.send(redirects);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
+};
+
+// FETCH all Redirects With Redirecttype
+exports.findAllByCountry = (req, res) => {
+    console.log('fine All by country');
+    const query = { country: req.params.country };
+    Redirect.find(query)
+        .then(redirects => {
+            // console.log(redirects)
+            res.send(redirects);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        });
+};
+
+// FETCH all Redirects With Redirecttype
+exports.findAllByCountryType = (req, res) => {
+    console.log('fine All by country');
+    const query = { country: req.params.country, type: req.params.type };
+    Redirect.find(query)
+        .then(redirects => {
+            // console.log(redirects)
+            res.send(redirects);
         }).catch(err => {
             res.status(500).send({
                 message: err.message
@@ -47,73 +109,73 @@ exports.findAllByType = (req, res) => {
 };
 
 
-// FIND a User
+// FIND a Redirect
 exports.findOne = (req, res) => {
-    User.findById(req.params.userId)
-        .then(user => {
-            if (!user) {
+    Redirect.findById(req.params.redirectId)
+        .then(redirect => {
+            if (!redirect) {
                 return res.status(404).send({
-                    message: "User not found with id " + req.params.userId
+                    message: "Redirect not found with id " + req.params.redirectId
                 });
             }
-            res.send(user);
+            res.send(redirect);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "User not found with id " + req.params.userId
+                    message: "Redirect not found with id " + req.params.redirectId
                 });
             }
             return res.status(500).send({
-                message: "Error retrieving User with id " + req.params.userId
+                message: "Error retrieving Redirect with id " + req.params.redirectId
             });
         });
 };
 
-// UPDATE a User
+// UPDATE a Redirect
 exports.update = (req, res) => {
-    var user = req.body;
-    user.updated = Date.now;
-    // Find user and update it
+    var redirect = req.body;
+    redirect.updated = Date.now;
+    // Find redirect and update it
     console.log(req.body)
-    User.findByIdAndUpdate(req.params.userId, user, { new: true })
-        .then(user => {
-            if (!user) {
+    Redirect.findByIdAndUpdate(req.params.redirectId, redirect, { new: true })
+        .then(redirect => {
+            if (!redirect) {
                 return res.status(404).send({
-                    message: "User not found with id " + req.params.userId
+                    message: "Redirect not found with id " + req.params.redirectId
                 });
             }
-            res.send(user);
+            res.send(redirect);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "User not found with id " + req.params.userId
+                    message: "Redirect not found with id " + req.params.redirectId
                 });
             }
             console.log(err);
             return res.status(500).send({
-                message: "Error updating user with id " + req.params.userId
+                message: "Error updating redirect with id " + req.params.redirectId
             });
         });
 };
 
-// DELETE a User
+// DELETE a Redirect
 exports.delete = (req, res) => {
-    User.findByIdAndRemove(req.params.userId)
-        .then(user => {
-            if (!user) {
+    Redirect.findByIdAndRemove(req.params.redirectId)
+        .then(redirect => {
+            if (!redirect) {
                 return res.status(404).send({
-                    message: "User not found with id " + req.params.userId
+                    message: "Redirect not found with id " + req.params.redirectId
                 });
             }
-            res.send({ message: "User deleted successfully!" });
+            res.send({ message: "Redirect deleted successfully!" });
         }).catch(err => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
-                    message: "User not found with id " + req.params.userId
+                    message: "Redirect not found with id " + req.params.redirectId
                 });
             }
             return res.status(500).send({
-                message: "Could not delete user with id " + req.params.userId
+                message: "Could not delete redirect with id " + req.params.redirectId
             });
         });
 };

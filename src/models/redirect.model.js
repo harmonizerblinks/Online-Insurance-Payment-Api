@@ -3,9 +3,10 @@ const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 
 const RedirectSchema = mongoose.Schema({
-    name: { type: String, minlength: 4, maxlength: 50, required: true },
+    country: { type: String, minlength: 2, maxlength: 50, required: true },
+    project: { type: String, required: true },
     type: { type: String, required: true },
-    count: { type: Number, required: true },
+    // count: { type: Number, required: true },
     status: { type: Boolean, required: true, default: true },
     created: { type: Date, default: Date.now },
     updated: { type: Date, default: Date.now }
