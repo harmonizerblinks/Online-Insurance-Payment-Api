@@ -192,7 +192,7 @@ menu.state('Savings.confirm', {
         var mobile = menu.args.phoneNumber;
         var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,netWork: network,mobile: mobile,amount: amount,withdrawal:false};
         postPayment(data, (result)=> { console.log(result)  });
-        menu.end('Payment request of amount GHS ' + amount + ' sent to your phone.');
+        menu.end('Payment request of amount GHC ' + amount + ' sent to your phone.');
     }
 });
 
@@ -290,8 +290,10 @@ menu.state('SaveOnBehalf.member', {
         var mobile = menu.val;
         await fetchAccount(mobile, async(data)=> {
             if(data.success) {     
+                var name = await menu.session.get('name');
                 var rate = await menu.session.get('rate');
-                menu.con('Enter amount to Save' +
+                menu.con('Name: '+ name +
+                    '\nEnter amount to Save' +
                     '\n Daily Rate GHC ' + rate);
             } else {
                 // `menu.go('Number');
@@ -329,8 +331,17 @@ menu.state('SaveOnBehalf.amount', {
 menu.state('SaveOnBehalf.confirm', {
     run: async() => {
         // access user input value save in session
+        // access user input value save in session
         var amount = await menu.session.get('amount');
-        menu.end('Payment request of amount GHS' + amount + ' sent to your phone.');
+        var account = await menu.session.get('account');
+        var accountid = await menu.session.get('account');
+        var groupid = await menu.session.get('groupid');
+        var network = await menu.session.get('groupid');
+        var mobile = menu.args.phoneNumber;
+        var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,netWork: network,mobile: mobile,amount: amount,withdrawal:false};
+        postPayment(data, (result)=> { console.log(result)  });
+        // var amount = await menu.session.get('amount');
+        menu.end('Payment request of amount GHC' + amount + ' sent to your phone.');
     }
 });
 
