@@ -85,6 +85,7 @@ app.use(passport.session());
 
 // require('./config/authguard.config.js')(passport);
 require('./routes/auth.routes.js')(app);
+require('./routes/redirect.routes.js')(app);
 require('./routes/users.routes.js')(app);
 require('./routes/package.routes.js')(app);
 require('./routes/insurance.routes.js')(app);

@@ -281,7 +281,7 @@ menu.state('SaveOnBehalf', {
     },
     next: {
         // using input to match user input to next state
-        'input': 'SaveOnBehalf.member'
+        '*[0-9]+': 'SaveOnBehalf.member'
     }
 });
 
