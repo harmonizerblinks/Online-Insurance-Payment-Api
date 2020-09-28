@@ -191,8 +191,11 @@ menu.state('Savings.confirm', {
         var network = await menu.session.get('network');
         var mobile = menu.args.phoneNumber;
         var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,netWork: network,mobile: mobile,amount: amount,withdrawal:false};
-        postPayment(data, (result)=> { console.log(result)  });
-        menu.end('Payment request of amount GHC ' + amount + ' sent to your phone.');
+        await postPayment(data, (result)=> { 
+            console.log(result) 
+            menu.end(JSON.stringify(result)); 
+        });
+        // menu.end('Payment request of amount GHC ' + amount + ' sent to your phone.');
     }
 });
 
@@ -437,7 +440,7 @@ async function postPayment(val, callback) {
     })
     .send(JSON.stringify({agent:null,account:val.account,accountId:val.accountid,type:val.type,method:'MOMO',netWork:val.network,mobile:val.mobile,source:'USSD',groupid:val.groupid,amount:val.amount,reference:'Group Save',tenantId:tenant,withdrawal:val.withdrawal}))
     .end( async(res)=> { 
-        if (res.error) throw new Error(res.error); 
+        // if (res.error) throw new Error(res.error); 
         console.log(res.raw_body);
         var response = JSON.parse(resp.raw_body);
         await callback(response);
