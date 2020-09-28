@@ -3,13 +3,13 @@ const Redirect = require('../models/redirect.model.js');
 
 // POST a Terminated
 exports.Completed = async(req, res) => {
-    // console.log(req.body);
+    console.log(req.query);
     // Create a Terminated
-    const redirect = new Redirect({ country: req.params.country.toLowerCase(), project: req.params.projectid.toLowerCase(), type: 'completed' });
+    const redirect = new Redirect({ country: req.query.country.toLowerCase(), project: req.query.projectid, type: 'completed' });
 
         await redirect.save()
         .then(data => {
-            res.status(301).redirect('www.positiveinsights-africa.com');
+            res.status(301).redirect('http://www.positiveinsights-africa.com');
         }).catch(err => {
             res.status(500).send({
                 message: err.message
@@ -21,12 +21,12 @@ exports.Completed = async(req, res) => {
 exports.Partial = async(req, res) => {
     // console.log(req.body);
     // Create a Redirect
-    const redirect = new Redirect({ country: req.params.country.toLowerCase(), project: req.params.projectid.toLowerCase(), type: 'partial' });
+    const redirect = new Redirect({ country: req.query.country.toLowerCase(), project: req.query.projectid, type: 'partial' });
 
         await redirect.save()
         .then(data => {
             // res.send(data);
-            res.status(301).redirect('www.positiveinsights-africa.com');
+            res.status(301).redirect('http://www.positiveinsights-africa.com');
         }).catch(err => {
             res.status(500).send({
                 message: err.message
@@ -38,12 +38,12 @@ exports.Partial = async(req, res) => {
 exports.Terminated = async(req, res) => {
     // console.log(req.body);
     // Create a Redirect
-    const redirect = new Redirect({ country: req.params.country.toLowerCase(),  project: req.params.projectid.toLowerCase(), type: 'terminated' });
+    const redirect = new Redirect({ country: req.params.country.toLowerCase(),  project: req.params.projectid, type: 'terminated' });
 
         await redirect.save()
         .then(data => {
             // res.send(data);
-            res.status(301).redirect('www.positiveinsights-africa.com');
+            res.status(301).redirect('http://www.positiveinsights-africa.com');
         }).catch(err => {
             res.status(500).send({
                 message: err.message

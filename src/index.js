@@ -9,7 +9,6 @@ const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
-const passport = require('passport');
 const path = require('path');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -78,8 +77,8 @@ app.use(mongoSanitize());
 app.use(xss());
 
 // Passport Middleware
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 // console.log('working')
 

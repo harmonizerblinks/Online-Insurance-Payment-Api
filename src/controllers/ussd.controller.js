@@ -287,7 +287,7 @@ menu.state('SaveOnBehalf', {
 
 menu.state('SaveOnBehalf.member', {
     run: async() => {
-        var mobile = Number(menu.val);
+        var mobile = menu.val;
         await fetchAccount(mobile, async(data)=> {
             if(data.success) {     
                 var rate = await menu.session.get('rate');
