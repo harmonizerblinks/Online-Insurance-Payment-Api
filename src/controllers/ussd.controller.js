@@ -186,9 +186,9 @@ menu.state('Savings.confirm', {
         // access user input value save in session
         var amount = await menu.session.get('amount');
         var account = await menu.session.get('account');
-        var accountid = await menu.session.get('account');
+        var accountid = await menu.session.get('accountid');
         var groupid = await menu.session.get('groupid');
-        var network = await menu.session.get('groupid');
+        var network = await menu.session.get('network');
         var mobile = menu.args.phoneNumber;
         var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,netWork: network,mobile: mobile,amount: amount,withdrawal:false};
         postPayment(data, (result)=> { console.log(result)  });
@@ -305,8 +305,8 @@ menu.state('SaveOnBehalf.member', {
     },
     next: {
         // using regex to match user input to next state
-        '1': 'SaveOnBehalf',
-        '*\\d+': 'SaveOnBehalf.amount'
+        '*\\d+': 'SaveOnBehalf.amount',
+        '#': 'Menu',
     }
 });
 
@@ -334,9 +334,9 @@ menu.state('SaveOnBehalf.confirm', {
         // access user input value save in session
         var amount = await menu.session.get('amount');
         var account = await menu.session.get('account');
-        var accountid = await menu.session.get('account');
+        var accountid = await menu.session.get('accountid');
         var groupid = await menu.session.get('groupid');
-        var network = await menu.session.get('groupid');
+        var network = await menu.session.get('network');
         var mobile = menu.args.phoneNumber;
         var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,netWork: network,mobile: mobile,amount: amount,withdrawal:false};
         postPayment(data, (result)=> { console.log(result)  });
