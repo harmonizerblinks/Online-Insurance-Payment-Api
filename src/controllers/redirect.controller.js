@@ -9,7 +9,7 @@ exports.Completed = async(req, res) => {
 
         await redirect.save()
         .then(data => {
-            res.send(data);
+            res.status(301).redirect('www.positiveinsights-africa.com');
         }).catch(err => {
             res.status(500).send({
                 message: err.message
@@ -25,7 +25,8 @@ exports.Partial = async(req, res) => {
 
         await redirect.save()
         .then(data => {
-            res.send(data);
+            // res.send(data);
+            res.status(301).redirect('www.positiveinsights-africa.com');
         }).catch(err => {
             res.status(500).send({
                 message: err.message
@@ -41,7 +42,8 @@ exports.Terminated = async(req, res) => {
 
         await redirect.save()
         .then(data => {
-            res.send(data);
+            // res.send(data);
+            res.status(301).redirect('www.positiveinsights-africa.com');
         }).catch(err => {
             res.status(500).send({
                 message: err.message

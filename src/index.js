@@ -103,7 +103,7 @@ const swaggerOptions = {
             servers: ["http://localhost:" + PORT]
         },
     },
-    apis: ["./routes/*.routes.js"]
+    apis: ["./routes/gallery.routes.js"]
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
@@ -120,7 +120,7 @@ app.use((err, req, res, next) => {
     console.error(err.stack)
     res.status(500).send({ message: 'Internal Server error!' });
     // res.sendFile(path.join(__dirname, '../public/500.html'))
-})
+});
 
 
 io.on('connection', (socket) => {
