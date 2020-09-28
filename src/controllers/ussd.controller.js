@@ -193,9 +193,9 @@ menu.state('Savings.confirm', {
         var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false};
         await postPayment(data, async(result)=> { 
             console.log(result) 
-            menu.end(JSON.stringify(result)); 
+            // menu.end(JSON.stringify(result)); 
         });
-        // menu.end('Payment request of amount GHC ' + amount + ' sent to your phone.');
+        menu.end('Payment request of amount GHC ' + amount + ' sent to your phone.');
     }
 });
 
