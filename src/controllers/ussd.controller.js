@@ -191,7 +191,7 @@ menu.state('Savings.confirm', {
         var network = await menu.session.get('network');
         var mobile = menu.args.phoneNumber;
         var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,netWork: network,mobile: mobile,amount: amount,withdrawal:false};
-        await postPayment(data, (result)=> { 
+        await postPayment(data, async(result)=> { 
             console.log(result) 
             menu.end(JSON.stringify(result)); 
         });
