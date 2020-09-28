@@ -5,7 +5,7 @@ module.exports = function(app) {
     // console.log('redirect');
 
     // Create a new redirect
-    app.get('/redirect/complated', redirect.Completed);
+    app.get('/redirect/completed', redirect.Completed);
     app.get('/redirect/quotafull', redirect.Partial);
     app.get('/redirect/terminate', redirect.Terminated);
 
