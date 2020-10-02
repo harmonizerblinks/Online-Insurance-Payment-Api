@@ -170,18 +170,25 @@ menu.state('Savings.amount', {
         // use menu.val to access user input value
         var amount = Number(menu.val);
         var rate = await menu.session.get('rate');
-        var val
-        // save user input in session
-        menu.session.set('amount', amount);
-        menu.con('You want to perform saving of amount GHC ' + amount +
-            '\n1. Confirm' +
-            '\n2. Cancel');
+        var val = amount/rate;
+        if(Number.isInteger(val)) {
+            // save user input in session
+            menu.session.set('amount', amount);
+            menu.con('You want to perform saving of amount GHC ' + amount +
+                '\n1. Confirm' +
+                '\n2. Cancel');
+        } else {
+            menu.con('You can only pay in multiple of amount GHC ' + rate +
+                '\n*. Try Again' +
+                '\n2. Cancel');
+        }
 
     },
     next: {
-        '#': 'Menu',
         '1': 'Savings.confirm',
-        '2': 'Savings.cancel'
+        '2': 'Savings.cancel',
+        '#': 'Menu',
+        '*': 'Savings'
     }
 });
 
