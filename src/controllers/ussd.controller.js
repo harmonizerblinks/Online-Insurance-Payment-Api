@@ -5,7 +5,7 @@ let menu = new UssdMenu({ provider: 'hubtel' });
 
 
 // var apiurl = 'http://api-collect.paynowafrica.com/api/services/app/Ussd/';
-var apiurl = 'https://33d1cb543226.ngrok.io/api/services/app/'
+var apiurl = 'http://api-aslan.paynowafrica.com/api/services/app/'
 var tenant = 1;
 let sessions = {};
 
@@ -267,6 +267,13 @@ menu.state('Withdrawal.confirm', {
     run: async() => {
         // submit with request
         var amount = await menu.session.get('amount');
+        var account = await menu.session.get('account');
+        var accountid = await menu.session.get('accountid');
+        var groupid = await menu.session.get('groupid');
+        var network = await menu.session.get('network');
+        var mobile = menu.args.phoneNumber;
+        var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:true};
+        postPayment(data, (result)=> { console.log(result) });
         menu.end('Withdraw request of Amount GHC ' + amount + ' submited to group master(s) for approval.');
     }
 });
@@ -342,9 +349,9 @@ menu.state('SaveOnBehalf.confirm', {
         var network = await menu.session.get('network');
         var mobile = menu.args.phoneNumber;
         var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false};
-        postPayment(data, (result)=> { console.log(result)  });
+        postPayment(data, (result)=> { console.log(result) });
         // var amount = await menu.session.get('amount');
-        menu.end('Payment request of amount GHC' + amount + ' sent to your phone.');
+        menu.end('Payment request of amount GHC ' + amount + ' sent to your phone.');
     }
 });
 
