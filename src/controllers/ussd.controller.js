@@ -66,7 +66,8 @@ menu.startState({
         '2': 'checkBalance',
         '3': 'Withdrawal',
         '4': 'SaveOnBehalf',
-        '5': 'Others'
+        '5': 'Others',
+        '*[0-9]+': 'Number.account'
     }
 });
 
@@ -100,7 +101,7 @@ menu.state('Menu', {
         '3': 'Withdrawal',
         '4': 'SaveOnBehalf',
         '5': 'Others',
-        'input': 'Number.account'
+        '*[0-9]+': 'Number.account'
     }
 });
 
@@ -111,7 +112,7 @@ menu.state('Number', {
     },
     next: {
         // using regex to match user input to next state
-        'input': 'Number.account'
+        '*[0-9]+': 'Number.account'
     }
 });
 
@@ -147,7 +148,6 @@ menu.state('Number.account', {
         '3': 'Withdrawal',
         '4': 'SaveOnBehalf',
         '5': 'Others',
-        'input': 'Number.account'
     }
 });
 
@@ -158,6 +158,7 @@ menu.state('Savings', {
             '\n Daily Rate GHC ' + rate);
     },
     next: {
+        '#': 'Menu',
         // using regex to match user input to next state
         '*\\d+': 'Savings.amount'
     }
@@ -165,9 +166,11 @@ menu.state('Savings', {
 
 // nesting states
 menu.state('Savings.amount', {
-    run: () => {
+    run: async() => {
         // use menu.val to access user input value
         var amount = Number(menu.val);
+        var rate = await menu.session.get('rate');
+        var val
         // save user input in session
         menu.session.set('amount', amount);
         menu.con('You want to perform saving of amount GHC ' + amount +
@@ -176,6 +179,7 @@ menu.state('Savings.amount', {
 
     },
     next: {
+        '#': 'Menu',
         '1': 'Savings.confirm',
         '2': 'Savings.cancel'
     }
@@ -209,19 +213,40 @@ menu.state('Savings.cancel', {
 
 menu.state('checkBalance', {
     run: async() => {
-        // fetch balance
-        var balance = await menu.session.get('balance');
-        var rate = await menu.session.get('rate');
+        // ask for account pin
         // use menu.end() to send response and terminate session
-        menu.con('Balance Information' +
-            '\nNumber Of Share ' + (balance/rate) +
-            '\nAmount GHS ' + balance +
-            '\n1. Ok' +
-            '\n#. Main Menu');
+        menu.con('Enter Account Pin');
+    },
+    next: {
+        '#': 'Menu',
+        '*[0-9]+': 'checkBalance.show',
+    }
+});
+
+menu.state('checkBalance.show', {
+    run: async() => {
+        // get pin
+        var epin = menu.val;
+        var pin = await menu.session.get('pin');
+        if(epin != pin) {
+            menu.con('Incorrect Pin' +
+                '\n*. Try Again' +
+                '\n#. Main Menu');
+        } else {
+            // fetch balance
+            var balance = await menu.session.get('balance');
+            var rate = await menu.session.get('rate');
+            menu.con('Balance Information' +
+                '\nNumber Of Share ' + (balance/rate) +
+                '\nAmount GHS ' + balance +
+                '\n1. Ok' +
+                '\n#. Main Menu');
+        }
     },
     next: {
         '1': 'checkBalance.confirm',
-        '#': 'Menu'
+        '#': 'Menu',
+        '*': 'checkBalance'
     }
 });
 
@@ -248,9 +273,6 @@ menu.state('Withdrawal.amount', {
         // use menu.val to access user input value
         var amount = Number(menu.val);
         menu.session.set('amount', amount);
-        // buyAirtime(menu.args.phoneNumber, amount).then((res) => {
-        //     menu.end('Airtime bought successfully.');
-        // });
         menu.con('Withdrawal request ' +
             '\n Amount GHS ' + amount +
             '\n1. Confirm' +
@@ -263,18 +285,51 @@ menu.state('Withdrawal.amount', {
     }
 });
 
+// nesting states
 menu.state('Withdrawal.confirm', {
     run: async() => {
-        // submit with request
+        // use menu.val to access user input value
+        // var amount = Number(menu.val);
         var amount = await menu.session.get('amount');
-        var account = await menu.session.get('account');
-        var accountid = await menu.session.get('accountid');
-        var groupid = await menu.session.get('groupid');
-        var network = await menu.session.get('network');
-        var mobile = menu.args.phoneNumber;
-        var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:true};
-        postPayment(data, (result)=> { console.log(result) });
-        menu.end('Withdraw request of Amount GHC ' + amount + ' submited to group master(s) for approval.');
+        // buyAirtime(menu.args.phoneNumber, amount).then((res) => {
+        //     menu.end('Airtime bought successfully.');
+        // });
+        menu.con('Withdrawal request ' +
+            '\n Amount GHS ' + amount +
+            '\n Enter Pin to Confirm' +
+            '\n *. Cancel');
+
+    },
+    next: {
+        '*': 'Withdrawal.cancel',
+        '*\\d+': 'Withdrawal.send'
+    }
+});
+
+menu.state('Withdrawal.send', {
+    run: async() => {
+        var epin = Number(menu.val);
+        var pin = await menu.session.get('pin');
+        if(epin != pin) {
+            menu.con('Incorrect Pin' +
+                '\n*. Try Again' +
+                '\n#. Main Menu');
+        } else {
+        // submit with request
+            var amount = await menu.session.get('amount');
+            var account = await menu.session.get('account');
+            var accountid = await menu.session.get('accountid');
+            var groupid = await menu.session.get('groupid');
+            var network = await menu.session.get('network');
+            var mobile = menu.args.phoneNumber;
+            var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:true};
+            postPayment(data, (result)=> { console.log(result) });
+            menu.end('Withdraw request of Amount GHC ' + amount + ' submited to group master(s) for approval.');
+        }
+    },
+    next: {
+        '#': 'Menu',
+        '*': 'checkBalance'
     }
 });
 
@@ -425,6 +480,7 @@ async function fetchAccount(val, callback) {
                 menu.session.set('type', response.result.type);
                 menu.session.set('accountid', response.result.id);
                 menu.session.set('groupid', response.result.groupid);
+                menu.session.set('pin', response.result.pin);
                 menu.session.set('group', response.result.groups);
                 menu.session.set('balance', response.result.balance);
                 menu.session.set('institution', response.result.tenant);
