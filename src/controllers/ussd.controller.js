@@ -89,7 +89,7 @@ menu.state('Menu', {
                     '\n5. Others');
             } else {
                 // `menu.go('Number');
-                menu.con('use the number use were sign up with');
+                menu.con('Enter the number you were sign up with');
             }
         });
         
