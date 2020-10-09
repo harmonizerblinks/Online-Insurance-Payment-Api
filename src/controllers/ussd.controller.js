@@ -6,7 +6,7 @@ let menu = new UssdMenu({ provider: 'hubtel' });
 
 // var apiurl = 'http://api-collect.paynowafrica.com/api/services/app/Ussd/';
 var apiurl = 'http://api-aslan.paynowafrica.com/api/services/app/'
-var tenant = 1;
+var tenant = 2;
 let sessions = {};
 
 menu.sessionConfig({
@@ -47,7 +47,7 @@ menu.startState({
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.success) {     
-                menu.con('Welcome to '+data.result.groups+'.' +
+                menu.con('Welcome to '+data.result.groups+'.' +' '+ data.result.name + 
                     '\n Select a Service:' +
                     '\n1. Savings' +
                     '\n2. Check Balance' +
@@ -55,7 +55,7 @@ menu.startState({
                     '\n4. Save On Behalf' +
                     '\n5. Others');
             } else {
-                menu.con('use the number use were sign up with');
+                menu.con('Enter the number you were sign up with');
             }
         });
         
@@ -80,7 +80,7 @@ menu.state('Menu', {
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.success) {     
-                menu.con('Welcome to '+data.result.groups+'.' + 
+                menu.con('Welcome to '+data.result.groups+'.' +' '+ data.result.name + 
                     '\n Select a Service:' +
                     '\n1. Savings' +
                     '\n2. Check Balance' +
@@ -136,7 +136,8 @@ menu.state('Number.account', {
                     '\n5. Others');
             } else {
                 // `menu.go('Number');
-                menu.end('use the number use were sign up with');
+                menu.con('Incorrect Live Time Number' + 
+                '\n Enter the number you were sign up with');
             }
         });
 
@@ -148,6 +149,7 @@ menu.state('Number.account', {
         '3': 'Withdrawal',
         '4': 'SaveOnBehalf',
         '5': 'Others',
+        '*[0-9]+': 'Number.account'
     }
 });
 
@@ -233,13 +235,9 @@ menu.state('checkBalance', {
 menu.state('checkBalance.show', {
     run: async() => {
         // get pin
-        var epin = menu.val;
+        var epin = Number(menu.val);
         var pin = await menu.session.get('pin');
-        if(epin != pin) {
-            menu.con('Incorrect Pin' +
-                '\n*. Try Again' +
-                '\n#. Main Menu');
-        } else {
+        if(epin == pin) {
             // fetch balance
             var balance = await menu.session.get('balance');
             var rate = await menu.session.get('rate');
@@ -247,6 +245,10 @@ menu.state('checkBalance.show', {
                 '\nNumber Of Share ' + (balance/rate) +
                 '\nAmount GHS ' + balance +
                 '\n1. Ok' +
+                '\n#. Main Menu');
+        } else {
+            menu.con('Incorrect Pin' +
+                '\n*. Try Again' +
                 '\n#. Main Menu');
         }
     },
@@ -276,10 +278,11 @@ menu.state('Withdrawal', {
 
 // nesting states
 menu.state('Withdrawal.amount', {
-    run: () => {
+    run: async() => {
         // use menu.val to access user input value
         var amount = Number(menu.val);
         menu.session.set('amount', amount);
+        var amount = await menu.session.get('balance');
         menu.con('Withdrawal request ' +
             '\n Amount GHS ' + amount +
             '\n1. Confirm' +
@@ -359,9 +362,10 @@ menu.state('SaveOnBehalf', {
 
 menu.state('SaveOnBehalf.member', {
     run: async() => {
-        var mobile = menu.val;
-        await fetchAccount(mobile, async(data)=> {
-            if(data.success) {     
+        var mid = menu.val;
+        var gid = await menu.session.get('groupid');
+        await fetchMemberAccount({id: mid,gid: gid}, async(data)=> {
+            if(data.success) {
                 var name = await menu.session.get('name');
                 var rate = await menu.session.get('rate');
                 menu.con('Name: '+ name +
@@ -418,19 +422,29 @@ menu.state('SaveOnBehalf.confirm', {
 });
 
 menu.state('SaveOnBehalf.cancel', {
-    run: () => {
+    run: async() => {
         // Cancel Savings request
-        menu.end('Thank you for using paynow services.');
+        var inst = await menu.session.get('institution');
+        menu.end('Thank you for using ' +inst+ ' services. \n \n Powered by Alsan');
     }
 });
 
 menu.state('Others', {
-    run: () => {
+    run: async() => {
         // fetch balance
-        // fetchBalance(menu.args.phoneNumber).then((bal) => {
-        // use menu.end() to send response and terminate session
         menu.end('Coming Soon');
-        // });
+        var type = await menu.session.get('type');
+        if(type == 'Vice') {
+            menu.con('You want to perform saving of amount GHS ' + amount +
+                '\n1. Confirm' +
+                '\n2. Cancel');
+        }
+        
+            
+    },
+    next: {
+        '1': 'SaveOnBehalf.confirm',
+        '2': 'SaveOnBehalf.cancel'
     }
 });
 
@@ -448,27 +462,14 @@ exports.ussd = async(req, res) => {
     });
 };
 
-async function fetchAcctt(val, callback) {
-    var api_endpoint = api + 'GetAccountDetails?input=' + val + '&tenantId=' + tenant
-    var req = unirest('GET', '/GetAccountDetails?input='+val+'&tenantId=1')
-    .end(async(res)=> { 
-        // if (res.error) { throw new Error(res.error); }
-        console.log(res.raw_body);
 
-        var response = JSON.parse(res.raw_body);
-
-        return await callback(response);;
-    });
-    // return "2.00"
-}
-
-async function fetchAccount(val, callback) {
+async function fetchMemberAccount(val, callback) {
     // try {
         if (val && val.startsWith('+233')) {
             // Remove Bearer from string
             val = val.replace('+233','0');
         }
-        var api_endpoint = apiurl + 'Ussd/GetAccountDetails?input=' + val + '&tenantId=' + tenant;
+        var api_endpoint = apiurl + 'Ussd/GetAccount?id=' + val.id +'&gid='+val.gid+ '&tenantId=' + tenant;
         console.log(api_endpoint);
         var request = unirest('GET', api_endpoint)
         .end(async(resp)=> { 
@@ -489,6 +490,49 @@ async function fetchAccount(val, callback) {
                 menu.session.set('groupid', response.result.groupid);
                 menu.session.set('pin', response.result.pin);
                 menu.session.set('group', response.result.groups);
+                menu.session.set('grouptype', response.result.groupType);
+                menu.session.set('limit', response.result.limit);
+                menu.session.set('balance', response.result.balance);
+                menu.session.set('institution', response.result.tenant);
+            }
+            
+            await callback(response);
+        });
+    // }
+    // catch(err) {
+    //     console.log(err);
+    //     return err;
+    // }
+}
+
+async function fetchAccount(val, groupid, callback) {
+    // try {
+        if (val && val.startsWith('+233')) {
+            // Remove Bearer from string
+            val = val.replace('+233','0');
+        }
+        var api_endpoint = apiurl + 'Ussd/GetAccountDetails?input=' + val + '&tenantId=' + tenant+'&groupid='+groupid;
+        console.log(api_endpoint);
+        var request = unirest('GET', api_endpoint)
+        .end(async(resp)=> { 
+            // if (resp.error) { 
+            //     console.log(resp.error); 
+            //     // var response = JSON.parse(res); 
+            //     return res;
+            // }
+            console.log(resp.raw_body);
+            var response = JSON.parse(resp.raw_body);
+            if(response.result)
+            {
+                menu.session.set('name', response.result.name);
+                menu.session.set('account', val);
+                menu.session.set('rate', response.result.rate);
+                menu.session.set('type', response.result.type);
+                menu.session.set('accountid', response.result.id);
+                menu.session.set('groupid', response.result.groupid);
+                menu.session.set('pin', response.result.pin);
+                menu.session.set('group', response.result.groups);
+                menu.session.set('grouptype', response.result.groupType);
                 menu.session.set('balance', response.result.balance);
                 menu.session.set('institution', response.result.tenant);
             }
