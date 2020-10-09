@@ -489,7 +489,7 @@ async function fetchMemberAccount(val, callback) {
                 menu.session.set('grouptype', response.result.groupType);
                 menu.session.set('balance', response.result.balance);
                 menu.session.set('institution', response.result.tenant);
-                menu.session.set('limit', response.result.limit);
+                // menu.session.set('limit', response.result.limit);
             }
             
             await callback(response);
@@ -531,7 +531,7 @@ async function fetchAccount(val, groupid, callback) {
                 menu.session.set('grouptype', response.result.groupType);
                 menu.session.set('balance', response.result.balance);
                 menu.session.set('institution', response.result.tenant);
-                menu.session.set('limit', response.result.limit);
+                // menu.session.set('limit', response.result.limit);
             }
             
             await callback(response);
