@@ -501,7 +501,7 @@ async function fetchMemberAccount(val, callback) {
     // }
 }
 
-async function fetchAccount(val, groupid, callback) {
+async function fetchAccount(val, callback) {
     // try {
         if (val && val.startsWith('+233')) {
             // Remove Bearer from string
