@@ -486,7 +486,7 @@ async function fetchMemberAccount(val, callback) {
                 menu.session.set('groupid', response.result.groupId);
                 menu.session.set('pin', response.result.pin);
                 menu.session.set('group', response.result.groups);
-                menu.session.set('grouptype', response.result.groupType);
+                // menu.session.set('grouptype', response.result.groupType);
                 menu.session.set('balance', response.result.balance);
                 menu.session.set('institution', response.result.tenant);
                 // menu.session.set('limit', response.result.limit);
@@ -507,7 +507,7 @@ async function fetchAccount(val, callback) {
             // Remove Bearer from string
             val = val.replace('+233','0');
         }
-        var api_endpoint = apiurl + 'Ussd/GetAccountDetails?input=' + val + '&tenantId=' + tenant+'&groupid='+groupid;
+        var api_endpoint = apiurl + 'Ussd/GetAccountDetails?input=' + val + '&tenantId=' + tenant;
         console.log(api_endpoint);
         var request = unirest('GET', api_endpoint)
         .end(async(resp)=> { 
