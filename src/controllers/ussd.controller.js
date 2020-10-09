@@ -465,10 +465,6 @@ exports.ussd = async(req, res) => {
 
 async function fetchMemberAccount(val, callback) {
     // try {
-        if (val && val.startsWith('+233')) {
-            // Remove Bearer from string
-            val = val.replace('+233','0');
-        }
         var api_endpoint = apiurl + 'Ussd/GetAccount?id=' + val.id +'&gid='+val.gid+ '&tenantId=' + tenant;
         console.log(api_endpoint);
         var request = unirest('GET', api_endpoint)
@@ -487,13 +483,13 @@ async function fetchMemberAccount(val, callback) {
                 menu.session.set('rate', response.result.rate);
                 menu.session.set('type', response.result.type);
                 menu.session.set('accountid', response.result.id);
-                menu.session.set('groupid', response.result.groupid);
+                menu.session.set('groupid', response.result.groupId);
                 menu.session.set('pin', response.result.pin);
                 menu.session.set('group', response.result.groups);
                 menu.session.set('grouptype', response.result.groupType);
-                menu.session.set('limit', response.result.limit);
                 menu.session.set('balance', response.result.balance);
                 menu.session.set('institution', response.result.tenant);
+                menu.session.set('limit', response.result.limit);
             }
             
             await callback(response);
@@ -529,12 +525,13 @@ async function fetchAccount(val, groupid, callback) {
                 menu.session.set('rate', response.result.rate);
                 menu.session.set('type', response.result.type);
                 menu.session.set('accountid', response.result.id);
-                menu.session.set('groupid', response.result.groupid);
+                menu.session.set('groupid', response.result.groupId);
                 menu.session.set('pin', response.result.pin);
                 menu.session.set('group', response.result.groups);
                 menu.session.set('grouptype', response.result.groupType);
                 menu.session.set('balance', response.result.balance);
                 menu.session.set('institution', response.result.tenant);
+                menu.session.set('limit', response.result.limit);
             }
             
             await callback(response);
