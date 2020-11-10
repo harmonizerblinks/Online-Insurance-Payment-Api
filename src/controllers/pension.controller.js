@@ -194,7 +194,7 @@ menu.state('PayOnBehalf', {
     },
     next: {
         // using input to match user input to next state
-        'input': 'SaveOnBehalf.member'
+        'input': 'PayOnBehalf.member'
     }
 });
 
@@ -205,7 +205,7 @@ menu.state('PayOnBehalf.member', {
     },
     next: {
         // using regex to match user input to next state
-        '*\\d+': 'SaveOnBehalf.amount'
+        '*\\d+': 'PayOnBehalf.amount'
     }
 });
 
@@ -221,8 +221,8 @@ menu.state('PayOnBehalf.amount', {
 
     },
     next: {
-        '1': 'SaveOnBehalf.confirm',
-        '2': 'SaveOnBehalf.cancel'
+        '1': 'PayOnBehalf.confirm',
+        '2': 'PayOnBehalf.cancel'
     }
 });
 
@@ -244,11 +244,20 @@ menu.state('PayOnBehalf.cancel', {
 
 menu.state('Contact', {
     run: () => {
-        // fetch balance
-        // fetchBalance(menu.args.phoneNumber).then((bal) => {
-        // use menu.end() to send response and terminate session
-        menu.end('Coming Soon');
-        // });
+        // use menu.con() to send response without terminating session      
+        menu.con('1. Stop auto-debit' +
+            '\n2. Name' +
+            '\n3. Email' +
+            '\n4. Mobile' +
+            '\n5. Website');
+    },
+    // next object links to next state based on user input
+    next: {
+        '1': 'AutoDebit',
+        '2': 'Contact.',
+        '3': 'Withdrawal',
+        '4': 'ICare',
+        '5': 'Contact'
     }
 });
 
