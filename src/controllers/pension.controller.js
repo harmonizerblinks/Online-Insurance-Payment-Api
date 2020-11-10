@@ -76,8 +76,7 @@ menu.state('Start', {
 
 menu.state('Pay', {
     run: () => {
-        menu.con('Enter amount to Save' +
-            '\n Daily Rate GHC 5');
+        menu.con('Enter amount to Pay');
     },
     next: {
         // using regex to match user input to next state
@@ -92,7 +91,7 @@ menu.state('Pay.amount', {
         var amount = Number(menu.val);
         // save user input in session
         menu.session.set('amount', amount);
-        menu.con('You want to perform saving of amount GHS ' + amount +
+        menu.con('Make sure that you have enough balance to proceed with the transaction of GHS ' + amount +
             '\n1. Confirm' +
             '\n2. Cancel');
 
@@ -107,7 +106,7 @@ menu.state('Pay.confirm', {
     run: async() => {
         // access user input value save in session
         var amount = await menu.session.get('amount');
-        menu.end('Payment request of amount GHS ' + amount + ' sent to your phone.');
+        menu.end('Your transaction was successful. You will receive a prompt of GHS ' + amount + ' shortly.');
     }
 });
 
@@ -131,22 +130,14 @@ menu.state('checkBalance', {
     },
     next: {
         '1': 'checkBalance.confirm',
-        '#': 'checkBalance.cancel'
+        '#': 'Start'
     }
 });
 
 menu.state('checkBalance.confirm', {
     run: () => {
         // Ok checkBalance 
-        menu.end('Thank you for using paynow services.');
-    }
-});
-
-menu.state('checkBalance.cancel', {
-    run: () => {
-        // Cancel Savings request
-        menu.go('Start');
-        // menu.end('Thank you for using paynow services.');
+        menu.end('Thank you for using People Pension Trust.');
     }
 });
 
@@ -186,20 +177,20 @@ menu.state('Withdrawal.confirm', {
     run: () => {
         // submit with request
         var amount = menu.session.get('amount');
-        menu.end('Withdraw request of Amount GHC ' + amount + ' submited to group master(s) for approval.');
+        menu.end('Withdraw request of Amount GHC ' + amount + ' has been sent for approval.');
     }
 });
 
 menu.state('Withdrawal.cancel', {
     run: () => {
         // Cancel Savings request
-        menu.end('Thank you for using paynow services.');
+        menu.end('Thank you for using People Pension Trust.');
     }
 });
 
 menu.state('PayOnBehalf', {
     run: () => {
-        menu.con('Enter Member Id or Mobile Number');
+        menu.con('Enter Member Scheme Number');
     },
     next: {
         // using input to match user input to next state
@@ -247,7 +238,7 @@ menu.state('PayOnBehalf.confirm', {
 menu.state('PayOnBehalf.cancel', {
     run: () => {
         // Cancel Savings request
-        menu.end('Thank you for using paynow services.');
+        menu.end('Thank you for using People Pension Trust.');
     }
 });
 
