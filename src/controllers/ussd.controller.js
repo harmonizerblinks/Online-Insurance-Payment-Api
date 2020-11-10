@@ -47,7 +47,7 @@ menu.startState({
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.success) {     
-                menu.con('Welcome to '+data.result.groups+'.' +' '+ data.result.name + 
+                menu.con('Welcome to '+data.result.groups+'.' +'\n '+ data.result.name + 
                     '\n Select a Service:' +
                     '\n1. Savings' +
                     '\n2. Check Balance' +
@@ -80,7 +80,7 @@ menu.state('Menu', {
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.success) {     
-                menu.con('Welcome to '+data.result.groups+'.' +' '+ data.result.name + 
+                menu.con('Welcome to '+data.result.groups+'.' +'\n '+ data.result.name + 
                     '\n Select a Service:' +
                     '\n1. Savings' +
                     '\n2. Check Balance' +
@@ -127,7 +127,7 @@ menu.state('Number.account', {
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.success) {     
-                menu.con('Welcome to '+data.result.groups+'.' + 
+                menu.con('Welcome to '+data.result.groups+'.' +'\n '+ data.result.name + 
                     '\n Select a Service:' +
                     '\n1. Savings' +
                     '\n2. Check Balance' +
@@ -382,7 +382,7 @@ menu.state('SaveOnBehalf.member', {
     next: {
         // using regex to match user input to next state
         '*\\d+': 'SaveOnBehalf.amount',
-        '#': 'Menu',
+        // '#': 'Menu',
     }
 });
 
@@ -432,12 +432,31 @@ menu.state('SaveOnBehalf.cancel', {
 menu.state('Others', {
     run: async() => {
         // fetch balance
-        menu.end('Coming Soon');
         var type = await menu.session.get('type');
         if(type == 'Vice') {
-            menu.con('You want to perform saving of amount GHS ' + amount +
-                '\n1. Confirm' +
-                '\n2. Cancel');
+            menu.con('1. Profile' +
+                '\n2. Change Pin' +
+                '\n3. Approval');
+        } else {
+            menu.con('1. Profile' +
+                '\n2. Change Pin');
+        }
+    },
+    next: {
+        '1': 'Profile',
+        '2': 'Change_Pin'
+    }
+});
+
+menu.state('Profile', {
+    run: async() => {
+        // fetch balance
+        var type = await menu.session.get('type');
+        if(type == 'Vice') {
+            menu.con('Other '+
+                '\n1. Profile' +
+                '\n2. Change Pin' +
+                '\n3. Approval');
         }
         
             

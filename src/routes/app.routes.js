@@ -4,6 +4,7 @@ module.exports = function(app) {
     var ussd = require('../controllers/ussd.controller.js');
     var usla = require('../controllers/usla.controller.js');
     var vsla = require('../controllers/vsla.controller.js');
+    var pension = require('../controllers/pension.controller.js');
     const verify = require('../middleware/verifyJwtToken.middleware.js');
     const user = require('../middleware/verifysignup.middleware.js');
 
@@ -46,5 +47,8 @@ module.exports = function(app) {
 
     // Group Save Ussd
     app.post('/api/ussd/vsla', vsla.ussd);
+
+    // People Pension Trust
+    app.post('/api/ussd/pension', pension.ussd);
 
 }
