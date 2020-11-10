@@ -92,13 +92,15 @@ menu.state('Pay.amount', {
         // save user input in session
         menu.session.set('amount', amount);
         menu.con('Make sure that you have enough balance to proceed with the transaction of GHS ' + amount +
-            '\n1. Confirm' +
-            '\n2. Cancel');
+            '\n1. One Time Payment' +
+            '\n2. Auto Debit' +
+            '\n3. Cancel');
 
     },
     next: {
         '1': 'Pay.confirm',
-        '2': 'Pay.cancel'
+        '2': 'Pay.auto',
+        '3': 'Pay.cancel'
     }
 });
 
@@ -107,6 +109,23 @@ menu.state('Pay.confirm', {
         // access user input value save in session
         var amount = await menu.session.get('amount');
         menu.end('Your transaction was successful. You will receive a prompt of GHS ' + amount + ' shortly.');
+    }
+});
+
+// nesting states
+menu.state('Pay.auto', {
+    run: () => {
+        // save user input in session
+        menu.con('Select Frequency:' +
+            '\n1. Daily' +
+            '\n2. Weekly' +
+            '\n3. Monthly');
+
+    },
+    next: {
+        '1': 'Pay.confirm',
+        '2': 'Pay.confirm',
+        '3': 'Pay.confirm'
     }
 });
 
@@ -200,8 +219,7 @@ menu.state('PayOnBehalf', {
 
 menu.state('PayOnBehalf.member', {
     run: () => {
-        menu.con('Enter amount to Save' +
-            '\n Daily Rate GHC 5');
+        menu.con('Enter amount to Pay');
     },
     next: {
         // using regex to match user input to next state
@@ -215,17 +233,35 @@ menu.state('PayOnBehalf.amount', {
         // use menu.val to access user input value
         var amount = Number(menu.val);
         menu.session.set('amount', amount);
-        menu.con('You want to perform saving of amount GHS ' + amount +
-            '\n1. Confirm' +
-            '\n2. Cancel');
+        menu.con('Make sure that you have enough balance to proceed with the transaction of GHS ' + amount +
+            '\n1. One Time Payment' +
+            '\n2. Auto Debit' +
+            '\n3. Cancel');
 
     },
     next: {
         '1': 'PayOnBehalf.confirm',
-        '2': 'PayOnBehalf.cancel'
+        '2': 'PayOnBehalf.auto',
+        '3': 'PayOnBehalf.cancel'
     }
 });
 
+// nesting states
+menu.state('PayOnBehalf.auto', {
+    run: () => {
+        // save user input in session
+        menu.con('Select Frequency:' +
+            '\n1. Daily' +
+            '\n2. Weekly' +
+            '\n3. Monthly');
+
+    },
+    next: {
+        '1': 'PayOnBehalf.confirm',
+        '2': 'PayOnBehalf.confirm',
+        '3': 'PayOnBehalf.confirm'
+    }
+});
 
 menu.state('PayOnBehalf.confirm', {
     run: () => {
@@ -254,10 +290,45 @@ menu.state('Contact', {
     // next object links to next state based on user input
     next: {
         '1': 'AutoDebit',
-        '2': 'Contact.',
-        '3': 'Withdrawal',
-        '4': 'ICare',
-        '5': 'Contact'
+        '2': 'Contact.name',
+        '3': 'Contact.email',
+        '4': 'Contact.mobile',
+        '5': 'Contact.website'
+    }
+});
+
+menu.state('AutoDebit', {
+    run: () => {
+        // Cancel Savings request
+        menu.end('Auto Debit disabled successfully.');
+    }
+});
+
+menu.state('Contact.name', {
+    run: () => {
+        // Cancel Savings request
+        menu.end('People Pension Trust.');
+    }
+});
+
+menu.state('Contact.email', {
+    run: () => {
+        // Cancel Savings request
+        menu.end('info@peoplespensiontrust.com.');
+    }
+});
+
+menu.state('Contact.mobile', {
+    run: () => {
+        // Cancel Savings request
+        menu.end('0302738242');
+    }
+});
+
+menu.state('Contact.website', {
+    run: () => {
+        // Cancel Savings request
+        menu.end('http://www.peoplespensiontrust.com');
     }
 });
 
