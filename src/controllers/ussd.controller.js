@@ -49,7 +49,7 @@ menu.startState({
             if(data.success) {     
                 menu.con('Welcome to '+data.result.groups+'.' +'\n '+ data.result.name + 
                     '\n Select a Service:' +
-                    '\n1. Savings' +
+                    '\n1. Payment' +
                     '\n2. Check Balance' +
                     '\n3. Withdrawal' +
                     '\n4. Save On Behalf' +
@@ -62,7 +62,7 @@ menu.startState({
     },
     // next object links to next state based on user input
     next: {
-        '1': 'Savings',
+        '1': 'Payment',
         '2': 'checkBalance',
         '3': 'Withdrawal',
         '4': 'SaveOnBehalf',
@@ -116,7 +116,6 @@ menu.state('Number', {
     }
 });
 
-
 // nesting states
 menu.state('Number.account', {
     run: async() => {
@@ -150,6 +149,20 @@ menu.state('Number.account', {
         '4': 'SaveOnBehalf',
         '5': 'Others',
         '*[0-9]+': 'Number.account'
+    }
+});
+
+menu.state('Payment', {
+    run: async() => {
+        // var mobile = menu.val;
+        menu.con('Select Payment Type:' +
+            '\n1. Savings' +
+            '\n2. Loan');
+    },
+    // next object links to next state based on user input
+    next: {
+        '1': 'Savings',
+        '2': 'Loan',
     }
 });
 
@@ -213,6 +226,73 @@ menu.state('Savings.confirm', {
 });
 
 menu.state('Savings.cancel', {
+    run: () => {
+        // Cancel Savings request
+        menu.end('Thank you for using paynow services.');
+    }
+});
+
+
+menu.state('Loan', {
+    run: async() => {
+        var rate = await menu.session.get('rate');
+        menu.con('Enter amount to Save ' +
+            '\n Daily Rate GHC ' + rate);
+    },
+    next: {
+        '#': 'Menu',
+        // using regex to match user input to next state
+        '*\\d+': 'Loan.amount'
+    }
+});
+
+// nesting states
+menu.state('Loan.amount', {
+    run: async() => {
+        // use menu.val to access user input value
+        var amount = Number(menu.val);
+        var rate = await menu.session.get('rate');
+        var val = amount/rate;
+        if(Number.isInteger(val)) {
+            // save user input in session
+            menu.session.set('amount', amount);
+            menu.con('You want to perform saving of amount GHC ' + amount +
+                '\n1. Confirm' +
+                '\n2. Cancel');
+        } else {
+            menu.con('You can only pay in multiple of amount GHC ' + rate +
+                '\n*. Try Again' +
+                '\n2. Cancel');
+        }
+
+    },
+    next: {
+        '1': 'Loan.confirm',
+        '2': 'Loan.cancel',
+        '#': 'Menu',
+        '*': 'Loan'
+    }
+});
+
+menu.state('Loan.confirm', {
+    run: async() => {
+        // access user input value save in session
+        var amount = await menu.session.get('amount');
+        var account = await menu.session.get('account');
+        var accountid = await menu.session.get('accountid');
+        var groupid = await menu.session.get('groupid');
+        var network = await menu.session.get('network');
+        var mobile = menu.args.phoneNumber;
+        var data = {account: account,type:'Loan',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false};
+        await postPayment(data, async(result)=> { 
+            console.log(result) 
+            // menu.end(JSON.stringify(result)); 
+        });
+        menu.end('Payment request of amount GHC ' + amount + ' sent to your phone.');
+    }
+});
+
+menu.state('Loan.cancel', {
     run: () => {
         // Cancel Savings request
         menu.end('Thank you for using paynow services.');
@@ -540,7 +620,7 @@ async function fetchAccount(val, callback) {
             if(response.result)
             {
                 menu.session.set('name', response.result.name);
-                menu.session.set('account', val);
+                menu.session.set('account', response.result.code);
                 menu.session.set('rate', response.result.rate);
                 menu.session.set('type', response.result.type);
                 menu.session.set('accountid', response.result.id);
