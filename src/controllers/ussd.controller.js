@@ -236,7 +236,7 @@ menu.state('Savings.cancel', {
 menu.state('Loan', {
     run: async() => {
         var rate = await menu.session.get('rate');
-        menu.con('Enter amount to Save ' +
+        menu.con('Enter amount to Pay ' +
             '\n Daily Rate GHC ' + rate);
     },
     next: {
