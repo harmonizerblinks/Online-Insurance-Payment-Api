@@ -1,6 +1,7 @@
 module.exports = function(app) {
 
     var apps = require('../controllers/app.controller.js');
+    var contact = require('../controllers/mail.controller.js');
     var ussd = require('../controllers/ussd.controller.js');
     var usla = require('../controllers/usla.controller.js');
     var vsla = require('../controllers/vsla.controller.js');

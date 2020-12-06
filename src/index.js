@@ -90,6 +90,7 @@ require('./routes/package.routes.js')(app);
 require('./routes/insurance.routes.js')(app);
 require('./routes/gallery.routes.js')(app);
 require('./routes/app.routes.js')(app);
+require('./routes/mail.routes.js')(app);
 
 // Api Documentation Setup
 const swaggerOptions = {
