@@ -135,7 +135,7 @@ async function sendmain(value) {
         from: value.website +' <'+ value.email +'>', // sender address
         to: value.to, // "bar@example.com, baz@example.com", // list of receivers
         subject: value.subject, // "Hello ✔", // Subject line
-        text: value.text,// "Sending Mail with Harmony Mailer", // plain text body
+        // text: value.text,// "Sending Mail with Harmony Mailer", // plain text body
         html: value.body, // html body
     }, (error, info) => {
         if (error) {
