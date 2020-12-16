@@ -5,7 +5,8 @@ let menu = new UssdMenu({ provider: 'hubtel' });
 
 
 // var apiurl = 'http://api-collect.paynowafrica.com/api/services/app/Ussd/';
-var apiurl = 'http://api-aslan.paynowafrica.com/api/services/app/'
+// var apiurl = 'http://api-aslan.paynowafrica.com/api/services/app/'
+var apiurl = 'https://api-aslans.paynowafrica.com/api/services/app/';
 var tenant = 2;
 let sessions = {};
 
@@ -49,11 +50,12 @@ menu.startState({
             if(data.success) {     
                 menu.con('Welcome to '+data.result.groups+'.' +'\n '+ data.result.name + 
                     '\n Select a Service:' +
-                    '\n1. Payment' +
-                    '\n2. Check Balance' +
-                    '\n3. Withdrawal' +
-                    '\n4. Save On Behalf' +
-                    '\n5. Others');
+                    '\n1. Savings' +
+                    '\n2. Loan Repayment' +
+                    '\n3. Check Balance' +
+                    '\n4. Withdrawal' +
+                    '\n5. Save On Behalf' +
+                    '\n6. Others');
             } else {
                 menu.con('Enter the number you were sign up with');
             }
@@ -62,11 +64,12 @@ menu.startState({
     },
     // next object links to next state based on user input
     next: {
-        '1': 'Payment',
-        '2': 'checkBalance',
-        '3': 'Withdrawal',
-        '4': 'SaveOnBehalf',
-        '5': 'Others',
+        '1': 'Savings',
+        '2': 'Loan',
+        '3': 'checkBalance',
+        '4': 'Withdrawal',
+        '5': 'SaveOnBehalf',
+        '6': 'Others',
         '*[0-9]+': 'Number.account'
     }
 });
@@ -97,10 +100,11 @@ menu.state('Menu', {
     // next object links to next state based on user input
     next: {
         '1': 'Savings',
-        '2': 'checkBalance',
-        '3': 'Withdrawal',
-        '4': 'SaveOnBehalf',
-        '5': 'Others',
+        '2': 'Loan',
+        '3': 'checkBalance',
+        '4': 'Withdrawal',
+        '5': 'SaveOnBehalf',
+        '6': 'Others',
         '*[0-9]+': 'Number.account'
     }
 });
@@ -129,10 +133,11 @@ menu.state('Number.account', {
                 menu.con('Welcome to '+data.result.groups+'.' +'\n '+ data.result.name + 
                     '\n Select a Service:' +
                     '\n1. Savings' +
-                    '\n2. Check Balance' +
-                    '\n3. Withdrawal' +
-                    '\n4. Save On Behalf' +
-                    '\n5. Others');
+                    '\n2. Loan',
+                    '\n3. Check Balance' +
+                    '\n4. Withdrawal' +
+                    '\n5. Save On Behalf' +
+                    '\n6. Others');
             } else {
                 // `menu.go('Number');
                 menu.con('Incorrect Live Time Number' + 
@@ -144,10 +149,11 @@ menu.state('Number.account', {
     // next object links to next state based on user input
     next: {
         '1': 'Savings',
-        '2': 'checkBalance',
-        '3': 'Withdrawal',
-        '4': 'SaveOnBehalf',
-        '5': 'Others',
+        '2': 'Loan',
+        '3': 'checkBalance',
+        '4': 'Withdrawal',
+        '5': 'SaveOnBehalf',
+        '6': 'Others',
         '*[0-9]+': 'Number.account'
     }
 });
@@ -236,8 +242,7 @@ menu.state('Savings.cancel', {
 menu.state('Loan', {
     run: async() => {
         var rate = await menu.session.get('rate');
-        menu.con('Enter amount to Pay ' +
-            '\n Daily Rate GHC ' + rate);
+        menu.con('Enter amount to Pay from Loan');
     },
     next: {
         '#': 'Menu',
@@ -251,19 +256,22 @@ menu.state('Loan.amount', {
     run: async() => {
         // use menu.val to access user input value
         var amount = Number(menu.val);
-        var rate = await menu.session.get('rate');
-        var val = amount/rate;
-        if(Number.isInteger(val)) {
-            // save user input in session
-            menu.session.set('amount', amount);
-            menu.con('You want to perform saving of amount GHC ' + amount +
+        menu.con('You want to Pay Loan of amount GHC ' + amount +
                 '\n1. Confirm' +
                 '\n2. Cancel');
-        } else {
-            menu.con('You can only pay in multiple of amount GHC ' + rate +
-                '\n*. Try Again' +
-                '\n2. Cancel');
-        }
+        // var rate = await menu.session.get('rate');
+        // var val = amount/rate;
+        // if(Number.isInteger(val)) {
+        //     // save user input in session
+        //     menu.session.set('amount', amount);
+        //     menu.con('You want to perform saving of amount GHC ' + amount +
+        //         '\n1. Confirm' +
+        //         '\n2. Cancel');
+        // } else {
+        //     menu.con('You can only pay in multiple of amount GHC ' + rate +
+        //         '\n*. Try Again' +
+        //         '\n2. Cancel');
+        // }
 
     },
     next: {
@@ -320,10 +328,12 @@ menu.state('checkBalance.show', {
         if(epin == pin) {
             // fetch balance
             var balance = await menu.session.get('balance');
+            var loan = await menu.session.get('loan');
             var rate = await menu.session.get('rate');
             menu.con('Balance Information' +
                 '\nNumber Of Share ' + (balance/rate) +
                 '\nAmount GHS ' + balance +
+                '\nLoan Balance GHS ' + loan +
                 '\n1. Ok' +
                 '\n#. Main Menu');
         } else {
@@ -587,6 +597,7 @@ async function fetchMemberAccount(val, callback) {
                 menu.session.set('group', response.result.groups);
                 // menu.session.set('grouptype', response.result.groupType);
                 menu.session.set('balance', response.result.balance);
+                menu.session.set('loan', response.result.loan);
                 menu.session.set('institution', response.result.tenant);
                 // menu.session.set('limit', response.result.limit);
             }
