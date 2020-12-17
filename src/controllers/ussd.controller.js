@@ -723,7 +723,7 @@ async function postPayment(val, callback) {
     .headers({
         'Content-Type': 'application/json'
     })
-    .send(JSON.stringify({agent:null,account:val.account,accountId:val.accountid,type:val.type,method:'MOMO',network:val.network,mobile:val.mobile,source:'USSD',groupid:val.groupid,amount:val.amount,reference:value.reference || 'Group Save',tenantId:tenant,withdrawal:val.withdrawal}))
+    .send(JSON.stringify({agent:null,account:val.account,accountId:val.accountid,type:val.type,method:'MOMO',network:val.network,mobile:val.mobile,source:'USSD',groupid:val.groupid,amount:val.amount,reference:value.reference,tenantId:tenant,withdrawal:val.withdrawal}))
     .end( async(res)=> { 
         // if (res.error) throw new Error(res.error); 
         console.log(res.raw_body);
