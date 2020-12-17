@@ -5,9 +5,9 @@ let menu = new UssdMenu({ provider: 'hubtel' });
 
 
 // var apiurl = 'http://api-collect.paynowafrica.com/api/services/app/Ussd/';
-// var apiurl = 'http://api-aslan.paynowafrica.com/api/services/app/'
+// var apiurl = 'http://api-aslan.paynowafrica.com/api/services/app/';
 var apiurl = 'https://api-aslans.paynowafrica.com/api/services/app/';
-var tenant = 2;
+var tenant = 3;
 let sessions = {};
 
 menu.sessionConfig({
@@ -54,7 +54,7 @@ menu.startState({
                     '\n2. Loan Repayment' +
                     '\n3. Check Balance' +
                     '\n4. Withdrawal' +
-                    '\n5. Pay On Behalf' +
+                    '\n5. Save On Behalf' +
                     '\n6. Others');
             } else {
                 menu.con('Enter the number you were sign up with');
@@ -136,7 +136,7 @@ menu.state('Number.account', {
                     '\n2. Loan',
                     '\n3. Check Balance' +
                     '\n4. Withdrawal' +
-                    '\n5. Pay On Behalf' +
+                    '\n5. Save On Behalf' +
                     '\n6. Others');
             } else {
                 // `menu.go('Number');
@@ -155,6 +155,20 @@ menu.state('Number.account', {
         '5': 'SaveOnBehalf',
         '6': 'Others',
         '*[0-9]+': 'Number.account'
+    }
+});
+
+menu.state('Payment', {
+    run: async() => {
+        // var mobile = menu.val;
+        menu.con('Select Payment Type:' +
+            '\n1. Savings' +
+            '\n2. Loan');
+    },
+    // next object links to next state based on user input
+    next: {
+        '1': 'Savings',
+        '2': 'Loan',
     }
 });
 
@@ -402,15 +416,13 @@ menu.state('Withdrawal.send', {
                 '\n#. Main Menu');
         } else {
         // submit with request
-            var name = await menu.session.get('name');
-            var group = await menu.session.get('group');
             var amount = await menu.session.get('amount');
             var account = await menu.session.get('account');
             var accountid = await menu.session.get('accountid');
             var groupid = await menu.session.get('groupid');
             var network = await menu.session.get('network');
             var mobile = menu.args.phoneNumber;
-            var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:true, reference: group +' - '+ name};
+            var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:true};
             postPayment(data, (result)=> { console.log(result) });
             menu.end('Withdraw request of Amount GHC ' + amount + ' submited to group master(s) for approval.');
         }
@@ -486,15 +498,13 @@ menu.state('SaveOnBehalf.confirm', {
     run: async() => {
         // access user input value save in session
         // access user input value save in session
-        var name = await menu.session.get('name');
-        var group = await menu.session.get('group');
         var amount = await menu.session.get('amount');
         var account = await menu.session.get('account');
         var accountid = await menu.session.get('accountid');
         var groupid = await menu.session.get('groupid');
         var network = await menu.session.get('network');
         var mobile = menu.args.phoneNumber;
-        var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false, reference: group + ' - ' + name};
+        var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false};
         postPayment(data, (result)=> { console.log(result) });
         // var amount = await menu.session.get('amount');
         menu.end('Payment request of amount GHC ' + amount + ' sent to your phone.');
@@ -649,7 +659,7 @@ async function postPayment(val, callback) {
     .headers({
         'Content-Type': 'application/json'
     })
-    .send(JSON.stringify({agent:null,account:val.account,accountId:val.accountid,type:val.type,method:'MOMO',network:val.network,mobile:val.mobile,source:'USSD',groupid:val.groupid,amount:val.amount,reference:value.reference || 'Group Save',tenantId:tenant,withdrawal:val.withdrawal}))
+    .send(JSON.stringify({agent:null,account:val.account,accountId:val.accountid,type:val.type,method:'MOMO',network:val.network,mobile:val.mobile,source:'USSD',groupid:val.groupid,amount:val.amount,reference:'Group Save',tenantId:tenant,withdrawal:val.withdrawal}))
     .end( async(res)=> { 
         // if (res.error) throw new Error(res.error); 
         console.log(res.raw_body);
