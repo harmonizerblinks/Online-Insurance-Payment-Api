@@ -161,8 +161,23 @@ menu.state('Number.account', {
 menu.state('Savings', {
     run: async() => {
         var rate = await menu.session.get('rate');
+        if(rate == null) {
+            await fetchAccount(menu.args.phoneNumber, (data)=> { 
+                // console.log(1,data); 
+                // use menu.con() to send response without terminating session 
+                if(data.success) {     
+                    menu.con('Enter amount to Save ' +
+                        '\n Daily Rate GHC ' + data.result.rate);
+                } else {
+                    // `menu.go('Number');
+                    menu.con('Incorrect Live Time Number' + 
+                    '\n Enter the number you were sign up with');
+                }
+            });
+        } else {
         menu.con('Enter amount to Save ' +
             '\n Daily Rate GHC ' + rate);
+        }
     },
     next: {
         '#': 'Menu',
