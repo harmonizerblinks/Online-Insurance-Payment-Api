@@ -202,15 +202,15 @@ menu.state('Savings.amount', {
 menu.state('Savings.confirm', {
     run: async() => {
         // access user input value save in session
-        var name = await menu.session.get('name');
-        var group = await menu.session.get('group');
         var amount = await menu.session.get('amount');
         var account = await menu.session.get('account');
         var accountid = await menu.session.get('accountid');
         var groupid = await menu.session.get('groupid');
         var network = await menu.session.get('network');
+        var name = await menu.session.get('name');
+        // var group = await menu.session.get('group');
         var mobile = menu.args.phoneNumber;
-        var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false, reference: group+' '+name};
+        var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false, reference: name};
         await postPayment(data, async(result)=> { 
             console.log(result) 
             // menu.end(JSON.stringify(result)); 
