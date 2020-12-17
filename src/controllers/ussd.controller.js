@@ -202,13 +202,15 @@ menu.state('Savings.amount', {
 menu.state('Savings.confirm', {
     run: async() => {
         // access user input value save in session
+        var name = await menu.session.get('name');
+        var group = await menu.session.get('group');
         var amount = await menu.session.get('amount');
         var account = await menu.session.get('account');
         var accountid = await menu.session.get('accountid');
         var groupid = await menu.session.get('groupid');
         var network = await menu.session.get('network');
         var mobile = menu.args.phoneNumber;
-        var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false};
+        var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false, reference: group+' '+name};
         await postPayment(data, async(result)=> { 
             console.log(result) 
             // menu.end(JSON.stringify(result)); 
@@ -227,7 +229,7 @@ menu.state('Savings.cancel', {
 
 menu.state('Loan', {
     run: async() => {
-        var rate = await menu.session.get('rate');
+        // var rate = await menu.session.get('rate');
         menu.con('Enter amount to Pay from Loan');
     },
     next: {
@@ -271,13 +273,15 @@ menu.state('Loan.amount', {
 menu.state('Loan.confirm', {
     run: async() => {
         // access user input value save in session
+        var name = await menu.session.get('name');
+        var group = await menu.session.get('group');
         var amount = await menu.session.get('amount');
         var account = await menu.session.get('account');
         var accountid = await menu.session.get('accountid');
         var groupid = await menu.session.get('groupid');
         var network = await menu.session.get('network');
         var mobile = menu.args.phoneNumber;
-        var data = {account: account,type:'Loan',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false};
+        var data = {account: account,type:'Loan',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false, reference: group+ ' '+name};
         await postPayment(data, async(result)=> { 
             console.log(result) 
             // menu.end(JSON.stringify(result)); 
@@ -410,7 +414,7 @@ menu.state('Withdrawal.send', {
             var groupid = await menu.session.get('groupid');
             var network = await menu.session.get('network');
             var mobile = menu.args.phoneNumber;
-            var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:true, reference: group +' - '+ name};
+            var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:true, reference: group +' - '+ name };
             postPayment(data, (result)=> { console.log(result) });
             menu.end('Withdraw request of Amount GHC ' + amount + ' submited to group master(s) for approval.');
         }
@@ -447,15 +451,33 @@ menu.state('SaveOnBehalf.member', {
                 var name = await menu.session.get('name');
                 var rate = await menu.session.get('rate');
                 menu.con('Name: '+ name +
-                    '\nEnter amount to Save' +
-                    '\n Daily Rate GHC ' + rate);
+                    '\nSelect Payment Type:' +
+                    '\n1. Savings' +
+                    '\n2. Loan');
             } else {
                 // `menu.go('Number');
                 menu.con('Incorrect Mobile Number'+ 
                     '\n1. Try Again');
             }
         });
-        
+    },
+    // next object links to next state based on user input
+    next: {
+        '1': 'SaveOnBehalf.save',
+        '2': 'SaveOnBehalf.loan',
+    }
+});
+
+
+menu.state('SaveOnBehalf.save', {
+    run: async() => {
+
+            var name = await menu.session.get('name');
+            var rate = await menu.session.get('rate');
+            menu.con('Enter amount to Save' +
+                '\n Daily Rate GHC ' + rate);
+            
+        });
     },
     next: {
         // using regex to match user input to next state
@@ -470,7 +492,9 @@ menu.state('SaveOnBehalf.amount', {
         // use menu.val to access user input value
         var amount = Number(menu.val);
         menu.session.set('amount', amount);
+        var name = await menu.session.get('name');
         menu.con('You want to perform saving of amount GHS ' + amount +
+            '\nfor ' + name +
             '\n1. Confirm' +
             '\n2. Cancel');
 
@@ -508,6 +532,59 @@ menu.state('SaveOnBehalf.cancel', {
         menu.end('Thank you for using ' +inst+ ' services. \n \n Powered by Alsan');
     }
 });
+
+
+menu.state('SaveOnBehalf.loan', {
+    run: async() => {
+        // var rate = await menu.session.get('rate');
+        menu.con('Enter amount to Pay from Loan');
+    },
+    next: {
+        '#': 'Menu',
+        // using regex to match user input to next state
+        '*\\d+': 'SaveOnBehalf.loanamount'
+    }
+});
+
+// nesting states
+menu.state('SaveOnBehalf.loanamount', {
+    run: () => {
+        // use menu.val to access user input value
+        var amount = Number(menu.val);
+        menu.session.set('amount', amount);
+        var name = await menu.session.get('name');
+        menu.con('You want to Pay Loan of amount GHS ' + amount +
+            '\nfor ' + name +
+            '\n1. Confirm' +
+            '\n2. Cancel');
+
+    },
+    next: {
+        '1': 'SaveOnBehalf.confirm',
+        '2': 'SaveOnBehalf.cancel'
+    }
+});
+
+
+menu.state('SaveOnBehalf.confirm', {
+    run: async() => {
+        // access user input value save in session
+        // access user input value save in session
+        var name = await menu.session.get('name');
+        var group = await menu.session.get('group');
+        var amount = await menu.session.get('amount');
+        var account = await menu.session.get('account');
+        var accountid = await menu.session.get('accountid');
+        var groupid = await menu.session.get('groupid');
+        var network = await menu.session.get('network');
+        var mobile = menu.args.phoneNumber;
+        var data = {account: account,type:'Loan',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false, reference: group + ' - ' + name};
+        postPayment(data, (result)=> { console.log(result) });
+        // var amount = await menu.session.get('amount');
+        menu.end('Payment request of amount GHC ' + amount + ' sent to your phone.');
+    }
+});
+
 
 menu.state('Others', {
     run: async() => {
