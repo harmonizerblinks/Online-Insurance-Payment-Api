@@ -476,8 +476,6 @@ menu.state('SaveOnBehalf.save', {
             var rate = await menu.session.get('rate');
             menu.con('Enter amount to Save' +
                 '\n Daily Rate GHC ' + rate);
-            
-        });
     },
     next: {
         // using regex to match user input to next state
@@ -488,7 +486,7 @@ menu.state('SaveOnBehalf.save', {
 
 // nesting states
 menu.state('SaveOnBehalf.amount', {
-    run: () => {
+    run: async() => {
         // use menu.val to access user input value
         var amount = Number(menu.val);
         menu.session.set('amount', amount);
@@ -548,7 +546,7 @@ menu.state('SaveOnBehalf.loan', {
 
 // nesting states
 menu.state('SaveOnBehalf.loanamount', {
-    run: () => {
+    run: async() => {
         // use menu.val to access user input value
         var amount = Number(menu.val);
         menu.session.set('amount', amount);
