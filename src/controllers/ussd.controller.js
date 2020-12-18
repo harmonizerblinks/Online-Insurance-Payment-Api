@@ -646,9 +646,9 @@ exports.ussd = async(req, res) => {
     if (args.Type == 'initiation') {
         args.Type = req.body.Type.replace(/\b[a-z]/g, (x) => x.toUpperCase());
     }
-    await fetchAccount(menu.args.phoneNumber, (data)=> { 
-        console.log(data);
-    });
+    // await fetchAccount(menu.args.phoneNumber, (data)=> { 
+    //     console.log(data);
+    // });
     menu.run(args, ussdResult => {
         menu.session.set('network', args.Operator);
         res.send(ussdResult);
