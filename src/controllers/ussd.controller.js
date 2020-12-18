@@ -307,9 +307,10 @@ menu.state('Loan.confirm', {
 });
 
 menu.state('Loan.cancel', {
-    run: () => {
+    run: async() => {
         // Cancel Savings request
-        menu.end('Thank you for using paynow services.');
+        var inst = await menu.session.get('institution');
+        menu.end('Thank you for using ' +inst+ ' services. \n \n Powered by Alsan');
     }
 });
 
@@ -356,9 +357,10 @@ menu.state('checkBalance.show', {
 });
 
 menu.state('checkBalance.confirm', {
-    run: () => {
+    run: async() => {
         // Ok checkBalance 
-        menu.end('Thank you for using paynow services.');
+        var inst = await menu.session.get('institution');
+        menu.end('Thank you for using ' +inst+ ' services. \n \n Powered by Alsan');
     }
 });
 
@@ -442,9 +444,10 @@ menu.state('Withdrawal.send', {
 });
 
 menu.state('Withdrawal.cancel', {
-    run: () => {
+    run: async() => {
         // Cancel Savings request
-        menu.end('Thank you for using paynow services.');
+        var inst = await menu.session.get('institution');
+        menu.end('Thank you for using ' +inst+ ' services. \n \n Powered by Alsan');
     }
 });
 
@@ -721,6 +724,7 @@ async function fetchAccount(val, callback) {
                 menu.session.set('accountid', response.result.id);
                 menu.session.set('groupid', response.result.groupId);
                 menu.session.set('pin', response.result.pin);
+                menu.session.set('loan', response.result.loan);
                 menu.session.set('group', response.result.groups);
                 menu.session.set('grouptype', response.result.groupType);
                 menu.session.set('balance', response.result.balance);
