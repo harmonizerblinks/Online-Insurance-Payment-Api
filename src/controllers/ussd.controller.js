@@ -259,6 +259,7 @@ menu.state('Loan.amount', {
     run: async() => {
         // use menu.val to access user input value
         var amount = Number(menu.val);
+        menu.session.set('amount', amount);
         menu.con('You want to Pay Loan of amount GHC ' + amount +
                 '\n1. Confirm' +
                 '\n2. Cancel');
@@ -296,7 +297,7 @@ menu.state('Loan.confirm', {
         var groupid = await menu.session.get('groupid');
         var network = await menu.session.get('network');
         var mobile = menu.args.phoneNumber;
-        var data = {account: account,type:'Loan',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false, reference: group+ ' '+name};
+        var data = {account: account,type:'Loan',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false, reference: group+ ' - '+name};
         await postPayment(data, async(result)=> { 
             console.log(result) 
             // menu.end(JSON.stringify(result)); 
@@ -377,7 +378,7 @@ menu.state('Withdrawal.amount', {
         // use menu.val to access user input value
         var amount = Number(menu.val);
         menu.session.set('amount', amount);
-        var amount = await menu.session.get('balance');
+        // var amount = await menu.session.get('balance');
         menu.con('Withdrawal request ' +
             '\n Amount GHS ' + amount +
             '\n1. Confirm' +
@@ -645,6 +646,9 @@ exports.ussd = async(req, res) => {
     if (args.Type == 'initiation') {
         args.Type = req.body.Type.replace(/\b[a-z]/g, (x) => x.toUpperCase());
     }
+    await fetchAccount(menu.args.phoneNumber, (data)=> { 
+        console.log(data);
+    });
     menu.run(args, ussdResult => {
         menu.session.set('network', args.Operator);
         res.send(ussdResult);
