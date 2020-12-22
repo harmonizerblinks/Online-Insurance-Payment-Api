@@ -48,14 +48,14 @@ menu.startState({
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.success) {     
-                menu.con('Welcome to '+data.result.groups+'.' +'\n '+ data.result.name + 
+                menu.con('Welcome to Ahantaman Rural Bank Branch Susu Group.' +'\n '+ data.result.name + 
                     '\n Select a Service:' +
                     '\n1. Savings' +
                     '\n2. Loan Repayment' +
                     '\n3. Check Balance' +
                     '\n4. Withdrawal' +
-                    '\n5. Save On Behalf' +
-                    '\n6. Others');
+                    '\n5. Account Info'+
+                    '\n6. Contact Us');
             } else {
                 menu.con('Enter the number you were sign up with');
             }
@@ -68,8 +68,8 @@ menu.startState({
         '2': 'Loan',
         '3': 'checkBalance',
         '4': 'Withdrawal',
-        '5': 'SaveOnBehalf',
-        '6': 'Others',
+        '5': 'Profile',
+        '6': 'ContactUs',
         '*[0-9]+': 'Number.account'
     }
 });
@@ -81,17 +81,17 @@ menu.state('Menu', {
         console.log(mobile);
         await fetchAccount(mobile, (data)=> { 
             // console.log(1,data); 
-            // use menu.con() to send response without terminating session 
+            // use menu.con() to send response without terminating session  
             if(data.success) {     
-                menu.con('Welcome to '+data.result.groups+'.' +'\n '+ data.result.name + 
+                menu.con('Welcome to Ahantaman Rural Bank Branch Susu Group.' +'\n '+ data.result.name + 
                     '\n Select a Service:' +
                     '\n1. Savings' +
-                    '\n2. Check Balance' +
-                    '\n3. Withdrawal' +
-                    '\n4. Save On Behalf' +
-                    '\n5. Others');
+                    '\n2. Loan Repayment' +
+                    '\n3. Check Balance' +
+                    '\n4. Withdrawal' +
+                    '\n5. Account Info'+
+                    '\n6. Contact Us');
             } else {
-                // `menu.go('Number');
                 menu.con('Enter the number you were sign up with');
             }
         });
@@ -103,19 +103,8 @@ menu.state('Menu', {
         '2': 'Loan',
         '3': 'checkBalance',
         '4': 'Withdrawal',
-        '5': 'SaveOnBehalf',
-        '6': 'Others',
-        '*[0-9]+': 'Number.account'
-    }
-});
-
-menu.state('Number', {
-    run: () => {
-        console.log(menu.args);
-        menu.end('use the number use were sign up with');
-    },
-    next: {
-        // using regex to match user input to next state
+        '5': 'Profile',
+        '6': 'ContactUs',
         '*[0-9]+': 'Number.account'
     }
 });
@@ -130,21 +119,19 @@ menu.state('Number.account', {
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.success) {     
-                menu.con('Welcome to '+data.result.groups+'.' +'\n '+ data.result.name + 
+                menu.con('Welcome to Ahantaman Rural Bank Branch Susu Group.' +'\n '+ data.result.name + 
                     '\n Select a Service:' +
                     '\n1. Savings' +
-                    '\n2. Loan',
+                    '\n2. Loan Repayment' +
                     '\n3. Check Balance' +
                     '\n4. Withdrawal' +
-                    '\n5. Save On Behalf' +
-                    '\n6. Others');
+                    '\n5. Account Info'+
+                    '\n6. Contact Us');
             } else {
-                // `menu.go('Number');
-                menu.con('Incorrect Live Time Number' + 
-                '\n Enter the number you were sign up with');
+                menu.con('Enter the number you were sign up with');
             }
         });
-
+        
     },
     // next object links to next state based on user input
     next: {
@@ -152,31 +139,16 @@ menu.state('Number.account', {
         '2': 'Loan',
         '3': 'checkBalance',
         '4': 'Withdrawal',
-        '5': 'SaveOnBehalf',
-        '6': 'Others',
+        '5': 'Profile',
+        '6': 'ContactUs',
         '*[0-9]+': 'Number.account'
-    }
-});
-
-menu.state('Payment', {
-    run: async() => {
-        // var mobile = menu.val;
-        menu.con('Select Payment Type:' +
-            '\n1. Savings' +
-            '\n2. Loan');
-    },
-    // next object links to next state based on user input
-    next: {
-        '1': 'Savings',
-        '2': 'Loan',
     }
 });
 
 menu.state('Savings', {
     run: async() => {
-        var rate = await menu.session.get('rate');
-        menu.con('Enter amount to Save ' +
-            '\n Daily Rate GHC ' + rate);
+        // var rate = await menu.session.get('rate');
+        menu.con('Enter amount to Save ');
     },
     next: {
         '#': 'Menu',
@@ -190,19 +162,11 @@ menu.state('Savings.amount', {
     run: async() => {
         // use menu.val to access user input value
         var amount = Number(menu.val);
-        var rate = await menu.session.get('rate');
-        var val = amount/rate;
-        if(Number.isInteger(val)) {
-            // save user input in session
-            menu.session.set('amount', amount);
-            menu.con('You want to perform saving of amount GHC ' + amount +
-                '\n1. Confirm' +
-                '\n2. Cancel');
-        } else {
-            menu.con('You can only pay in multiple of amount GHC ' + rate +
-                '\n*. Try Again' +
-                '\n2. Cancel');
-        }
+        // save user input in session
+        menu.session.set('amount', amount);
+        menu.con('You want to perform saving of amount GHC ' + amount +
+            '\n1. Confirm' +
+            '\n2. Cancel');
 
     },
     next: {
@@ -241,7 +205,6 @@ menu.state('Savings.cancel', {
 
 menu.state('Loan', {
     run: async() => {
-        var rate = await menu.session.get('rate');
         menu.con('Enter amount to Pay from Loan');
     },
     next: {
@@ -259,20 +222,6 @@ menu.state('Loan.amount', {
         menu.con('You want to Pay Loan of amount GHC ' + amount +
                 '\n1. Confirm' +
                 '\n2. Cancel');
-        // var rate = await menu.session.get('rate');
-        // var val = amount/rate;
-        // if(Number.isInteger(val)) {
-        //     // save user input in session
-        //     menu.session.set('amount', amount);
-        //     menu.con('You want to perform saving of amount GHC ' + amount +
-        //         '\n1. Confirm' +
-        //         '\n2. Cancel');
-        // } else {
-        //     menu.con('You can only pay in multiple of amount GHC ' + rate +
-        //         '\n*. Try Again' +
-        //         '\n2. Cancel');
-        // }
-
     },
     next: {
         '1': 'Loan.confirm',
@@ -447,75 +396,6 @@ menu.state('SaveOnBehalf', {
     next: {
         // using input to match user input to next state
         '*[0-9]+': 'SaveOnBehalf.member'
-    }
-});
-
-menu.state('SaveOnBehalf.member', {
-    run: async() => {
-        var mid = menu.val;
-        var gid = await menu.session.get('groupid');
-        await fetchMemberAccount({id: mid,gid: gid}, async(data)=> {
-            if(data.success) {
-                var name = await menu.session.get('name');
-                var rate = await menu.session.get('rate');
-                menu.con('Name: '+ name +
-                    '\nEnter amount to Save' +
-                    '\n Daily Rate GHC ' + rate);
-            } else {
-                // `menu.go('Number');
-                menu.con('Incorrect Mobile Number'+ 
-                    '\n1. Try Again');
-            }
-        });
-        
-    },
-    next: {
-        // using regex to match user input to next state
-        '*\\d+': 'SaveOnBehalf.amount',
-        // '#': 'Menu',
-    }
-});
-
-// nesting states
-menu.state('SaveOnBehalf.amount', {
-    run: () => {
-        // use menu.val to access user input value
-        var amount = Number(menu.val);
-        menu.session.set('amount', amount);
-        menu.con('You want to perform saving of amount GHS ' + amount +
-            '\n1. Confirm' +
-            '\n2. Cancel');
-
-    },
-    next: {
-        '1': 'SaveOnBehalf.confirm',
-        '2': 'SaveOnBehalf.cancel'
-    }
-});
-
-
-menu.state('SaveOnBehalf.confirm', {
-    run: async() => {
-        // access user input value save in session
-        // access user input value save in session
-        var amount = await menu.session.get('amount');
-        var account = await menu.session.get('account');
-        var accountid = await menu.session.get('accountid');
-        var groupid = await menu.session.get('groupid');
-        var network = await menu.session.get('network');
-        var mobile = menu.args.phoneNumber;
-        var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false};
-        postPayment(data, (result)=> { console.log(result) });
-        // var amount = await menu.session.get('amount');
-        menu.end('Payment request of amount GHC ' + amount + ' sent to your phone.');
-    }
-});
-
-menu.state('SaveOnBehalf.cancel', {
-    run: async() => {
-        // Cancel Savings request
-        var inst = await menu.session.get('institution');
-        menu.end('Thank you for using ' +inst+ ' services. \n \n Powered by Alsan');
     }
 });
 
