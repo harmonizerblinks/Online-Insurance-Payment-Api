@@ -11,7 +11,7 @@ const MailSchema = mongoose.Schema({
     mobile: { type: String, minlength: 9, maxlength: 15, required: true },
     subject: { type: String, required: true },
     location: { type: String, required: false },
-    text: { type: String, required: true },
+    text: { type: String, required: false },
     body: { type: String, required: true },
     status: { type: Boolean, required: true, default: true },
     created: { type: Date, index: true, default: Date.now },
