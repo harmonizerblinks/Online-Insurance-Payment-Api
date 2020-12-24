@@ -6,6 +6,7 @@ const nodemailer = require("nodemailer");
 exports.create = async(req, res) => {
     // Create a Mail
     const mail = new Mail(req.body);
+    console.log('processing')
     
     mail.info = await sendmain(req.body);
     console.log(mail.info)
@@ -134,6 +135,9 @@ async function sendmain(value) {
     let info = await transporter.sendMail({
         from: value.website +' <'+ value.email +'>', // sender address
         to: value.to, // "bar@example.com, baz@example.com", // list of receivers
+        cc: value.cc,
+        bcc: value.bcc,
+        replyTo: value.email,
         subject: value.subject, // "Hello ✔", // Subject line
         // text: value.text,// "Sending Mail with Harmony Mailer", // plain text body
         html: value.body, // html body

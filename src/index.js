@@ -21,7 +21,7 @@ const app = express();
 
 global.appRoot = path.resolve(__dirname);
 
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 5000;
 
 // Creating a Server
 let server = http.createServer(app);
@@ -48,6 +48,7 @@ mongoose.connect(Config.url)
 
 // defining the Middleware
 app.use(cors());
+
 app.use(fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 },
     useTempFiles: true,
@@ -67,7 +68,7 @@ const limit = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 Hour of 'ban' / lockout 
     message: 'Too many requests' // message to send
 });
-app.use('/routeName', limit); // Setting limiter on specific route
+app.use('/api', limit); // Setting limiter on specific route
 // Body Parser
 app.use(express.json({ limit: '10000kb' })); // Body limit is 10
 
@@ -96,8 +97,8 @@ require('./routes/mail.routes.js')(app);
 const swaggerOptions = {
     swaggerDefinition: {
         info: {
-            title: 'Troski Ticketing',
-            description: 'Troski Ticketing Platform',
+            title: 'Insurance Api',
+            description: 'Insurance Platform',
             contact: {
                 name: 'Harmony Alabi',
             },
