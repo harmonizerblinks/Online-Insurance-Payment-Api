@@ -124,7 +124,7 @@ async function sendmain(value) {
     let transporter = nodemailer.createTransport({
         host: "smtp.gmail.com", // "smtp.ethereal.email",
         port: 465,
-        // secure: true, // true for 465, false for other ports
+        secure: true, // true for 465, false for other ports
         auth: {
             user: 'aliasdevelopers@gmail.com', // testAccount.user, // generated ethereal user
             pass: 'Alias@2018', //testAccount.pass, // generated ethereal password
