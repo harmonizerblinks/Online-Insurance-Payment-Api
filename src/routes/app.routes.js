@@ -6,6 +6,7 @@ module.exports = function(app) {
     var usla = require('../controllers/usla.controller.js');
     var vsla = require('../controllers/vsla.controller.js');
     var pension = require('../controllers/pension.controller.js');
+    var paynow = require('../controllers/paynow.controller.js');
     var ahantaman = require('../controllers/ahantaman.controller.js');
     const verify = require('../middleware/verifyJwtToken.middleware.js');
     const user = require('../middleware/verifysignup.middleware.js');
@@ -50,8 +51,11 @@ module.exports = function(app) {
     // Group Save Ussd
     app.post('/api/ussd/vsla', vsla.ussd);
 
+    // Paynow
+    app.post('/api/ussd/paynow', pension.ussd);
+
     // People Pension Trust
-    app.post('/api/ussd/pension', pension.ussd);
+    app.post('/api/ussd/pension', paynow.ussd);
 
     // Ahantaman Rural Bank Group Saving
     app.post('/api/ussd/ahantaman', ahantaman.ussd);
