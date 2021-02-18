@@ -289,7 +289,7 @@ exports.ussd = async(req, res) => {
         args.Type = req.body.Type.replace(/\b[a-z]/g, (x) => x.toUpperCase());
     }
     menu.run(args, ussdResult => {
-        menu.session.set('network', args.Operator);  
+        // menu.session.set('network', args.Operator || 'MTN');  
         res.send(ussdResult);
     });
     // let args = {
