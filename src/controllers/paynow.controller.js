@@ -150,6 +150,25 @@ menu.state('Church.account', {
     }
 });
 
+// nesting states
+menu.state('Church.Type', {
+    run: async() => {
+        // use menu.val to access user input value
+        var val = Number(menu.val);
+        var type = church[val];
+        menu.session.set('type', type);
+        // var name = await menu.session.get('name');
+        menu.con('Enter amount for ' + type +
+            '\n' +
+            '\n#. Main Menu');
+
+    },
+    next: {
+        '#': 'Start',
+        '*[0-9]+': 'Church.type'
+    }
+});
+
 menu.state('Pay', {
     run: () => {
         menu.con('Enter amount to Pay');
