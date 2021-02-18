@@ -2,7 +2,7 @@ const UssdMenu = require('ussd-menu-builder');
 let menu = new UssdMenu({ provider: 'hubtel' });
 var apiurl = 'https://api.paynowafrica.com/PayNow/';
 let sessions = {};
-// let church = ["Tithe","Offering","Harvest","Donation","Welfare","Others"];
+let church = ["Tithe","Offering","Harvest","Donation","Welfare","Others"];
 
 menu.sessionConfig({
     start: (sessionId, callback) => {
@@ -90,7 +90,7 @@ menu.state('Payments', {
             '\n3. Pay Store' +
             '\n4. Pay Invoice' +
             '\n5. Pay Group / Club' +
-            '\n#. Main Menu');
+            '\n \n#. Main Menu');
     },
     // next object links to next state based on user input
     next: {
@@ -107,7 +107,7 @@ menu.state('Church', {
     run: () => {
         // use menu.con() to send response without terminating session      
         menu.con('Enter Church Code' + '\n' +
-            '\n#. Main');
+            '\n \n#. Main');
     },
     // next object links to next state based on user input
     next: {
