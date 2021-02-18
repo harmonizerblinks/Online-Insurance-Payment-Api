@@ -125,7 +125,7 @@ menu.state('Church.type', {
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.code) {
-                menu.session.set('service', "Pay Church");
+                // menu.session.set('service', 'Pay Church');
                 menu.con('Welcome to '+data.name +
                     '\n1.Tithe' +
                     '\n2.Offering',
@@ -181,7 +181,7 @@ menu.state('Church.reference', {
     next: {
         '#': 'Start',
         '0': 'Church.amount',
-        '*': 'Church.confirm'
+        '*[a-zA-Z]+': 'Church.confirm'
     }
 });
 
@@ -193,10 +193,12 @@ menu.state('Church.confirm', {
         // save user input in session
         menu.session.set('reference', reference);
         var type = await menu.session.get('type');
+        var amount = await menu.session.get('amount');
         menu.con('You want to pay' +type + ' of amount GHC ' + amount +
+            '\n Reference: '+ reference +
             '\n1. Confirm' +
-            '\n2. Cancel' +
-            '\n#. Main Menu');
+            '\n2. Go back' +
+            '\n \n#. Main Menu');
 
     },
     next: {
@@ -211,16 +213,16 @@ menu.state('Church.send', {
         var code = await menu.session.get('code');
         var type = await menu.session.get('type');
         var amount = await menu.session.get('amount');
-        var service = await menu.session.get('service');
+        // var service = await menu.session.get('service');
         var reference = await menu.session.get('reference');
         var network = await menu.session.get('network');
         var mobile = menu.args.phoneNumber;
-        var data = {code: code,type:type,service:service,network:network,mobile: mobile,amount: amount, reference: reference};
+        var data = {code: code, type: type,service: "Pay Church", network:network,mobile: mobile,amount: amount, reference: reference};
         await payMerchant(data, async(result)=> { 
             console.log(result);
             // menu.end(JSON.stringify(result)); 
         });
-        menu.end('Payment request of amount GHC ' + amount + ' sent to your phone.');
+        menu.end('Payment request of amount GHC ' + amount + ' sent to your phone. kindly confirm payment');
     }
 });
 
@@ -321,7 +323,7 @@ async function fetchMerchant(val, callback) {
 
 
 async function payMerchant(val, callback) {
-
+    console.info(val);
     var api_endpoint = apiurl + 'Merchant';
     console.log(api_endpoint);
     var request = unirest('POST', api_endpoint)
