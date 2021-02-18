@@ -3,8 +3,8 @@ let menu = new UssdMenu({ provider: 'hubtel' });
 var unirest = require('unirest');
 var apiurl = "https://api.paynowafrica.com/PayNow/";
 let sessions = {};
-let church = ["Tithe","Offering","Harvest","Donation","Welfare","Others"];
-let group = ["Due","Levies","Welfare","Assessment","Donation","Others"];
+let church = ["","Tithe","Offering","Harvest","Donation","Welfare","Others"];
+let group = ["","Due","Levies","Welfare","Assessment","Donation","Others"];
 
 menu.sessionConfig({
     start: (sessionId, callback) => {
