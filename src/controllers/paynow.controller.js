@@ -703,8 +703,9 @@ menu.state('Group.confirm', {
         // save user input in session
         menu.session.set('reference', reference);
         var type = await menu.session.get('type');
+        var name = await menu.session.get('name');
         var amount = await menu.session.get('amount');
-        menu.con('You want to pay ' + type + ' of amount GHC ' + amount +
+        menu.con('You want to pay ' + type + ' of amount GHC ' + amount + ' to ' + name +
             '\n Reference: '+ reference +
             '\n1. Confirm' +
             '\n2. Go back' +
