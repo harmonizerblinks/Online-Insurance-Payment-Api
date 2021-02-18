@@ -1,6 +1,6 @@
 const UssdMenu = require('ussd-menu-builder');
 let menu = new UssdMenu({ provider: 'hubtel' });
-var apiurl = 'https://api.paynowafrica.com/PayNow/';
+var apiurl = "https://api.paynowafrica.com/PayNow/";
 let sessions = {};
 let church = ["Tithe","Offering","Harvest","Donation","Welfare","Others"];
 
@@ -33,6 +33,7 @@ menu.sessionConfig({
 menu.on('error', (err) => {
     // handle errors
     console.log('Error', err);
+    menu.end("Error response "+ err);
 });
 
 // Define menu states

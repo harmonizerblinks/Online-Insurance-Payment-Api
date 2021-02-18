@@ -6,8 +6,8 @@ module.exports = function(app) {
     var usla = require('../controllers/usla.controller.js');
     var vsla = require('../controllers/vsla.controller.js');
     var pension = require('../controllers/pension.controller.js');
-    var paynow = require('../controllers/paynow.controller.js');
     var ahantaman = require('../controllers/ahantaman.controller.js');
+    var paynow = require('../controllers/paynow.controller.js');
     const verify = require('../middleware/verifyJwtToken.middleware.js');
     const user = require('../middleware/verifysignup.middleware.js');
 
