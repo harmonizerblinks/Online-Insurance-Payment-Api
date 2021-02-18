@@ -42,7 +42,10 @@ menu.startState({
         // use menu.con() to send response without terminating session
         menu.con('Welcome to PayNow Services' +
             '\n1. Payments' +
-            '\n2. Airtime');
+            '\n2. Airtime' +
+            '\n3. Financial' +
+            '\n4. Utility' +
+            '\n5. Voting');
     },
     // next object links to next state based on user input
     next: {
