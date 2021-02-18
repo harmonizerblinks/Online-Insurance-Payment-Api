@@ -108,7 +108,7 @@ menu.state('Church', {
     run: () => {
         // use menu.con() to send response without terminating session      
         menu.con('Enter Church Code' + '\n' +
-            '\n \n#. Main');
+            '\n \n#. Main Menu');
     },
     // next object links to next state based on user input
     next: {
@@ -196,8 +196,9 @@ menu.state('Church.confirm', {
         // save user input in session
         menu.session.set('reference', reference);
         var type = await menu.session.get('type');
+        var name = await menu.session.get('name');
         var amount = await menu.session.get('amount');
-        menu.con('You want to pay ' +type + ' of amount GHC ' + amount +
+        menu.con('You want to pay ' +type + ' of amount GHC ' + amount + 'to ' + name +
             '\n Reference: '+ reference +
             '\n1. Confirm' +
             '\n2. Go back' +
@@ -241,7 +242,7 @@ menu.state('Merchant', {
     run: () => {
         // use menu.con() to send response without terminating session      
         menu.con('Enter Merchant Code' + '\n' +
-            '\n \n#. Main');
+            '\n \n#. Main Menu');
     },
     // next object links to next state based on user input
     next: {
@@ -306,9 +307,9 @@ menu.state('Merchant.confirm', {
         var reference = menu.val;
         // save user input in session
         menu.session.set('reference', reference);
-        var type = await menu.session.get('type');
+        var name = await menu.session.get('name');
         var amount = await menu.session.get('amount');
-        menu.con('You want to pay ' +type + ' of amount GHC ' + amount +
+        menu.con('You want to pay ' +name + ' an amount of GHC ' + amount +
             '\n Reference: '+ reference +
             '\n1. Confirm' +
             '\n2. Go back' +
@@ -352,7 +353,7 @@ menu.state('Store', {
     run: () => {
         // use menu.con() to send response without terminating session      
         menu.con('Enter Iten Code' + '\n' +
-            '\n \n#. Main');
+            '\n \n#. Main Menu');
     },
     // next object links to next state based on user input
     next: {
@@ -485,7 +486,7 @@ menu.state('Invoice', {
     run: () => {
         // use menu.con() to send response without terminating session      
         menu.con('Enter Invoice Code' + '\n' +
-            '\n \n#. Main');
+            '\n \n#. Main Menu');
     },
     // next object links to next state based on user input
     next: {
@@ -553,7 +554,7 @@ menu.state('Invoice.reference', {
         var amount = Number(menu.val);
         // save user input in session
         menu.session.set('amount', amount);
-        menu.con('Enter Ref / Name' +
+        menu.con('Enter Reference' +
             '\n' +
             '\n#. Main Menu, 0. Go back');
 
