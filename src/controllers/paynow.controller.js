@@ -304,7 +304,7 @@ async function fetchMerchant(val, callback) {
         // }
         console.log(resp.raw_body);
         var response = JSON.parse(resp.raw_body);
-        if(response.result)
+        if(response.code)
         {
             menu.session.set('mtype', response.type);
             menu.session.set('code', response.code);
@@ -349,7 +349,7 @@ async function fetchItem(val, callback) {
         // }
         console.log(resp.raw_body);
         var response = JSON.parse(resp.raw_body);
-        if(response.result)
+        if(response.code)
         {
             menu.session.set('code', response.code);
             menu.session.set('name', response.name);
@@ -393,7 +393,7 @@ async function fetchInvoice(val, callback) {
             // }
             console.log(resp.raw_body);
             var response = JSON.parse(resp.raw_body);
-            if(response.result)
+            if(response.code)
             {
                 menu.session.set('code', response.code);
                 menu.session.set('name', response.name);
