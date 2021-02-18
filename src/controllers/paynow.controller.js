@@ -4,6 +4,7 @@ var unirest = require('unirest');
 var apiurl = "https://api.paynowafrica.com/PayNow/";
 let sessions = {};
 let church = ["Tithe","Offering","Harvest","Donation","Welfare","Others"];
+let group = ["Tithe","Offering","Harvest","Donation","Welfare","Others"];
 
 menu.sessionConfig({
     start: (sessionId, callback) => {
@@ -128,10 +129,11 @@ menu.state('Church.type', {
                 // menu.session.set('service', 'Pay Church');
                 menu.con('Welcome to '+data.name +
                     '\n1.Tithe' +
-                    '\n2.Offering',
+                    '\n2.Offering' +
                     '\n3.Harvest' +
                     '\n4.Donation' +
-                    '\n5.Welfare');
+                    '\n5.Welfare' +
+                    '\n6.Others');
             } else {
                 // `menu.go('Number');
                 menu.con('Incorrect Church Code' + 
@@ -194,7 +196,7 @@ menu.state('Church.confirm', {
         menu.session.set('reference', reference);
         var type = await menu.session.get('type');
         var amount = await menu.session.get('amount');
-        menu.con('You want to pay' +type + ' of amount GHC ' + amount +
+        menu.con('You want to pay ' +type + ' of amount GHC ' + amount +
             '\n Reference: '+ reference +
             '\n1. Confirm' +
             '\n2. Go back' +
