@@ -43,8 +43,8 @@ module.exports = function(app) {
 
 
     // Group Save Ussd
-    // app.post('/api/ussd', ussd.ussd);
-    app.post('/api/ussd', paynow.ussd);
+    app.post('/api/ussd', ussd.ussd);
+    // app.post('/api/ussd', paynow.ussd);
 
     // Group Save Ussd
     app.post('/api/ussd/usla', usla.ussd);

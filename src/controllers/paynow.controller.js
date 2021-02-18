@@ -43,11 +43,13 @@ menu.startState({
     run: () => {
         // use menu.con() to send response without terminating session
         menu.con('Welcome to PayNow Services' +
-            '\n1. Payments' +
-            '\n2. Airtime' +
-            '\n3. Financial' +
-            '\n4. Utility' +
-            '\n5. Voting');
+            '\n1. Payments');
+        // menu.con('Welcome to PayNow Services' +
+        //     '\n1. Payments' +
+        //     '\n2. Airtime' +
+        //     '\n3. Financial' +
+        //     '\n4. Utility' +
+        //     '\n5. Voting');
     },
     // next object links to next state based on user input
     next: {
@@ -65,11 +67,7 @@ menu.state('Start', {
     run: () => {
         // use menu.con() to send response without terminating session      
         menu.con('Welcome to PayNow Services' +
-            '\n1) Payments' +
-            '\n2) Airtime' +
-            '\n3) Financial Services' +
-            '\n4) Utility & TV' +
-            '\n5) Voting');
+            '\n1) Payments');
     },
     // next object links to next state based on user input
     next: {
