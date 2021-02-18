@@ -2,7 +2,7 @@ const UssdMenu = require('ussd-menu-builder');
 let menu = new UssdMenu({ provider: 'hubtel' });
 var apiurl = 'https://api.paynowafrica.com/PayNow/';
 let sessions = {};
-const church = ["Tithe","Offering","Harvest","Donation","Welfare","Others"];
+// let church = ["Tithe","Offering","Harvest","Donation","Welfare","Others"];
 
 menu.sessionConfig({
     start: (sessionId, callback) => {
