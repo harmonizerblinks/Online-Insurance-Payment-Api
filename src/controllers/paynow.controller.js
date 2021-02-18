@@ -111,12 +111,12 @@ menu.state('Church', {
     // next object links to next state based on user input
     next: {
         '#': 'Start',
-        '*\\d+': 'Church.account'
+        '*\\d+': 'Church.type'
     }
 });
 
 // nesting states
-menu.state('Church.account', {
+menu.state('Church.type', {
     run: async() => {
         // use menu.val to access user input value
         var code = menu.val;
@@ -126,13 +126,12 @@ menu.state('Church.account', {
             // use menu.con() to send response without terminating session 
             if(data.code) {
                 menu.session.set('service', "Pay Church");
-                menu.con('Welcome to '+data.name+'.' +
+                menu.con('Welcome to '+data.name +
                     '\n1.Tithe' +
                     '\n2.Offering',
                     '\n3.Harvest' +
                     '\n4.Donation' +
-                    '\n5.Welfare' +
-                    '\n6.Others');
+                    '\n5.Welfare');
             } else {
                 // `menu.go('Number');
                 menu.con('Incorrect Church Code' + 
@@ -144,12 +143,12 @@ menu.state('Church.account', {
     // next object links to next state based on user input
     next: {
         '#': 'Start',
-        '*[0-9]+': 'Church.type'
+        '*[0-9]+': 'Church.amount'
     }
 });
 
 // nesting states
-menu.state('Church.type', {
+menu.state('Church.amount', {
     run: async() => {
         // use menu.val to access user input value
         var val = Number(menu.val);
@@ -163,72 +162,74 @@ menu.state('Church.type', {
     },
     next: {
         '#': 'Start',
-        '*[0-9]+': 'Church.type'
-    }
-});
-
-menu.state('Pay', {
-    run: () => {
-        menu.con('Enter amount to Pay');
-    },
-    next: {
-        // using regex to match user input to next state
-        '*\\d+': 'Pay.amount'
+        '*[0-9]+': 'Church.reference'
     }
 });
 
 // nesting states
-menu.state('Pay.amount', {
-    run: () => {
+menu.state('Church.reference', {
+    run: async() => {
         // use menu.val to access user input value
         var amount = Number(menu.val);
         // save user input in session
         menu.session.set('amount', amount);
-        menu.con('Make sure that you have enough balance to proceed with the transaction of GHS ' + amount +
-            '\n1. One Time Payment' +
-            '\n2. Auto Debit' +
-            '\n3. Cancel');
+        menu.con('Enter Ref / Name' +
+            '\n' +
+            '\n#. Main Menu, 0. Go back');
 
     },
     next: {
-        '1': 'Pay.confirm',
-        '2': 'Pay.auto',
-        '3': 'Pay.cancel'
-    }
-});
-
-menu.state('Pay.confirm', {
-    run: async() => {
-        // access user input value save in session
-        var amount = await menu.session.get('amount');
-        menu.end('Your transaction was successful. You will receive a prompt of GHS ' + amount + ' shortly.');
+        '#': 'Start',
+        '0': 'Church.amount',
+        '*\\d+': 'Church.confirm'
     }
 });
 
 // nesting states
-menu.state('Pay.auto', {
-    run: () => {
+menu.state('Church.confirm', {
+    run: async() => {
+        // use menu.val to access user input value
+        var amount = Number(menu.val);
         // save user input in session
-        menu.con('Select Frequency:' +
-            '\n1. Daily' +
-            '\n2. Weekly' +
-            '\n3. Monthly');
+        menu.session.set('amount', amount);
+        var type = await menu.session.get('rate');
+        menu.con('You want to pay' +type + ' of amount GHC ' + amount +
+            '\n1. Confirm' +
+            '\n2. Cancel' +
+            '\n#. Main Menu');
 
     },
     next: {
-        '1': 'Pay.confirm',
-        '2': 'Pay.confirm',
-        '3': 'Pay.confirm'
+        '1': 'Church.send',
+        '2': 'Church.cancel'
     }
 });
 
-menu.state('Pay.cancel', {
+menu.state('Church.send', {
+    run: async() => {
+        // access user input value save in session
+        var code = await menu.session.get('code');
+        var type = await menu.session.get('type');
+        var amount = await menu.session.get('amount');
+        var service = await menu.session.get('service');
+        var reference = await menu.session.get('reference');
+        var network = await menu.session.get('network');
+        var mobile = menu.args.phoneNumber;
+        var data = {code: code,type:type,service:service,network:network,mobile: mobile,amount: amount, reference: reference};
+        await payMerchant(data, async(result)=> { 
+            console.log(result);
+            // menu.end(JSON.stringify(result)); 
+        });
+        menu.end('Payment request of amount GHC ' + amount + ' sent to your phone.');
+    }
+});
+
+menu.state('Church.cancel', {
     run: () => {
         // Cancel Savings request
-        menu.end('Thank you for using Peoples Pension Trust.');
+        menu.end('Thank you for using paynow services.');
     }
 });
-
 
 
 menu.state('Contact', {
