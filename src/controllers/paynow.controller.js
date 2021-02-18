@@ -40,12 +40,9 @@ menu.on('error', (err) => {
 menu.startState({
     run: () => {
         // use menu.con() to send response without terminating session
-        menu.con('Welcome to Paynow Services' +
-            '\n1) Payments' +
-            '\n2) Airtime' +
-            '\n3) Financial Services' +
-            '\n4) Utility & TV' +
-            '\n5) Voting');
+        menu.con('Welcome to PayNow Services' +
+            '\n1. Payments' +
+            '\n2. Airtime');
     },
     // next object links to next state based on user input
     next: {
@@ -88,7 +85,7 @@ menu.state('Payments', {
             '\n3. Pay Store' +
             '\n4. Pay Invoice' +
             '\n5. Pay Group / Club' +
-            '\n \n#. Main Menu');
+            '\n#. Main Menu');
     },
     // next object links to next state based on user input
     next: {
@@ -105,7 +102,7 @@ menu.state('Church', {
     run: () => {
         // use menu.con() to send response without terminating session      
         menu.con('Enter Church Code' + '\n' +
-            '\n \n#. Main');
+            '\n#. Main');
     },
     // next object links to next state based on user input
     next: {
@@ -149,7 +146,7 @@ menu.state('Church.account', {
 });
 
 // nesting states
-menu.state('Church.Type', {
+menu.state('Church.type', {
     run: async() => {
         // use menu.val to access user input value
         var val = Number(menu.val);
@@ -234,19 +231,17 @@ menu.state('Pay.cancel', {
 menu.state('Contact', {
     run: () => {
         // use menu.con() to send response without terminating session      
-        menu.con('1. Stop auto-debit' +
-            '\n2. Name' +
-            '\n3. Email' +
-            '\n4. Mobile' +
-            '\n5. Website');
+        menu.con('1. Name' +
+            '\n2. Email' +
+            '\n3. Mobile' +
+            '\n4. Website');
     },
     // next object links to next state based on user input
     next: {
-        '1': 'AutoDebit',
-        '2': 'Contact.name',
-        '3': 'Contact.email',
-        '4': 'Contact.mobile',
-        '5': 'Contact.website'
+        '1': 'Contact.name',
+        '2': 'Contact.email',
+        '3': 'Contact.mobile',
+        '4': 'Contact.website'
     }
 });
 
@@ -279,7 +274,7 @@ menu.state('Contact.website', {
 });
 
 
-// POST a Insurance
+// POST Paynow
 exports.ussd = async(req, res) => {
     // Create a 
     let args = req.body;
@@ -287,18 +282,9 @@ exports.ussd = async(req, res) => {
         args.Type = req.body.Type.replace(/\b[a-z]/g, (x) => x.toUpperCase());
     }
     menu.run(args, ussdResult => {
-        // menu.session.set('network', args.Operator || 'MTN');  
+        menu.session.set('network', args.Operator || 'MTN');  
         res.send(ussdResult);
     });
-    // let args = {
-    //     phoneNumber: req.body.phoneNumber,
-    //     sessionId: req.body.sessionId,
-    //     serviceCode: req.body.serviceCode,
-    //     text: req.body.text
-    // };
-    // await menu.run(args, resMsg => {
-    //     res.send(resMsg);
-    // });
 };
 
 
