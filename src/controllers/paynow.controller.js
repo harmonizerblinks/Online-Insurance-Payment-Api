@@ -39,7 +39,7 @@ menu.on('error', (err) => {
 menu.startState({
     run: () => {
         // use menu.con() to send response without terminating session
-        menu.con(' Welcome to Paynow Services' +
+        menu.con('Welcome to Paynow Services' +
             '\n1. Payments' +
             '\n2. Airtime' +
             '\n3. Financial Services' +
@@ -62,7 +62,7 @@ menu.startState({
 menu.state('Start', {
     run: () => {
         // use menu.con() to send response without terminating session      
-        menu.con(' Welcome to Paynow Services' +
+        menu.con('Welcome to Paynow Services' +
             '\n1. Payments' +
             '\n2. Airtime' +
             '\n3. Financial Services' +
