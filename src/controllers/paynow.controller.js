@@ -1,5 +1,6 @@
 const UssdMenu = require('ussd-menu-builder');
 let menu = new UssdMenu({ provider: 'hubtel' });
+var unirest = require('unirest');
 var apiurl = "https://api.paynowafrica.com/PayNow/";
 let sessions = {};
 let church = ["Tithe","Offering","Harvest","Donation","Welfare","Others"];
@@ -420,7 +421,7 @@ async function fetchUtility(val, callback) {
             // }
             console.log(resp.raw_body);
             var response = JSON.parse(resp.raw_body);
-            if(response.result)
+            if(response.code)
             {
                 menu.session.set('code', response.code);
                 menu.session.set('name', response.name);
