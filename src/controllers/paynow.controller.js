@@ -1,6 +1,8 @@
 const UssdMenu = require('ussd-menu-builder');
 let menu = new UssdMenu({ provider: 'hubtel' });
+var apiurl = 'https://api.paynowafrica.com/PayNow/';
 let sessions = {};
+const church = ["Tithe","Offering","Harvest","Donation","Welfare","Others"];
 
 menu.sessionConfig({
     start: (sessionId, callback) => {
@@ -38,60 +40,113 @@ menu.startState({
     run: () => {
         // use menu.con() to send response without terminating session      
         menu.con(' Welcome to Paynow Services' +
+            '\n1. Payments' +
+            '\n2. Airtime' +
+            '\n3. Financial Services' +
+            '\n4. Utility & TV' +
+            '\n5. Voting' +
+            '\n6. Contact');
+    },
+    // next object links to next state based on user input
+    next: {
+        '1': 'Payments',
+        '2': 'Airtime',
+        '3': 'Financial',
+        '4': 'Utility',
+        '5': 'Voting',
+        '6': 'Contact'
+    }
+});
+
+// Define Start
+menu.state('Start', {
+    run: () => {
+        // use menu.con() to send response without terminating session      
+        menu.con(' Welcome to Paynow Services' +
+            '\n1. Payments' +
+            '\n2. Airtime' +
+            '\n3. Financial Services' +
+            '\n4. Utility & TV' +
+            '\n5. Voting' +
+            '\n6. Contact');
+    },
+    // next object links to next state based on user input
+    next: {
+        '1': 'Payments',
+        '2': 'Airtime',
+        '3': 'Financial',
+        '4': 'Utility',
+        '5': 'Voting',
+        '6': 'Contact'
+    }
+});
+
+menu.state('Payments', {
+    run: () => {
+        // use menu.con() to send response without terminating session      
+        menu.con(' Payments' +
             '\n1. Pay Church' +
             '\n2. Pay Merchant' +
             '\n3. Pay Store' +
             '\n4. Pay Invoice' +
-            '\n5. Pay Group / Club'+
-            '\n6. Airtime');
+            '\n5. Pay Group / Club' +
+            '\n#. Main Menu');
     },
     // next object links to next state based on user input
     next: {
-        '1': 'Pay',
-        '2': 'checkBalance',
-        '3': 'Withdrawal',
-        '4': 'ICare',
-        '5': 'Contact'
+        '1': 'Church',
+        '2': 'Merchant',
+        '3': 'Store',
+        '4': 'Invoice',
+        '5': 'Group',
+        '#': 'Start'
     }
 });
 
-menu.state('Start', {
+menu.state('Church', {
     run: () => {
         // use menu.con() to send response without terminating session      
-        menu.con(' Welcome to Peoples Pension Trust' +
-            '\n1. Pay' +
-            '\n2. Check Balance' +
-            '\n3. Withdrawal/Claims' +
-            '\n4. ICare' +
-            '\n5. Contact');
+        menu.con('Enter Church Code' + '\n' +
+            '\n#. Main');
     },
     // next object links to next state based on user input
     next: {
-        '1': 'Pay',
-        '2': 'checkBalance',
-        '3': 'Withdrawal',
-        '4': 'ICare',
-        '5': 'Contact'
+        '#': 'Start',
+        '*\\d+': 'Contact'
     }
 });
 
-menu.state('Start', {
-    run: () => {
-        // use menu.con() to send response without terminating session      
-        menu.con(' Welcome to Peoples Pension Trust' +
-            '\n1. Pay' +
-            '\n2. Check Balance' +
-            '\n3. Withdrawal/Claims' +
-            '\n4. ICare' +
-            '\n5. Contact');
+// nesting states
+menu.state('Church.account', {
+    run: async() => {
+        // use menu.val to access user input value
+        var code = menu.val;
+        // save user input in session
+        await fetchMerchant({code: code, type: 'General'}, (data)=> { 
+            // console.log(1,data); 
+            // use menu.con() to send response without terminating session 
+            if(data) {
+                menu.session.set('service', "Pay Church");
+                menu.con('Welcome to '+data.name+'.' +'\n '+
+                    '\n1. Tithe' +
+                    '\n2. Offering',
+                    '\n3. Harvest' +
+                    '\n4. Donation' +
+                    '\n5. Welfare' +
+                    '\n6. Others' +
+                    '\n#. Main Menu');
+            } else {
+                // `menu.go('Number');
+                menu.con('Incorrect Church Code' + 
+                '\n#. Main Menu');
+            }
+        });
+
     },
     // next object links to next state based on user input
     next: {
-        '1': 'Pay',
-        '2': 'checkBalance',
-        '3': 'Withdrawal',
-        '4': 'ICare',
-        '5': 'Contact'
+        '#': 'Start',
+        '*[0-9]+': 'Church.type'
     }
 });
 
@@ -215,6 +270,7 @@ exports.ussd = async(req, res) => {
         args.Type = req.body.Type.replace(/\b[a-z]/g, (x) => x.toUpperCase());
     }
     menu.run(args, ussdResult => {
+        menu.session.set('network', args.Operator);
         res.send(ussdResult);
     });
     // let args = {
@@ -227,6 +283,150 @@ exports.ussd = async(req, res) => {
     //     res.send(resMsg);
     // });
 };
+
+
+async function fetchMerchant(val, callback) {
+    // try {
+    var api_endpoint = apiurl + 'Merchant/' + val.type + '/' + val.code;
+    console.log(api_endpoint);
+    var request = unirest('GET', api_endpoint)
+    .end(async(resp)=> { 
+        // if (resp.error) { 
+        //     console.log(resp.error); 
+        //     // var response = JSON.parse(res); 
+        //     return res;
+        // }
+        console.log(resp.raw_body);
+        var response = JSON.parse(resp.raw_body);
+        if(response.result)
+        {
+            menu.session.set('mtype', response.type);
+            menu.session.set('code', response.code);
+            menu.session.set('name', response.name);
+            // menu.session.set('type', response.type);
+            menu.session.set('merchantid', response.merchantid);
+            // menu.session.set('limit', response.result.limit);
+        }
+        
+        await callback(response);
+    });
+}
+
+
+async function payMerchant(val, callback) {
+
+    var api_endpoint = apiurl + 'Merchant';
+    console.log(api_endpoint);
+    var request = unirest('POST', api_endpoint)
+    .headers({
+        'Content-Type': 'application/json'
+    })
+    .send(JSON.stringify({ "code": val.code, "type": val.type, "amount": val.amount, "mobile": val.mobile, "network": val.network, "service": val.service, "reference": val.reference }))
+    .end(async(resp) => {
+        console.log(resp.raw_body);
+        var response = JSON.parse(resp.raw_body);
+        await callback(response);
+    });
+}
+
+
+async function fetchItem(val, callback) {
+
+    var api_endpoint = apiurl + 'Item/' + val.code;
+    console.log(api_endpoint);
+    var request = unirest('GET', api_endpoint)
+    .end(async(resp)=> { 
+        // if (resp.error) { 
+        //     console.log(resp.error); 
+        //     // var response = JSON.parse(res); 
+        //     return res;
+        // }
+        console.log(resp.raw_body);
+        var response = JSON.parse(resp.raw_body);
+        if(response.result)
+        {
+            menu.session.set('code', response.code);
+            menu.session.set('name', response.name);
+            menu.session.set('category', response.category);
+            menu.session.set('amount', response.amount);
+            menu.session.set('merchant', response.merchant);
+            menu.session.set('quantity', response.quantity);
+        }
+        
+        await callback(response);
+    });
+}
+
+async function payItem(val, callback) {
+    
+    var api_endpoint = apiurl + 'Merchant';
+    console.log(api_endpoint);
+    var request = unirest('POST', api_endpoint)
+    .headers({
+        'Content-Type': 'application/json'
+    })
+    .send(JSON.stringify({ "code": val.code, "name": val.name, "email": val.email, "amount": val.amount, "mobile": val.mobile, "provider": val.network, "quantity": val.quantity, "source": "Ussd", "reference": val.reference, "userid": "Ussd", "botid": "Ussd", "order_id": "Ussd" }))
+    .end(async(resp) => {
+        console.log(resp.raw_body);
+        var response = JSON.parse(resp.raw_body);
+        await callback(response);
+    });
+}
+
+
+async function fetchInvoice(val, callback) {
+    // try {
+        var api_endpoint = apiurl + 'Invoice/' + val.code;
+        console.log(api_endpoint);
+        var request = unirest('GET', api_endpoint)
+        .end(async(resp)=> { 
+            // if (resp.error) { 
+            //     console.log(resp.error); 
+            //     // var response = JSON.parse(res); 
+            //     return res;
+            // }
+            console.log(resp.raw_body);
+            var response = JSON.parse(resp.raw_body);
+            if(response.result)
+            {
+                menu.session.set('code', response.code);
+                menu.session.set('name', response.name);
+                menu.session.set('mobile', response.mobile);
+                menu.session.set('amount', response.amount);
+                menu.session.set('merchantid', response.merchantid);
+                // menu.session.set('quantity', response.quantity);
+            }
+            
+            await callback(response);
+        });
+}
+
+async function fetchUtility(val, callback) {
+    // try {
+        var api_endpoint = apiurl + 'Utility/' + val.code;
+        console.log(api_endpoint);
+        var request = unirest('GET', api_endpoint)
+        .end(async(resp)=> { 
+            // if (resp.error) { 
+            //     console.log(resp.error); 
+            //     // var response = JSON.parse(res); 
+            //     return res;
+            // }
+            console.log(resp.raw_body);
+            var response = JSON.parse(resp.raw_body);
+            if(response.result)
+            {
+                menu.session.set('code', response.code);
+                menu.session.set('name', response.name);
+                // menu.session.set('category', response.category);
+                menu.session.set('amount', response.amount);
+                // menu.session.set('merchant', response.merchant);
+                // menu.session.set('quantity', response.quantity);
+            }
+            
+            await callback(response);
+        });
+}
 
 function fetchBalance(val) {
     return "2.00"
