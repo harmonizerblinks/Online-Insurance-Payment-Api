@@ -124,16 +124,15 @@ menu.state('Church.account', {
         await fetchMerchant({code: code, type: 'General'}, (data)=> { 
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
-            if(data) {
+            if(data.code) {
                 menu.session.set('service', "Pay Church");
-                menu.con('Welcome to '+data.name+'.' +'\n '+
-                    '\n1. Tithe' +
-                    '\n2. Offering',
-                    '\n3. Harvest' +
-                    '\n4. Donation' +
-                    '\n5. Welfare' +
-                    '\n6. Others' +
-                    '\n#. Main Menu');
+                menu.con('Welcome to '+data.name+'.' +
+                    '\n1.Tithe' +
+                    '\n2.Offering',
+                    '\n3.Harvest' +
+                    '\n4.Donation' +
+                    '\n5.Welfare' +
+                    '\n6.Others');
             } else {
                 // `menu.go('Number');
                 menu.con('Incorrect Church Code' + 
