@@ -38,7 +38,7 @@ menu.on('error', (err) => {
 // Define menu states
 menu.startState({
     run: () => {
-        // use menu.con() to send response without terminating session      
+        // use menu.con() to send response without terminating session
         menu.con(' Welcome to Paynow Services' +
             '\n1. Payments' +
             '\n2. Airtime' +
@@ -83,8 +83,7 @@ menu.state('Start', {
 
 menu.state('Payments', {
     run: () => {
-        // use menu.con() to send response without terminating session 
-        // menu.session.set('network', args.Operator);    
+        // use menu.con() to send response without terminating session     
         menu.con(' Payments' +
             '\n1. Pay Church' +
             '\n2. Pay Merchant' +
@@ -290,6 +289,7 @@ exports.ussd = async(req, res) => {
         args.Type = req.body.Type.replace(/\b[a-z]/g, (x) => x.toUpperCase());
     }
     menu.run(args, ussdResult => {
+        menu.session.set('network', args.Operator);  
         res.send(ussdResult);
     });
     // let args = {
