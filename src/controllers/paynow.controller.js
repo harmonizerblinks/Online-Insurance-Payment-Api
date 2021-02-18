@@ -181,7 +181,7 @@ menu.state('Church.reference', {
     next: {
         '#': 'Start',
         '0': 'Church.amount',
-        '*\\d+': 'Church.confirm'
+        '*': 'Church.confirm'
     }
 });
 
@@ -189,10 +189,10 @@ menu.state('Church.reference', {
 menu.state('Church.confirm', {
     run: async() => {
         // use menu.val to access user input value
-        var amount = Number(menu.val);
+        var reference = menu.val;
         // save user input in session
-        menu.session.set('amount', amount);
-        var type = await menu.session.get('rate');
+        menu.session.set('reference', reference);
+        var type = await menu.session.get('type');
         menu.con('You want to pay' +type + ' of amount GHC ' + amount +
             '\n1. Confirm' +
             '\n2. Cancel' +
