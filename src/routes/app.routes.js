@@ -43,7 +43,8 @@ module.exports = function(app) {
 
 
     // Group Save Ussd
-    app.post('/api/ussd', ussd.ussd);
+    // app.post('/api/ussd', ussd.ussd);
+    app.post('/api/ussd', paynow.ussd);
 
     // Group Save Ussd
     app.post('/api/ussd/usla', usla.ussd);
@@ -52,10 +53,10 @@ module.exports = function(app) {
     app.post('/api/ussd/vsla', vsla.ussd);
 
     // Paynow
-    app.post('/api/ussd/paynow', pension.ussd);
+    app.post('/api/ussd/pension', paynow.ussd);
 
     // People Pension Trust
-    app.post('/api/ussd/pension', paynow.ussd);
+    app.post('/api/ussd/paynow', pension.ussd);
 
     // Ahantaman Rural Bank Group Saving
     app.post('/api/ussd/ahantaman', ahantaman.ussd);
