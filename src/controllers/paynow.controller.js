@@ -198,12 +198,11 @@ menu.state('Church.confirm', {
         var type = await menu.session.get('type');
         var name = await menu.session.get('name');
         var amount = await menu.session.get('amount');
-        menu.con('You want to pay ' +type + ' of amount GHC ' + amount + 'to ' + name +
+        menu.con('You want to pay ' +type + ' of amount GHC ' + amount + ' to ' + name +
             '\n Reference: '+ reference +
             '\n1. Confirm' +
             '\n2. Go back' +
-            '\n \n#. Main Menu');
-
+            '\n#. Main Menu');
     },
     next: {
         '1': 'Church.send',
@@ -352,37 +351,36 @@ menu.state('Merchant.cancel', {
 menu.state('Store', {
     run: () => {
         // use menu.con() to send response without terminating session      
-        menu.con('Enter Iten Code' + '\n' +
+        menu.con('Enter Item Code' + '\n' +
             '\n \n#. Main Menu');
     },
     // next object links to next state based on user input
     next: {
         '#': 'Start',
-        '*\\d+': 'Store.type'
+        '*\\d+': 'Store.item'
     }
 });
 
 // nesting states
-menu.state('Store.type', {
+menu.state('Store.item', {
     run: async() => {
         // use menu.val to access user input value
         var code = menu.val;
         // save user input in session
-        await fetchMerchant({code: code, type: 'General'}, (data)=> { 
+        await fetchItem({code: code}, (data)=> { 
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.code) {
                 // menu.session.set('service', 'Pay Church');
-                menu.con('Welcome to '+data.name +
-                    '\n1.Tithe' +
-                    '\n2.Offering' +
-                    '\n3.Harvest' +
-                    '\n4.Donation' +
-                    '\n5.Welfare' +
-                    '\n6.Others');
+                menu.con('Name: '+data.name +
+                    '\nAmount: GHC' + data.amount +
+                    '\nCategory: ' + data.category +
+                    '\nDescription' + data.description +
+                    '\n\nEnter Quantity' +
+                    '\n\n0. Go Back');
             } else {
                 // `menu.go('Number');
-                menu.con('Incorrect Church Code' + 
+                menu.con('Incorrect Item Code' + 
                 '\n#. Main Menu');
             }
         });
@@ -391,17 +389,17 @@ menu.state('Store.type', {
     // next object links to next state based on user input
     next: {
         '#': 'Start',
-        '*[0-9]+': 'Store.amount'
+        '0': 'Store',
+        '*[0-9]+': 'Store.quantity'
     }
 });
 
 // nesting states
-menu.state('Store.amount', {
+menu.state('Store.quantity', {
     run: async() => {
         // use menu.val to access user input value
-        var val = Number(menu.val);
-        var type = church[val];
-        menu.session.set('type', type);
+        var quantity = Number(menu.val);
+        menu.session.set('quantity', quantity);
         // var name = await menu.session.get('name');
         menu.con('Enter amount for ' + type +
             '\n' +
@@ -871,9 +869,9 @@ async function fetchItem(val, callback) {
             menu.session.set('code', response.code);
             menu.session.set('name', response.name);
             menu.session.set('category', response.category);
-            menu.session.set('amount', response.amount);
+            menu.session.set('itemamount', response.amount);
             menu.session.set('merchant', response.merchant);
-            menu.session.set('quantity', response.quantity);
+            menu.session.set('itemquantity', response.quantity);
         }
         
         await callback(response);
