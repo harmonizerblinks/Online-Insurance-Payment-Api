@@ -51,7 +51,7 @@ menu.startState({
                 menu.con('Hello '+data.name+',' +'\nYour Current Debt Amount for ECG Account Number '+data.number+' is GHS ' + data.amount + 
                     '\n1. Make Payment'); 
             } else {
-                menu.con('Enter Mobile number or bill code.');
+                menu.con('Enter Mobile Number that received Bill or Bill Code.');
             }
         });
         
@@ -76,7 +76,7 @@ menu.state('Menu', {
                     '\n1. Make Payment'); 
             } else {
                 // `menu.go('Number');
-                menu.con('Enter Mobile number or bill code.');
+                menu.con('Enter Mobile Number that received Bill or Bill Code.');
             }
         // });
         
@@ -102,7 +102,7 @@ menu.state('Number.account', {
                     '\n1. Make Payment'); 
             } else {
                 // `menu.go('Number');
-                menu.con('Enter Mobile number or bill code.');
+                menu.con('Enter Mobile Number that received Bill or Bill Code.');
             }
         });
 
