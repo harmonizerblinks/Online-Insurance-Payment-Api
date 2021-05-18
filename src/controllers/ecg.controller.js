@@ -48,7 +48,7 @@ menu.startState({
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.code) { 
-                menu.con('Hello '+data.name+',' +'\nYour Current Debt Amount for Account Number '+data.number+' is GHS ' + data.amount + 
+                menu.con('Hello '+data.name+',' +'\nYour Current Debt Amount for ECG Account Number '+data.number+' is GHS ' + data.amount + 
                     '\n1. Make Payment'); 
             } else {
                 menu.con('Enter Mobile number or bill code.');
@@ -72,7 +72,7 @@ menu.state('Menu', {
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.code) { 
-                menu.con('Hello '+data.name+',' +'\nYour Current Debt Amount for Account Number '+data.number+' is GHS ' + data.amount + 
+                menu.con('Hello '+data.name+',' +'\nYour Current Debt Amount for ECG Account Number '+data.number+' is GHS ' + data.amount + 
                     '\n1. Make Payment'); 
             } else {
                 // `menu.go('Number');
@@ -98,7 +98,7 @@ menu.state('Number.account', {
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.code) { 
-                menu.con('Hello '+data.name+',' +'\nYour Current Debt Amount for Account Number '+data.number+' is GHS ' + data.amount + 
+                menu.con('Hello '+data.name+',' +'\nYour Current Debt Amount for ECG Account Number '+data.number+' is GHS ' + data.amount + 
                     '\n1. Make Payment'); 
             } else {
                 // `menu.go('Number');
@@ -116,8 +116,8 @@ menu.state('Number.account', {
 
 menu.state('Payment', {
     run: async() => {
-        
-        menu.con('Enter amount to you want to Pay');
+        var data = await menu.session.get('account');
+        menu.con('Debt Amount: GHS '+ data.amount +'. \nEnter amount to you want to Pay');
     },
     next: {
         '#': 'Menu',
@@ -133,7 +133,7 @@ menu.state('Payment.amount', {
         var amount = Number(menu.val);
         menu.session.set('amount', amount);
         var data = await menu.session.get('account');
-        menu.con('You want to perform Bill payment of amount GHC ' + amount + ' to ECG Account '+data.number +
+        menu.con('You want to perform Bill payment of amount GHC '+amount+' to ECG Account Number '+data.number +
             '\n1. Confirm' +
             '\n2. Cancel');
         
@@ -150,19 +150,15 @@ menu.state('Payment.amount', {
 menu.state('Payment.confirm', {
     run: async() => {
         // access user input value save in session
-        // var name = await menu.session.get('name');
-        // var group = await menu.session.get('group');
-        // var amount = await menu.session.get('amount');
-        // var account = await menu.session.get('account');
-        // var accountid = await menu.session.get('accountid');
-        // var groupid = await menu.session.get('groupid');
-        // var network = await menu.session.get('network');
-        // var mobile = menu.args.phoneNumber;
-        // var data = {account: account,type:'Deposit',groupid:groupid,accountid:accountid,network:network,mobile: mobile,amount: amount,withdrawal:false, reference: group+' '+name};
-        // await postPayment(data, async(result)=> { 
-        //     console.log(result) 
-        //     // menu.end(JSON.stringify(result)); 
-        // });
+        var amount = await menu.session.get('amount');
+        var account = await menu.session.get('account');
+        var network = await menu.session.get('network');
+        var mobile = menu.args.phoneNumber;
+        var data = {code: account.code,name:account.name,email:'info@paynow.com',source:'USSD',network:network,mobile: mobile,amount: amount, reference: 'Bill Payment'};
+        await postPayment(data, async(result)=> { 
+            console.log(result) 
+            // menu.end(JSON.stringify(result)); 
+        });
         menu.end('Kindly Confirm Payment request of amount GHC ' + amount + ' sent to your phone.');
     }
 });
@@ -210,10 +206,10 @@ async function fetchAccount(val, callback) {
             // }
             console.log(resp.raw_body);
             var response = JSON.parse(resp.raw_body);
-            if(response.result)
+            if(response.invoiceid > 0)
             {
-                menu.session.set('bill', response);
-                menu.session.set('amount', response.amount      );
+                menu.session.set('account', response);
+                // menu.session.set('amount', response.amount);
             }
             
             await callback(response);
