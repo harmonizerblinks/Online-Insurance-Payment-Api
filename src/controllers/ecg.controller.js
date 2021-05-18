@@ -4,9 +4,9 @@ const UssdMenu = require('ussd-menu-builder');
 let menu = new UssdMenu({ provider: 'hubtel' });
 
 
-var apiurl = 'https://localhost:5001/Integration/';
+// var apiurl = 'https://localhost:5001/Integration/';
 // var apiurl = 'http://api-aslan.paynowafrica.com/api/services/app/'
-// var apiurl = 'https://api.alias-solutions.net:8449/Integration/';
+var apiurl = 'https://api.alias-solutions.net:8449/Integration/';
 var tenant = 2;
 let sessions = {};
 
@@ -199,7 +199,7 @@ async function fetchAccount(val, callback) {
             // Remove Bearer from string
             val = val.replace('+233','');
         }
-        var api_endpoint = apiurl + '/Integration/GetAccountBalanceByMobile/' + val;
+        var api_endpoint = apiurl + 'GetAccountBalanceByMobile/' + val;
         console.log(api_endpoint);
         var request = unirest('GET', api_endpoint)
         .end(async(resp)=> { 
@@ -226,12 +226,12 @@ async function fetchAccount(val, callback) {
 }
 
 async function postPayment(val, callback) {
-    var api_endpoint = apiurl + 'Mobile/PostPayments?tenantId=' + tenant;
+    var api_endpoint = apiurl + 'BillPayment';
     var req = unirest('POST', api_endpoint)
     .headers({
         'Content-Type': 'application/json'
     })
-    .send(JSON.stringify({agent:null,account:val.account,accountId:val.accountid,type:val.type,method:'MOMO',network:val.network,mobile:val.mobile,source:'USSD',groupid:val.groupid,amount:val.amount,reference:val.reference || 'Group Save',tenantId:tenant,withdrawal:val.withdrawal}))
+    .send(JSON.stringify(val))
     .end( async(res)=> { 
         // if (res.error) throw new Error(res.error); 
         console.log(res.raw_body);
