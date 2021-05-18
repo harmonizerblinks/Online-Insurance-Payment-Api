@@ -5,6 +5,7 @@ module.exports = function(app) {
     var ussd = require('../controllers/ussd.controller.js');
     var usla = require('../controllers/usla.controller.js');
     var vsla = require('../controllers/vsla.controller.js');
+    var ecg = require('../controllers/ecg.controller.js');
     var pension = require('../controllers/pension.controller.js');
     var ahantaman = require('../controllers/ahantaman.controller.js');
     var paynow = require('../controllers/paynow.controller.js');
@@ -43,7 +44,8 @@ module.exports = function(app) {
 
 
     // Group Save Ussd
-    app.post('/api/ussd', ussd.ussd);
+    // app.post('/api/ussd', ussd.ussd);
+    app.post('/api/ussd', ecg.ussd);
     // app.post('/api/ussd', paynow.ussd);
 
     // Group Save Ussd
