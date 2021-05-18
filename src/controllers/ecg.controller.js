@@ -49,7 +49,7 @@ menu.startState({
             // use menu.con() to send response without terminating session 
             if(data.code) { 
                 menu.con('Hello '+data.name+',' +'\nYour Current Debt Amount for ECG Account Number '+data.number+' is GHS ' + data.amount + 
-                    '\n1. Make Payment'); 
+                    '\n\n1. Make Payment'); 
             } else {
                 menu.con('Enter Mobile Number that received Bill or Bill Code.');
             }
@@ -73,7 +73,7 @@ menu.state('Menu', {
             // use menu.con() to send response without terminating session 
             if(data.code) { 
                 menu.con('Hello '+data.name+',' +'\nYour Current Debt Amount for ECG Account Number '+data.number+' is GHS ' + data.amount + 
-                    '\n1. Make Payment'); 
+                    '\n\n1. Make Payment'); 
             } else {
                 // `menu.go('Number');
                 menu.con('Enter Mobile Number that received Bill or Bill Code.');
@@ -99,7 +99,7 @@ menu.state('Number.account', {
             // use menu.con() to send response without terminating session 
             if(data.code) { 
                 menu.con('Hello '+data.name+',' +'\nYour Current Debt Amount for ECG Account Number '+data.number+' is GHS ' + data.amount + 
-                    '\n1. Make Payment'); 
+                    '\n\n1. Make Payment'); 
             } else {
                 // `menu.go('Number');
                 menu.con('Enter Mobile Number that received Bill or Bill Code.');
