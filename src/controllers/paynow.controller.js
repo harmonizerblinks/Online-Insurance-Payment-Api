@@ -1,9 +1,11 @@
 const UssdMenu = require('ussd-builder');
 let menu = new UssdMenu({ provider: 'hubtel' });
 var unirest = require('unirest');
-var apiurl = "https://api.paynowafrica.com/PayNow/";
-var studentapiUrl = "http://api.uschoolonline.com/api/Students"
-var infoUrl = "https://app.alias-solutions.net:5008/ussd/"
+// var apiurl = "https://api.paynowafrica.com/PayNow/";
+const apiurl = "https://app.alias-solutions.net:5001/PayNow/";
+const apiurls = "https://app.alias-solutions.net:5001/Website/";
+var studentapiUrl = "http://api.uschoolonline.com/api/Students";
+var infoUrl = "https://app.alias-solutions.net:5008/ussd/";
 // var studentPaymentAPI = "http://api.uschoolonline.com/api/Students";
 let sessions = {};
 let church = ["","Tithe","Offering","Harvest","Donation","Welfare","Others"];

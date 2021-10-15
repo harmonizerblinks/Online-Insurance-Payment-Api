@@ -15,6 +15,7 @@ const PackageSchema = mongoose.Schema({
     no_of_seat: { type: Number, required: true, default: 5 },
     extra_seat_charge: { type: Schema.Types.Mixed, required: true, default: 5 },
     status: { type: Boolean, required: true, default: true },
+    merchantid: { type: Schema.Types.ObjectId, ref: 'merchant', required: false },
     userid: { type: Schema.Types.ObjectId, ref: 'user', required: false },
     created: { type: Date, index: true, default: Date.now },
     muserid: { type: Schema.Types.ObjectId, ref: 'user', required: false },

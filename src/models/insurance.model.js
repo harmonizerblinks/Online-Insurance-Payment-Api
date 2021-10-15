@@ -44,17 +44,9 @@ const InsuranceSchema = mongoose.Schema({
     address: { type: String, minlength: 5, maxlength: 500, required: false },
     digital_address: { type: String, required: false },
     postal_address: { type: String, required: false },
-    balance: { type: Schema.Types.Mixed, required: false, default: 0 },
-    // id_type: { type: String, required: false },
-    // id_number: { type: String, required: false },
-    // tin: { type: String, required: false },
-    // occupation: { type: String, required: false },
     package_id: { type: Schema.Types.ObjectId, ref: 'package', required: true },
-    details: { type: InsuranceDetailSchema, required: true },
-    payment: { type: InsurancePaymentSchema, required: false },
     status: { type: String, required: true, default: 'Pending' },
-    response: { type: Object, required: false },
-    callback: { type: Object, required: false },
+    merchantid: { type: Schema.Types.ObjectId, ref: 'merchant', required: false },
     created: { type: Date, index: true, default: Date.now },
     updated: { type: Date, index: true, default: Date.now }
 });
