@@ -2,11 +2,11 @@ const UssdMenu = require('ussd-builder');
 let menu = new UssdMenu({ provider: 'hubtel' });
 var unirest = require('unirest');
 // var apiurl = "https://api.paynowafrica.com/PayNow/";
+// var apiurls = "https://api.paynowafrica.com/Website/";
 const apiurl = "https://app.alias-solutions.net:5001/PayNow/";
 const apiurls = "https://app.alias-solutions.net:5001/Website/";
 var studentapiUrl = "http://api.uschoolonline.com/api/Students";
 var infoUrl = "https://app.alias-solutions.net:5008/ussd/";
-// var studentPaymentAPI = "http://api.uschoolonline.com/api/Students";
 let sessions = {};
 let church = ["","Tithe","Offering","Harvest","Donation","Welfare","Others"];
 let group = ["","Due","Levies","Welfare","Assessment","Donation","Others"];
@@ -63,6 +63,9 @@ menu.startState({
         '1': 'Payments',
         '2': 'Airtime',
         '3': 'Contact'
+        // '3': 'Financial',
+        // '4': 'Utility',
+        // '5': 'Voting',
     }
 });
 
@@ -71,15 +74,18 @@ menu.state('Start', {
     run: () => {
         // use menu.con() to send response without terminating session      
         menu.con('Welcome to PayNow Services' +
-            '\n1. Payments' +
-            '\n2. Airtime'+
-            '\n2. Contact');
+            '\n1) Payments' +
+            '\n2. Airtime' +
+            '\n3. Contact');
     },
     // next object links to next state based on user input
     next: {
         '1': 'Payments',
         '2': 'Airtime',
         '3': 'Contact'
+        // '3': 'Financial',
+        // '4': 'Utility',
+        // '5': 'Voting'
     }
 });
 
@@ -88,7 +94,7 @@ menu.state('Payments', {
         // use menu.con() to send response without terminating session     
         menu.con(' Payments' +
             '\n1. Pay Church' +
-            '\n2. Pay Store' +
+            '\n2. Pay Merchant' +
             '\n3. Pay Item' +
             '\n4. Pay Invoice' +
             '\n5. Pay Group / Club' +
@@ -98,7 +104,7 @@ menu.state('Payments', {
     // next object links to next state based on user input
     next: {
         '1': 'Church',
-        '2': 'Store',
+        '2': 'Merchant',
         '3': 'Item',
         '4': 'Invoice',
         '5': 'Group',
@@ -127,7 +133,7 @@ menu.state('Church.type', {
         // use menu.val to access user input value
         var code = menu.val;
         // save user input in session
-        await fetchMerchant({code: code, type: 'General'}, (data)=> { 
+        await fetchMerchant({code: code, type: 'Church'}, (data)=> { 
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.code) {
@@ -225,11 +231,11 @@ menu.state('Church.send', {
         var network = menu.args.operator;
         var mobile = menu.args.phoneNumber;
         var data = {code: code, type: type,service: "Pay Church", network:network,mobile: mobile,amount: amount, reference: reference};
-        payMerchant(data);
-        // await payMerchant(data, async(result)=> { 
-        //     console.log(result);
-        //     // menu.end(JSON.stringify(result)); 
-        // });
+        // payMerchant(data);
+        await payMerchant(data, async(result)=> { 
+            console.log(result);
+            // menu.end(JSON.stringify(result)); 
+        });
         menu.end('Payment request of amount GHC ' + amount + ' sent to your phone. kindly confirm payment');
     }
 });
@@ -242,26 +248,26 @@ menu.state('Church.cancel', {
 });
 
 
-menu.state('Store', {
+menu.state('Merchant', {
     run: () => {
         // use menu.con() to send response without terminating session      
-        menu.con('Enter Store Code' + '\n' +
+        menu.con('Enter Merchant Code' + '\n' +
             '\n \n#. Main Menu');
     },
     // next object links to next state based on user input
     next: {
         '#': 'Start',
-        '*\\d+': 'Store.amount'
+        '*\\d+': 'Merchant.amount'
     }
 });
 
 // nesting states
-menu.state('Store.amount', {
+menu.state('Merchant.amount', {
     run: async() => {
         // use menu.val to access user input value
         var code = menu.val;
         // save user input in session
-        await fetchMerchant({code: code, type: 'Store'}, (data)=> { 
+        await fetchMerchant({code: code, type: 'Default'}, (data)=> { 
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.code) {
@@ -280,13 +286,13 @@ menu.state('Store.amount', {
     // next object links to next state based on user input
     next: {
         '#': 'Start',
-        '0': 'Store',
-        '*[0-9]+': 'Store.reference'
+        '0': 'Merchant',
+        '*[0-9]+': 'Merchant.reference'
     }
 });
 
 // nesting states
-menu.state('Store.reference', {
+menu.state('Merchant.reference', {
     run: async() => {
         // use menu.val to access user input value
         var amount = Number(menu.val);
@@ -299,13 +305,13 @@ menu.state('Store.reference', {
     },
     next: {
         '#': 'Start',
-        '0': 'Store.amount',
-        '*[a-zA-Z]+': 'Store.confirm'
+        '0': 'Merchant.amount',
+        '*[a-zA-Z]+': 'Merchant.confirm'
     }
 });
 
 // nesting states
-menu.state('Store.confirm', {
+menu.state('Merchant.confirm', {
     run: async() => {
         // use menu.val to access user input value
         var reference = menu.val;
@@ -321,12 +327,12 @@ menu.state('Store.confirm', {
 
     },
     next: {
-        '1': 'Store.send',
-        '2': 'Store.reference'
+        '1': 'Merchant.send',
+        '2': 'Merchant.reference'
     }
 });
 
-menu.state('Store.send', {
+menu.state('Merchant.send', {
     run: async() => {
         // access user input value save in session
         var code = await menu.session.get('code');
@@ -337,16 +343,16 @@ menu.state('Store.send', {
         var network = menu.args.operator;
         var mobile = menu.args.phoneNumber;
         var data = {code: code, type: "Payment",service: "Pay Merchant", network:network,mobile: mobile,amount: amount, reference: reference};
-        payMerchant(data);
-        // await payMerchant(data, async(result)=> { 
-        //     console.log(result);
-        //     // menu.end(JSON.stringify(result)); 
-        // });
+        // payMerchant(data);
+        await payMerchant(data, async(result)=> { 
+            console.log(result);
+            // menu.end(JSON.stringify(result)); 
+        });
         menu.end('Payment request of amount GHC ' + amount + ' sent to your phone. kindly confirm payment');
     }
 });
 
-menu.state('Store.cancel', {
+menu.state('Merchant.cancel', {
     run: () => {
         // Cancel Savings request
         menu.end('Thank you for using paynow services.');
@@ -469,8 +475,8 @@ menu.state('Item.send', {
         var reference = await menu.session.get('reference');
         var network = menu.args.operator;
         var mobile = menu.args.phoneNumber;
-        var data = {code: code, type: type,service: "Pay Church", network:network,mobile: mobile,amount: amount, reference: reference};
-        await payMerchant(data, async(result)=> { 
+        var data = {code: code, type: type,service: "Pay Item", network:network,mobile: mobile,amount: amount, reference: reference};
+        await payItem(data, async(result)=> { 
             console.log(result);
             // menu.end(JSON.stringify(result)); 
         });
@@ -638,7 +644,7 @@ menu.state('Group.type', {
         // use menu.val to access user input value
         var code = menu.val;
         // save user input in session
-        await fetchMerchant({code: code, type: 'General'}, (data)=> { 
+        await fetchMerchant({code: code, type: 'Group'}, (data)=> { 
             // console.log(1,data); 
             // use menu.con() to send response without terminating session 
             if(data.code) {
@@ -676,7 +682,6 @@ menu.state('Group.amount', {
         menu.con('Enter amount for ' + type +
             '\n' +
             '\n#. Main Menu');
-
     },
     next: {
         '#': 'Start',
@@ -752,6 +757,109 @@ menu.state('Group.cancel', {
     }
 });
 
+menu.state('Airtime', {
+    run: () => {
+        // use menu.con() to send response without terminating session      
+        menu.con('1. Self' +
+            '\n2. Others' +
+            '\n' +
+            '\n#. Main Menu');
+    },
+    // next object links to next state based on user input
+    next: {
+        '1': 'Airtime.Self',
+        '2': 'Airtime.Others',
+        '#': 'Start'
+    }
+});
+
+// nesting states
+menu.state('Airtime.Self', {
+    run: async() => {
+        // use menu.val to access user input value
+        var mobile = menu.args.phoneNumber;
+        menu.session.set('recipient', mobile);
+        // var name = await menu.session.get('name');
+        menu.con('Enter Amount '+
+            '\n' +
+            '\n#. Main Menu');
+
+    },
+    next: {
+        '#': 'Start',
+        '*[0-9]+': 'Airtime.confirm'
+    }
+});
+
+// nesting states
+menu.state('Airtime.Others', {
+    run: async() => {
+        // var name = await menu.session.get('name');
+        menu.con('Enter Mobile Number ' +
+            '\n' +
+            '\n#. Main Menu');
+
+    },
+    next: {
+        '#': 'Start',
+        '*[0-9]+': 'Airtime.amount'
+    }
+});
+
+// nesting states
+menu.state('Airtime.amount', {
+    run: async() => {
+        // use menu.val to access user input value
+        var val = menu.val;
+        menu.session.set('recipient', val);
+        // var name = await menu.session.get('name');
+        menu.con('Enter Amount ' +
+            '\n' +
+            '\n#. Main Menu');
+
+    },
+    next: {
+        '#': 'Start',
+        '*[0-9]+': 'Airtime.confirm'
+    }
+});
+
+// nesting states
+menu.state('Airtime.confirm', {
+    run: async() => {
+        // use menu.val to access user input value
+        var amount = menu.val;
+        // save user input in session
+        menu.session.set('amount', amount);
+        //var type = await menu.session.get('type');
+        var recipient = await menu.session.get('recipient');
+        menu.con('You want to Buy Airtime of amount GHC ' + amount + ' to ' + recipient +
+            '\n1. Confirm' +
+            '\n \n#. Main Menu');
+    },
+    next: {
+        '1': 'Airtime.send',
+        '#': 'Start'
+    }
+});
+
+menu.state('Airtime.send', {
+    run: async() => {
+        // access user input value save in session
+        var amount = await menu.session.get('amount');
+        var recipient = await menu.session.get('recipient');
+        var network = menu.args.operator;
+        var mobile = menu.args.phoneNumber;
+        var data = {code: "500", network:network,mobile: mobile,amount: amount, recipient: recipient};
+        await buyAirtime(data, async(result)=> { 
+            console.log(result);
+            // menu.end(JSON.stringify(result)); 
+        });
+        menu.end('Airtime Payment request of amount GHC ' + amount + ' sent to your phone. kindly confirm payment');
+    }
+});
+
+
 menu.state('Fees', {
     run: () => {
         menu.con('Welcome to uSchool Payment Services. Enter Student Number');
@@ -816,105 +924,6 @@ menu.state('Fees.confirm', {
     }
 });
 
-menu.state('Airtime', {
-    run: () => {
-        // use menu.con() to send response without terminating session      
-        menu.con('1. Self' +
-            '\n2. Others' +
-            '\n\n#. Main Menu');
-    },
-    // next object links to next state based on user input
-    next: {
-        '#': 'Start',
-        '1': 'Airtime.self',
-        '2': 'Airtime.others',
-    }
-});
-
-menu.state('Airtime.self', {
-    run: () => {
-        
-        menu.session.set('mobile', menu.args.phoneNumber);
-        // use menu.con() to send response without terminating session      
-        menu.con('Enter Amount' +
-        '\n\n#. Main Menu');
-    },
-    // next object links to next state based on user input
-    next: {
-        '#': 'Start',
-        '*\\d+': 'Airtime.amount'
-    }
-});
-
-menu.state('Airtime.others', {
-    run: () => {
-        // use menu.con() to send response without terminating session      
-        menu.con('Enter Mobile Number' +
-        '\n\n#. Main Menu');
-    },
-    // next object links to next state based on user input
-    next: {
-        '#': 'Start',
-        '*\\d+': 'Airtime.others.amount'
-    }
-});
-
-menu.state('Airtime.others.amount', {
-    run: () => {
-        // use menu.con() to send response without terminating session
-        // let receipientnumber = menu.val;
-        menu.session.set('mobile', menu.val);
-        menu.con('Enter Amount' +
-        '\n\n#. Main Menu');
-    },
-    // next object links to next state based on user input
-    next: {
-        '#': 'Start',
-        '*\\d+': 'Airtime.amount'
-    }
-});
-
-
-menu.state('Airtime.amount', {
-    run: async() => {
-        let amount = menu.val;
-        menu.session.set('amount', amount);
-        let mobile = await menu.session.get('mobile');
-        // let mobile = menu.args.phoneNumber;
-        // if (mobile && mobile.startsWith('+233')) {
-        //     // Remove Bearer from string
-        //     mobile = mobile.replace('+233', '0');
-        // }else if(mobile && mobile.startsWith('233')) {
-        //     // Remove Bearer from string
-        //     mobile = mobile.replace('233', '0');
-        // }    
-        // menu.session.set('mobile', mobile);
-        // use menu.con() to send response without terminating session      
-        menu.con('You want to buy airtime of amount GHC '+ amount + ' to ' + mobile +
-        '\n1. Confirm' + 
-        '\n\n# Main Menu');
-    },
-    // next object links to next state based on user input
-    next: {
-        '#': 'Start',
-        '1': 'Airtime.complete'
-    }
-});
-
-menu.state('Airtime.complete', {
-    run: async() => {
-        let amount = await menu.session.get('amount');
-        let network = menu.args.operator;
-        let mobile = await menu.session.get('mobile');
-        var data = { 
-            code: "500", source: "Ussd", recipient_mobile_network: network, recipientmobilenumber: mobile, amount: amount, vouchernumber: "00000", payeroperatorname: network, payermobilenumber: menu.args.phoneNumber, userid: "Ussd", botid: "Ussd",order_id: ""
-        };
-        await buyAirtime(data, (res) => {
-            console.log(res);
-        })
-        menu.end('Airtime Payment request of amount GHC '+ amount +' sent to your phone. Kindly confirm payment');
-    },
-});
 
 menu.state('Contact', {
     run: () => {
@@ -950,7 +959,7 @@ menu.state('Contact.email', {
 menu.state('Contact.mobile', {
     run: () => {
         // Cancel Savings request
-        menu.end('0302738242');
+        menu.end('+233 (0)30 295 5790');
     }
 });
 
@@ -961,15 +970,6 @@ menu.state('Contact.website', {
     }
 });
 
-menu.state('Fees.cancel', {
-    run: () => {
-        // Cancel Savings request
-        menu.end(' ');
-    }
-});
-
-
-
 
 // POST Paynow
 exports.ussd = async(req, res) => {
@@ -979,7 +979,7 @@ exports.ussd = async(req, res) => {
         args.Type = req.body.Type.replace(/\b[a-z]/g, (x) => x.toUpperCase());
     }
     menu.run(args, ussdResult => {
-        menu.session.set('network', args.Operator || 'MTN');  
+        // menu.session.set('network', args.Operator || 'MTN');  
         res.send(ussdResult);
     });
 };
@@ -1012,6 +1012,7 @@ async function fetchMerchant(val, callback) {
     });
 }
 
+
 async function payMerchant(val, callback) {
     console.info(val);
     var api_endpoint = apiurl + 'Merchant';
@@ -1020,14 +1021,14 @@ async function payMerchant(val, callback) {
     .headers({
         'Content-Type': 'application/json'
     })
-    .send(JSON.stringify(val))
-    // .send(JSON.stringify({ "code": val.code, "type": val.type, "amount": val.amount, "mobile": val.mobile, "network": val.network, "service": val.service, "reference": val.reference }))
+    .send(JSON.stringify({ "code": val.code, "type": val.type, "amount": val.amount, "mobile": val.mobile, "network": val.network, "service": val.service, "reference": val.reference }))
     .end(async(resp) => {
         console.log(resp.raw_body);
         var response = JSON.parse(resp.raw_body);
         await callback(response);
     });
 }
+
 
 async function fetchItem(val, callback) {
 
@@ -1071,6 +1072,7 @@ async function payItem(val, callback) {
         await callback(response);
     });
 }
+
 
 async function fetchInvoice(val, callback) {
     // try {
@@ -1126,24 +1128,20 @@ async function fetchUtility(val, callback) {
         });
 }
 
+
 async function buyAirtime(val, callback) {
     
     var api_endpoint = apiurl + 'BuyAirtime';
-    console.log(api_endpoint);
+    console.log(api_endpoint, val);
     var request = unirest('POST', api_endpoint)
     .headers({
         'Content-Type': 'application/json'
     })
-    .send(JSON.stringify(val)).end(async(resp) => {
-        if (resp.error) { 
-            console.log(resp.error); 
-            // var response = JSON.parse(res); 
-            // return res;
-            await callback(resp.error);
-        }
+    .send(JSON.stringify({ "code": val.code, "recipient_mobile_network": val.network, "amount": val.amount, "payermobilenumber": val.mobile, "payeroperatorname": val.network, "recipientmobilenumber": val.recipient, "vouchernumber": "000", "source": "Ussd", "userid": "Ussd", "botid": "Ussd", "order_id": "Ussd" }))
+    .end(async(resp) => {
         console.log(resp.raw_body);
-        // var response = JSON.parse(resp.raw_body);
-        await callback(resp.raw_body);
+        var response = JSON.parse(resp.raw_body);
+        await callback(response);
     });
 }
 
@@ -1173,7 +1171,6 @@ async function fetchStudent(val, callback) {
 }
 
 // Post Payment
-
 async function postStudentPayment(val, callback){
     console.info(val);
     const value = { schoolcode:val.code, studentNumber: val.studentNumber, amountpaid: val.amount, datepaid: new Date(), phoneNumber: val.mobile, network:val.network };
@@ -1201,12 +1198,15 @@ async function postStudentPayment(val, callback){
     });
 };
 
+
 function getCallBack(val) {
-    var req = unirest('GET', 'https://api.paynowafrica.com/paynow/confirmation/' + val.network_ref)
+    const api_endpoint = apiurl + 'confirmation/' + val.network_ref;
+    var req = unirest('GET', api_endpoint)
         .end(async(res)=>{
             var body = JSON.parse(res.raw_body);
+            console.log(body);
             if (body.status_code ===  -1 || body.status_code === 0) {
-                setTimeout(() => { getCallBack(code, val); }, 60000);
+                setTimeout(() => { getCallBack(val); }, 60000);
                 // var callback = setTimeout(getCallBack(body, body.response.transaction_no), 200000);
             } else if(body.status_code === 1 ) {
                 // let ref = val.reference.split(" ");
@@ -1222,12 +1222,11 @@ function getCallBack(val) {
                 //     "network_ref": body.interpaytxnref,
                 //     "network": val.network
                 // }
-                
                 val.statuscode = body.status_code;
                 val.statusmessage = body.status_message;
                 val.paynow_ref = body.interpaytxnref;
                 val.network_ref = body.transaction_no;
-                console.log(data)        
+                console.log(val)        
                 var api_endpoint = studentapiUrl;
                 var request = unirest('POST', api_endpoint)
                 .headers({
@@ -1282,7 +1281,3 @@ async function getInfo(val, callback) {
 function fetchBalance(val) {
     return "2.00"
 }
-
-// function buyAirtime(phone, val) {
-//     return true
-// }
